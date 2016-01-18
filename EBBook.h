@@ -27,6 +27,11 @@ namespace libeburc
 		 * If failed to initialize, JIS X 0208 is assumed.
 		 */
 		void LoadLanguage();
+		/*
+		 * Read information from the `CATALOG(S)' file in 'book'.
+		 * Return EB_SUCCESS if it succeeds, error-code otherwise.
+		 */
+		void LoadCatalog();
 
 		EBBook( IStorageFolder^ BookDir );
 

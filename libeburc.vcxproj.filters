@@ -50,6 +50,9 @@
     <ClInclude Include="FileName.h">
       <Filter>ebu</Filter>
     </ClInclude>
+    <ClInclude Include="build-post.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libeburc.rc">

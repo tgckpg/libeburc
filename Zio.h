@@ -2,8 +2,16 @@
 
 #include <pch.h>
 #include <defs.h>
+#include <EBException.h>
+#include <robuffer.h>
+#include <build-post.h>
 
+#define ZIO_MAX_EBZIP_LEVEL             5
+#define ZIO_SIZE_EBZIP_HEADER           22
+
+using namespace concurrency;
 using namespace Windows::Storage;
+using namespace Windows::Storage::Streams;
 using namespace Windows::Foundation;
 
 namespace libeburc
@@ -11,7 +19,7 @@ namespace libeburc
 	/// <summary>
 	/// Compression type codes.
 	/// </summary>
-	enum class ZioCode
+	public enum class ZioCode
 	{
 		ZIO_PLAIN,
 		ZIO_EBZIP1,
@@ -25,7 +33,7 @@ namespace libeburc
 	/// <summary>
 	/// Huffman node types.
 	/// </summary>
-	enum class ZioHuffmanNode
+	public enum class ZioHuffmanNode
 	{
 		ZIO_HUFFMAN_NODE_INTERMEDIATE,
 		ZIO_HUFFMAN_NODE_EOF,
@@ -34,17 +42,23 @@ namespace libeburc
 		ZIO_HUFFMAN_NODE_LEAF32,
 	};
 
-	ref class Zio sealed
+	public ref class Zio sealed
 	{
+	internal:
 		/*
 		 * ID.
 		 */
 		int id;
 
 		/*
+		 * Source File
+		 */
+		IStorageFile^ SrcFile;
+
+		/*
 		 * Zio type. (PLAIN, EBZIP, EPWING, EPWING6 or SEBXA)
 		 */
-		ZioCode code;
+		ZioCode Code;
 
 		/*
 		 * File descriptor.
@@ -133,14 +147,28 @@ namespace libeburc
 		int is_ebnet;
 
 		/*
+		 * Low-level read function.
+		 *
+		 * If `zio->file' is socket, it calls ebnet_read().  Otherwise it calls
+		 * the read() system call.
+		 * *Does not support ebnet
+		 */
+		IBuffer^ ReadRaw( IBuffer^ buffer, size_t length );
+		/*
 		 * Open an EBZIP compression file.
 		 */
-		int OpenEbZip();
+		void OpenEbZip();
+
+		/*
+		 * Read data from `zio' file.
+		 */
+		IBuffer^ Read( IBuffer^ buffer, size_t length );
 
 		Zio( IStorageFile^ File, ZioCode ZCode );
+		Zio(); // For definition
 
 	public:
 
-		static IAsyncOperation<Zio^>^ Open( IStorageFile^ File, ZioCode ZCode );
+		static IAsyncOperation<Zio^>^ OpenAsync( IStorageFile^ File, ZioCode ZCode );
 	};
 }

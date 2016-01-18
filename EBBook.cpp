@@ -29,11 +29,16 @@ void EBBook::Bind()
 	Code = EB_BOOK_NONE;
 	Code = BookCounter++;
 	LoadLanguage();
+	LoadCatalog();
+}
+
+void EBBook::LoadCatalog()
+{
+
 }
 
 void EBBook::LoadLanguage()
 {
-	Zio^ zio = ref new Zio();
 	ZioCode zio_code;
 	char language_path_name[ EB_MAX_PATH_LENGTH + 1 ];
 	char language_file_name[ EB_MAX_FILE_NAME_LENGTH + 1 ];
@@ -46,30 +51,29 @@ void EBBook::LoadLanguage()
 	 */
 	try
 	{
-		StorageFile^ language_file = FileName::eb_find_file_name( DirRoot, L"language" );
+		IStorageFile^ language_file = FileName::eb_find_file_name( DirRoot, L"language" );
 
 		ZioCode ZCode = FileName::eb_path_name_zio_code( language_file, ZioCode::ZIO_PLAIN );
 
-		IAsyncOperation<Zio^>^ Ziop = Zio::Open( language_file, ZCode );
+		Zio^ ZInst = ref new Zio( language_file, ZCode );
+
+		if ( ZInst->Code == ZioCode::ZIO_INVALID )
+			throw ref new COMException( -1, "Invalid Zio" );
+
 		/*
-		if ( zio_open( &zio, language_path_name, zio_code ) < 0 )
+		 * Get a character code of the book, and get the number of langueages
+		 * in the file.
+		if (zio_read(&zio, buffer, 16) != 16)
 			goto failed;
-		*/
 
-			/*
-			 * Get a character code of the book, and get the number of langueages
-			 * in the file.
-			if (zio_read(&zio, buffer, 16) != 16)
-				goto failed;
+		book->character_code = eb_uint2(buffer);
+		if (book->character_code != EB_CHARCODE_ISO8859_1
+			&& book->character_code != EB_CHARCODE_JISX0208
+			&& book->character_code != EB_CHARCODE_JISX0208_GB2312) {
+			goto failed;
+		}
 
-			book->character_code = eb_uint2(buffer);
-			if (book->character_code != EB_CHARCODE_ISO8859_1
-				&& book->character_code != EB_CHARCODE_JISX0208
-				&& book->character_code != EB_CHARCODE_JISX0208_GB2312) {
-				goto failed;
-			}
-
-			zio_close(&zio);
+		zio_close(&zio);
 		 */
 
 	}

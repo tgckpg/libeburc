@@ -208,6 +208,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="build-post.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="EBBook.h" />
     <ClInclude Include="EBException.h" />
