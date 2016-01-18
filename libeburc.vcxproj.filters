@@ -27,6 +27,10 @@
     <ClCompile Include="FileName.cpp">
       <Filter>ebu</Filter>
     </ClCompile>
+    <ClCompile Include="JACode.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -53,6 +57,10 @@
     <ClInclude Include="build-post.h">
       <Filter>ebu</Filter>
     </ClInclude>
+    <ClInclude Include="JACode.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libeburc.rc">

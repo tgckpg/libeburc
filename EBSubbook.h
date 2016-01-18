@@ -4,11 +4,13 @@
 #include <defs.h>
 #include <Zio.h>
 
+using namespace Platform;
 
 namespace libeburc
 {
 	public ref class EBSubbook sealed
 	{
+	internal:
 		/// <summary>
 		/// Whether the object has been initialized.
 		/// </summary>
@@ -34,6 +36,15 @@ namespace libeburc
 		/// </summary>
 		Zio MovieZio;
 
+		/// <summary>
+		/// Subbook directory name.
+		/// </summary>
+		char directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
+
+		/// <summary>
+		/// The Subbook Root dir
+		/// </summary>
+		IStorageFolder^ DirRoot;
 	public:
 		/// <summary>
 		/// Index page.
@@ -45,6 +56,8 @@ namespace libeburc
 		/// This subbook is not available, if the code is EB_SUBBOOK_INVALID.
 		/// </summary>
 		property EBSubbookCode Code;
+
+		property String^ Title;
 
 		EBSubbook();
 	};

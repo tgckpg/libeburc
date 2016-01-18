@@ -1,5 +1,6 @@
 #pragma once
 #include <pch.h>
+#include <Utils.h>
 
 #define LOG(x);
 
@@ -134,11 +135,11 @@ namespace libeburc
 
 	public enum class EBCharacterCode
 	{
-		EB_CHARCODE_INVALID,
-		EB_CHARCODE_ISO8859_1,
-		EB_CHARCODE_JISX0208,
-		EB_CHARCODE_JISX0208_GB2312,
-		EB_CHARCODE_UTF8,
+		EB_CHARCODE_INVALID = -1,
+		EB_CHARCODE_ISO8859_1 = 1,
+		EB_CHARCODE_JISX0208 = 2,
+		EB_CHARCODE_JISX0208_GB2312 = 3,
+		EB_CHARCODE_UTF8 = 4,
 	};
 
 	public enum class EBErrorCode

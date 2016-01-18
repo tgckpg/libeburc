@@ -27,6 +27,16 @@ namespace libeburc
 		/// Ex: Returns the found_file_name instead.
 		/// </summary>
 		static StorageFile^ eb_find_file_name( IStorageFolder^ Folder, wstring target_file_name );
+		/// <summary>
+		/// Rewrite `directory_name' to a real directory name in the `path' directory.
+		///
+		/// If a directory matched to `directory_name' exists, then EB_SUCCESS is
+		/// returned, and `directory_name' is rewritten to that name.  Otherwise
+		/// EB_ERR_BAD_DIR_NAME is returned.
+		/// 
+		/// Ex: Now returns the target StorageFolder
+		/// </summary>
+		static IStorageFolder^ eb_fix_directory( IStorageFolder^ Folder, wstring target_dir_name );
 		static ZioCode eb_path_name_zio_code( IStorageFile^ File, ZioCode DefaultCode );
 	};
 }

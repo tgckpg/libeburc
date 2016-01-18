@@ -5,6 +5,8 @@
 #include <EBSubbook.h>
 #include <FileName.h>
 #include <EBException.h>
+#include <JACode.h>
+#include <build-post.h>
 
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
@@ -21,6 +23,11 @@ namespace libeburc
 
 		IStorageFolder^ DirRoot;
 
+		/*
+		 * Fix chachacter-code of the book if misleaded.
+		 */
+		void FixMislead();
+
 		void Bind();
 		/*
 		 * Read information from the `LANGUAGE' file.
@@ -32,6 +39,10 @@ namespace libeburc
 		 * Return EB_SUCCESS if it succeeds, error-code otherwise.
 		 */
 		void LoadCatalog();
+		/*
+		 * Read information from the `CATALOG' file in 'book'. (EB)
+		 */
+		void LoadCatalogEB( IStorageFile^ File );
 
 		EBBook( IStorageFolder^ BookDir );
 

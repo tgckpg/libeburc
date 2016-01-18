@@ -147,22 +147,52 @@ namespace libeburc
 		int is_ebnet;
 
 		/*
+		 * LSeekRaw Location
+		 */
+		off_t posx;
+
+		/*
 		 * Low-level read function.
 		 *
 		 * If `zio->file' is socket, it calls ebnet_read().  Otherwise it calls
 		 * the read() system call.
 		 * *Does not support ebnet
 		 */
-		IBuffer^ ReadRaw( IBuffer^ buffer, size_t length );
+		byte* ReadRaw( size_t length, IBuffer^ buffer = nullptr  );
+		/*
+		 * Uncompress an ebzip'ped slice.
+		 *
+		 * If it succeeds, 0 is returned.  Otherwise, -1 is returned.
+		 */
+		byte* UnzipSlice( size_t zipped_slice_size );
+
+		/*
+		 * Open an non-compressed file.
+		 */
+		void OpenPlain();
+
 		/*
 		 * Open an EBZIP compression file.
 		 */
 		void OpenEbZip();
 
 		/*
+		 * Low-level seek function.
+		 *
+		 * If `zio->file' is socket, it calls ebnet_close().  Otherwise it calls
+		 * the close() system call.
+		 */
+		void LSeekRaw( off_t offset );
+
+		/*
 		 * Read data from `zio' file.
 		 */
-		IBuffer^ Read( IBuffer^ buffer, size_t length );
+		byte* Read( size_t length, IBuffer^ buffer = nullptr );
+		/*
+		 * Read data from the `zio' file compressed with the ebzip compression
+		 * format.
+		 */
+		byte* ReadEBZip( size_t length, IBuffer^ buffer = nullptr );
 
 		Zio( IStorageFile^ File, ZioCode ZCode );
 		Zio(); // For definition
