@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>a73a073f-4117-49b2-a21b-8d4285370a05</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ebu">
+      <UniqueIdentifier>{1bea14b4-8439-4329-bf1c-ac9cf85035e2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="EBInfo.cpp" />
+    <ClCompile Include="EBBook.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="EBSubbook.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="Zio.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="EBException.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="FileName.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="EBInfo.h" />
+    <ClInclude Include="defs.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBBook.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBSubbook.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="Zio.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBException.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="FileName.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libeburc.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
