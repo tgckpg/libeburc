@@ -33,3 +33,11 @@
  */
 #define EB_SIZE_EB_CATALOG		40
 #define EB_SIZE_EPWING_CATALOG		164
+
+/*
+ * File names.
+ */
+#define EB_FILE_NAME_START      L"start"
+#define EB_FILE_NAME_HONMON     L"honmon"
+#define EB_FILE_NAME_FUROKU     L"furoku"
+#define EB_FILE_NAME_APPENDIX       L"appendix"

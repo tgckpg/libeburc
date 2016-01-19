@@ -3,9 +3,7 @@
 
 using namespace libeburc;
 
-Utils::Utils()
-{
-}
+Utils::Utils() { }
 
 wstring Utils::ToWStr( const char * c )
 {

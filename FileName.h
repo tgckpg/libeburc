@@ -24,7 +24,8 @@ namespace libeburc
 		/// Note that `target_file_name' must not contain `.' or excceed
 		/// EB_MAX_DIRECTORY_NAME_LENGTH characters.
 		///
-		/// Ex: Returns the found_file_name instead.
+		/// Extra: Returns the found_file instead.
+		/// Extra: eb_find_file_name2 is also generalized within.
 		/// </summary>
 		static StorageFile^ eb_find_file_name( IStorageFolder^ Folder, wstring target_file_name );
 		/// <summary>

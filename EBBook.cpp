@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "EBSubbook.h"
 #include "EBBook.h"
 
 using namespace libeburc;
@@ -136,7 +137,7 @@ void EBBook::LoadCatalogEB( IStorageFile^ File )
 	char* space;
 	for ( int i = 0; i < subbook_count; i++ )
 	{
-		EBSubbook^ subbook = ref new EBSubbook();
+		EBSubbook^ subbook = ref new EBSubbook( this );
 		/*
 		 * Read data from the catalog file.
 		 */
@@ -196,7 +197,7 @@ void EBBook::FixMislead()
 		{
 			character_code = EBCharCode::EB_CHARCODE_JISX0208;
 
-			for_each( begin( Subbooks ), end( Subbooks ), [] ( EBSubbook^ subbook )
+			for_each( begin( subbooks ), end( subbooks ), [] ( EBSubbook^ subbook )
 			{
 				JACode::eb_jisx0208_to_euc( subbook->title, subbook->title );
 			} );
@@ -245,4 +246,9 @@ void EBBook::LoadLanguage()
 		 * An error occurs...
 		 */
 	}
+}
+
+IIterable<EBSubbook^>^ EBBook::Subbooks::get()
+{
+	return subbooks->GetView();
 }

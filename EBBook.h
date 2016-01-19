@@ -2,12 +2,10 @@
 
 #include <pch.h>
 #include <defs.h>
-#include <EBSubbook.h>
 #include <FileName.h>
 #include <EBException.h>
 #include <JACode.h>
 #include <build-post.h>
-#include <Windows.h>
 
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
@@ -15,12 +13,12 @@ using namespace Windows::Foundation::Collections;
 
 namespace libeburc
 {
+	ref class EBSubbook;
 	/// <summary>
 	/// A Book.
 	/// </summary>
 	public ref class EBBook sealed
 	{
-
 		IStorageFolder^ DirRoot;
 
 		/*
@@ -76,7 +74,10 @@ namespace libeburc
 		/// <summary>
 		/// Subbook list.
 		/// </summary>
-		property IIterable<EBSubbook^>^ Subbooks { IIterable<EBSubbook^>^ get() { return subbooks->GetView(); } }
+		property IIterable<EBSubbook^>^ Subbooks
+		{
+			IIterable<EBSubbook^>^ get();
+		}
 
 		static IAsyncOperation<EBBook^>^ Parse( IStorageFolder^ BookDir );
 	};

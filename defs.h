@@ -21,6 +21,10 @@ typedef int EBHookCode;
 typedef int EBBinaryCode;
 
 /*
+ * Size of a page (The term `page' means `block' in JIS X 4081).
+ */
+#define EB_SIZE_PAGE			2048
+/*
  * Special book ID for cache to represent "no cache data for any book".
  */
 #define EB_BOOK_NONE            -1

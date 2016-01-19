@@ -112,7 +112,7 @@ IStorageFolder^ FileName::eb_fix_directory( IStorageFolder^ Folder, wstring Targ
 	{
 		VectorViewIterator<StorageFolder^> TargetFolder = find_if( begin( Folders ), end( Folders ), [ & ] ( StorageFolder^ Folder ) {
 			wstring fName = Folder->Name->Data();
-			return _wcsicmp( fName.c_str(), tName );
+			return _wcsicmp( fName.c_str(), tName ) == 0;
 		} );
 
 		if ( TargetFolder == end( Folders ) )
