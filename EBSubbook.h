@@ -67,8 +67,7 @@ namespace libeburc
 		{
 			String^ get()
 			{
-				wstring wtitle = Utils::ToWStr( title );
-				return ref new String( wtitle.c_str() );
+				return ref new String( ( LPWSTR ) Utils::MBEUCJP16( title ) );
 			}
 		}
 

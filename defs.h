@@ -2,6 +2,8 @@
 #include <pch.h>
 #include <Utils.h>
 
+#define CP_EUCJP 20932
+
 #define LOG(x);
 
 typedef int EBBookCode;

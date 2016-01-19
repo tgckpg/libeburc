@@ -1,5 +1,7 @@
 #pragma once
 
+#include <defs.h>
+
 using namespace std;
 
 namespace libeburc
@@ -9,5 +11,6 @@ namespace libeburc
 		Utils();
 	public:
 		static wstring ToWStr( const char * c );
+		static byte* MBEUCJP16( const char * c );
 	};
 }

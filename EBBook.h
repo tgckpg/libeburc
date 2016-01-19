@@ -7,11 +7,11 @@
 #include <EBException.h>
 #include <JACode.h>
 #include <build-post.h>
+#include <Windows.h>
 
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
-using namespace Windows::Storage;
 
 namespace libeburc
 {
