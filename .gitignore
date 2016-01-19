@@ -2,5 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+/x86/Debug
 /x64/Debug
-/libeburc.aps
+/ARM/Debug
+*.swp
+*.aps
