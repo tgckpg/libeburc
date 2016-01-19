@@ -212,7 +212,11 @@
     <ClInclude Include="defs.h" />
     <ClInclude Include="EBBook.h" />
     <ClInclude Include="EBException.h" />
+    <ClInclude Include="EBFont.h" />
+    <ClInclude Include="EBMultiSearch.h" />
+    <ClInclude Include="EBSearch.h" />
     <ClInclude Include="EBSubbook.h" />
+    <ClInclude Include="EBUTF8Table.h" />
     <ClInclude Include="FileName.h" />
     <ClInclude Include="JACode.h" />
     <ClInclude Include="pch.h" />
@@ -224,7 +228,11 @@
   <ItemGroup>
     <ClCompile Include="EBBook.cpp" />
     <ClCompile Include="EBException.cpp" />
+    <ClCompile Include="EBFont.cpp" />
+    <ClCompile Include="EBMultiSearch.cpp" />
+    <ClCompile Include="EBSearch.cpp" />
     <ClCompile Include="EBSubbook.cpp" />
+    <ClCompile Include="EBUTF8Table.cpp" />
     <ClCompile Include="FileName.cpp" />
     <ClCompile Include="JACode.cpp" />
     <ClCompile Include="pch.cpp">

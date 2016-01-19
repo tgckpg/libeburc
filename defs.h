@@ -12,7 +12,6 @@ typedef int EBSuffixCode;
 typedef int EBFontCode;
 typedef int EBWordCode;
 typedef int EBSubbookCode;
-typedef int EBIndexStyleCode;
 typedef int EBSearchCode;
 typedef int EBTextCode;
 typedef int EBTextStatusCode;
@@ -132,6 +131,14 @@ typedef int EBBinaryCode;
 
 namespace libeburc
 {
+	public enum class EBIndexStyleCode
+	{
+		EB_INDEX_STYLE_CONVERT = 0,
+		EB_INDEX_STYLE_ASIS = 1,
+		EB_INDEX_STYLE_REVERSED_CONVERT = 2,
+		EB_INDEX_STYLE_DELETE = 2, // typo?
+	};
+
 	public enum class EBDiscCode
 	{
 		EB_DISC_INVALID,

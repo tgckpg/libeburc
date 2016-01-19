@@ -31,6 +31,16 @@
       <Filter>ebu</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="EBSearch.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="EBMultiSearch.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="EBUTF8Table.cpp">
+      <Filter>ebu</Filter>
+    </ClCompile>
+    <ClCompile Include="EBFont.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -61,6 +71,16 @@
       <Filter>ebu</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="EBSearch.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBMultiSearch.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBUTF8Table.h">
+      <Filter>ebu</Filter>
+    </ClInclude>
+    <ClInclude Include="EBFont.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libeburc.rc">

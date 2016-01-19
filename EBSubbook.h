@@ -3,15 +3,23 @@
 #include <pch.h>
 #include <defs.h>
 #include <FileName.h>
+#include <EBSearch.h>
+#include <EBMultiSearch.h>
+#include <EBUTF8Table.h>
+#include <EBFont.h>
 #include <Zio.h>
 
 using namespace std;
 using namespace Platform;
+using namespace Platform::Collections;
 using namespace Windows::Foundation;
 
 namespace libeburc
 {
 	ref class EBBook;
+	/// <summary>
+	/// A subbook in a book.
+	/// </summary>
 	public ref class EBSubbook sealed
 	{
 		/// <summary>
@@ -58,7 +66,7 @@ namespace libeburc
 		/// <summary>
 		/// Files
 		/// </summary>
-		/* Originally Stores filenames.
+		/* Originally it stores filenames.
 		 *	but lets now use the StorageFile now
 		 * char text_file_name[EB_MAX_FILE_NAME_LENGTH + 1];
 		 * char graphic_file_name[EB_MAX_FILE_NAME_LENGTH + 1];
@@ -72,6 +80,29 @@ namespace libeburc
 		/// Internal title
 		/// </summary>
 		char title[ EB_MAX_TITLE_LENGTH + 1 ];
+
+		/// <summary>
+		/// Page number where search method titles are stored.
+		/// (temporary need, EPWING only).
+		/// </summary>
+		int search_title_page;
+		/*
+		 * The number of multi-search methods the subbook has.
+		 */
+		int multi_count;
+		/*
+		 * Normalization table for UTF-8 subbook.
+		 */
+		int table_page;
+		int table_size;
+		
+		Vector<EBUTF8Table^>^ table;
+		int table_count;
+		byte* table_buffer;
+		/*
+		 * The top page of multi search methods.
+		 */
+		EBMultiSearch^ multis[ EB_MAX_MULTI_SEARCHES ];
 
 		/// <summary>
 		/// Set via typec EB
@@ -107,6 +138,40 @@ namespace libeburc
 		/// Load multi search titles.
 		/// </summary>
 		void LoadMultiTitles();
+
+		/// <summary>
+		/// Load the UTF8 table.
+		/// </summary>
+		void LoadUTF8Table();
+
+		/// <summary>
+		/// The top page of search methods.
+		/// </summary>
+		EBSearch^ word_alphabet;
+		EBSearch^ word_asis;
+		EBSearch^ word_kana;
+		EBSearch^ endword_alphabet;
+		EBSearch^ endword_asis;
+		EBSearch^ endword_kana;
+		EBSearch^ keyword;
+		EBSearch^ menu;
+		EBSearch^ image_menu;
+		EBSearch^ cross;
+		EBSearch^ copyright;
+		EBSearch^ text;
+		EBSearch^ sound;
+
+		/*
+		 * Font list.
+		 */
+		EBFont^ narrow_fonts[ EB_MAX_FONTS ];
+		EBFont^ wide_fonts[ EB_MAX_FONTS ];
+
+		/*
+		 * Current narrow and wide fonts.
+		 */
+		EBFont^ *narrow_current;
+		EBFont^ *wide_current;
 
 		EBSubbook( EBBook^ Book );
 
