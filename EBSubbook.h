@@ -4,6 +4,7 @@
 #include <defs.h>
 #include <Zio.h>
 
+using namespace std;
 using namespace Platform;
 
 namespace libeburc
@@ -45,6 +46,11 @@ namespace libeburc
 		/// The Subbook Root dir
 		/// </summary>
 		IStorageFolder^ DirRoot;
+
+		/// <summary>
+		/// Internal title
+		/// </summary>
+		char title[ EB_MAX_TITLE_LENGTH + 1 ];
 	public:
 		/// <summary>
 		/// Index page.
@@ -57,7 +63,14 @@ namespace libeburc
 		/// </summary>
 		property EBSubbookCode Code;
 
-		property String^ Title;
+		property String^ Title
+		{
+			String^ get()
+			{
+				wstring wtitle = Utils::ToWStr( title );
+				return ref new String( wtitle.c_str() );
+			}
+		}
 
 		EBSubbook();
 	};

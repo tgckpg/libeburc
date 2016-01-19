@@ -45,33 +45,39 @@ namespace libeburc
 		void LoadCatalogEB( IStorageFile^ File );
 
 		EBBook( IStorageFolder^ BookDir );
+	internal:
+		int subbook_count;
+		EBCharCode character_code;
+		EBDiscCode disc_code;
+		EBBookCode code;
+		Vector<EBSubbook^>^ subbooks;
 
 	public:
 		/// <summary>
 		/// Book ID
 		/// </summary>
-		property EBBookCode Code;
+		property EBBookCode Code { EBBookCode get() { return code; } }
 
 		/// <summary>
 		/// Disc type.  EB* or EPWING.
 		/// </summary>
-		property EBDiscCode DiscCode; 
+		property EBDiscCode DiscCode { EBDiscCode get() { return disc_code; } }
 
 		/// <summary>
 		/// Character code of the book.
 		/// </summary>
-		property EBCharacterCode CharCode;
+		property EBCharCode CharCode { EBCharCode get() { return character_code; } }
 
 		/// <summary>
 		/// The number of subbooks the book has.
 		/// </summary>
-		property int SubbookCount;
+		property int SubbookCount { int get() { return subbook_count; } }
 
 		/// <summary>
 		/// Subbook list.
 		/// </summary>
-		property IIterable<EBSubbook^>^ Subbooks;
+		property IIterable<EBSubbook^>^ Subbooks { IIterable<EBSubbook^>^ get() { return subbooks->GetView(); } }
 
-		static IAsyncOperation<EBBook^>^ Parse(IStorageFolder^ BookDir);
+		static IAsyncOperation<EBBook^>^ Parse( IStorageFolder^ BookDir );
 	};
 }

@@ -133,7 +133,7 @@ namespace libeburc
 		EB_DISC_EPWING,
 	};
 
-	public enum class EBCharacterCode
+	public enum class EBCharCode
 	{
 		EB_CHARCODE_INVALID = -1,
 		EB_CHARCODE_ISO8859_1 = 1,
