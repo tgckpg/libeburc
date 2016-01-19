@@ -43,6 +43,7 @@ static const char * const misleaded_book_table[] = {
 EBBook::EBBook( IStorageFolder^ BookDir )
 {
 	DirRoot = BookDir;
+	code = EB_BOOK_NONE;
 }
 
 IAsyncOperation<EBBook^>^ EBBook::Parse( IStorageFolder^ BookDir )
@@ -56,7 +57,6 @@ IAsyncOperation<EBBook^>^ EBBook::Parse( IStorageFolder^ BookDir )
 
 void EBBook::Bind()
 {
-	code = EB_BOOK_NONE;
 	code = BookCounter++;
 	LoadLanguage();
 	LoadCatalog();
@@ -175,7 +175,8 @@ void EBBook::LoadCatalogEB( IStorageFile^ File )
 		if ( character_code != EBCharCode::EB_CHARCODE_ISO8859_1 )
 			JACode::eb_jisx0208_to_euc( subbook->title, subbook->title );
 
-		subbooks->Append( subbook );
+		// Use set instead of append
+		subbooks->SetAt( i, subbook );
 	}
 
 	/*
@@ -187,10 +188,11 @@ void EBBook::LoadCatalogEB( IStorageFile^ File )
 void EBBook::FixMislead()
 {
 	const char * const * misleaded;
+	EBSubbook^ subbook = subbooks->GetAt( 0 );
 
 	for ( misleaded = misleaded_book_table; *misleaded != NULL; misleaded++ )
 	{
-		if ( strcmp( Subbooks->First()->Current->title, *misleaded ) == 0 )
+		if ( strcmp( subbook->title, *misleaded ) == 0 )
 		{
 			character_code = EBCharCode::EB_CHARCODE_JISX0208;
 
