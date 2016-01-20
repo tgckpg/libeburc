@@ -1,9 +1,12 @@
 ﻿#pragma once
 
 #include <pch.h>
+#include <CharRange.h>
 
+using namespace concurrency;
 using namespace Platform;
 using namespace Platform::Collections;
+using namespace Windows::Foundation;
 using namespace Windows::Storage;
 
 namespace libeburc
@@ -14,6 +17,9 @@ namespace libeburc
     public ref class EBInfo sealed
     {
         EBInfo();
+	internal:
+		static CharRange^ NarrowFontRange( EBSubbook^ subbook );
+		static CharRange^ WideFontRange( EBSubbook^ subbook );
     public:
 		/*
 		 * Output disc type.
@@ -31,5 +37,13 @@ namespace libeburc
 		 * Output a font list.
 		 */
 		static Array<int>^ FontList( EBSubbook^ Subbook );
+		/*
+		 * Output character range of the narrow font.
+		 */
+		static IAsyncOperation<CharRange^>^ GetNarrowFontRangeAsync( EBSubbook^ Subbook );
+		/*
+		 * Output character range of the wide font.
+		 */
+		static IAsyncOperation<CharRange^>^ GetWideFontRangeAsync( EBSubbook^ Subbook );
     };
 }

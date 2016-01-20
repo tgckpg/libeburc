@@ -100,3 +100,33 @@ Array<int>^ EBInfo::FontList( EBSubbook^ subbook )
 
 	return A;
 }
+//*
+CharRange^ EBInfo::NarrowFontRange( EBSubbook^ subbook )
+{
+	EBFontCode font_list[ EB_MAX_FONTS ];
+    int font_count;
+	subbook->FontList( font_list, &font_count );
+	subbook->SetFont( font_list[ 0 ] );
+
+	return ref new CharRange( subbook->narrow_current->start, subbook->narrow_current->end );
+}
+
+CharRange^ EBInfo::WideFontRange( EBSubbook^ subbook )
+{
+	EBFontCode font_list[ EB_MAX_FONTS ];
+    int font_count;
+	subbook->FontList( font_list, &font_count );
+	subbook->SetFont( font_list[ 0 ] );
+
+	return ref new CharRange( subbook->wide_current->start, subbook->wide_current->end );
+}
+
+IAsyncOperation<CharRange^>^ EBInfo::GetNarrowFontRangeAsync( EBSubbook^ subbook )
+{
+	return create_async( [ & ] { return NarrowFontRange( subbook ); } );
+}
+
+IAsyncOperation<CharRange^>^ EBInfo::GetWideFontRangeAsync( EBSubbook^ subbook )
+{
+	return create_async( [ & ] { return WideFontRange( subbook ); } );
+}

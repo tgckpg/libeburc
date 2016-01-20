@@ -157,6 +157,7 @@ namespace libeburc
 		void LoadFontHeaders();
 
 		void FontList( EBFontCode *font_list, int *font_count );
+		void SetFont( EBFontCode font_code );
 
 
 
@@ -238,8 +239,8 @@ namespace libeburc
 		/*
 		 * Current narrow and wide fonts.
 		 */
-		EBFont^ *narrow_current;
-		EBFont^ *wide_current;
+		EBFont^ narrow_current;
+		EBFont^ wide_current;
 
 		EBSubbook( EBBook^ Book );
 

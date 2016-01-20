@@ -17,6 +17,9 @@
     <Filter Include="eburc\Helpers">
       <UniqueIdentifier>{9fe8de29-867b-478b-bafe-9f06f2c696d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="eburc\Objects">
+      <UniqueIdentifier>{05db2761-b50a-4357-a8f3-7fb79d437dd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -37,9 +40,6 @@
       <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBMultiSearch.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
-    <ClCompile Include="EBPosition.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBSearchContext.cpp">
@@ -72,6 +72,12 @@
     <ClCompile Include="Utils.cpp">
       <Filter>eburc\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="EBPosition.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="CharRange.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -99,9 +105,6 @@
       <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBMultiSearch.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
-    <ClInclude Include="EBPosition.h">
       <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBSearchContext.h">
@@ -133,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="EBPosition.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="CharRange.h">
+      <Filter>eburc\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

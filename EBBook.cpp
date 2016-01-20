@@ -49,11 +49,12 @@ EBBook::EBBook( IStorageFolder^ BookDir )
 
 IAsyncOperation<EBBook^>^ EBBook::Parse( IStorageFolder^ BookDir )
 {
-	return concurrency::create_async([&] {
+	return create_async( [ & ]
+	{
 		EBBook^ Book = ref new EBBook( BookDir );
 		Book->Bind();
 		return Book;
-	});
+	} );
 }
 
 void EBBook::Bind()

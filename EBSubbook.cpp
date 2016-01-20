@@ -829,3 +829,47 @@ void EBSubbook::LoadFontHeaders()
 		InitFont( wide_fonts[ i ] );
 	}
 }
+
+void EBSubbook::SetFont( EBFontCode code )
+{
+	/*
+	 * If the current font is the font with `font_code', return immediately.
+	 * Otherwise close the current font and continue.
+	 */
+	if ( narrow_current )
+	{
+		if ( narrow_current->font_code == code ) return;
+
+		narrow_current = nullptr;
+	}
+	if ( wide_current )
+	{
+		if ( wide_current->font_code == code )
+			wide_current = nullptr;
+	}
+
+	/*
+	 * Set the current font.
+	 */
+	if ( narrow_fonts[ code ]->font_code != EB_FONT_INVALID )
+		narrow_current = narrow_fonts[ code ];
+	if ( wide_fonts[ code ]->font_code != EB_FONT_INVALID )
+		wide_current = wide_fonts[ code ];
+
+	if ( !( narrow_current || wide_current ) )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_FONT );
+	}
+
+	/*
+	 * Initialize current font informtaion.
+	 */
+	if ( narrow_current )
+	{
+		narrow_current->Open();
+	}
+	if ( wide_current )
+	{
+		wide_current->Open();
+	}
+}

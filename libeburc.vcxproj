@@ -209,6 +209,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="build-post.h" />
+    <ClInclude Include="CharRange.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="EBBinaryContext.h" />
     <ClInclude Include="EBBook.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="Zio.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CharRange.cpp" />
     <ClCompile Include="EBBinaryContext.cpp" />
     <ClCompile Include="EBBook.cpp" />
     <ClCompile Include="EBException.cpp" />
