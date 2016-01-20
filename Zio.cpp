@@ -109,6 +109,7 @@ byte* Zio::ReadRaw( size_t length, IBuffer^ buffer )
 		RStream->Seek( posx );
 
 		task<IBuffer^> ReadOp( RStream->ReadAsync( buffer, length, InputStreamOptions::None ) );
+		ReadOp.wait();
 		IBuffer^ RBuffer = ReadOp.get();
 
 		ComPtr<IBufferByteAccess> BuffByteAccess;
@@ -342,7 +343,10 @@ void Zio::OpenPlain()
 
 	try
 	{
-		FileProperties::BasicProperties^ Props = task<FileProperties::BasicProperties^>( SrcFile->GetBasicPropertiesAsync() ).get();
+		task<FileProperties::BasicProperties^> PropOps( SrcFile->GetBasicPropertiesAsync() );
+		PropOps.wait();
+		FileProperties::BasicProperties^ Props = PropOps.get();
+
 		file_size = Props->Size;
 		id = zio_counter++;
 	}

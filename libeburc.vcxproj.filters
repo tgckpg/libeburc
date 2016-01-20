@@ -5,82 +5,113 @@
       <UniqueIdentifier>a73a073f-4117-49b2-a21b-8d4285370a05</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ebu">
+    <Filter Include="eburc">
       <UniqueIdentifier>{1bea14b4-8439-4329-bf1c-ac9cf85035e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\Contexts">
+      <UniqueIdentifier>{2471c29a-194b-48c7-b1e8-89ec0042c6a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="EBInfo.cpp" />
     <ClCompile Include="EBBook.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBSubbook.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="Zio.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBException.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="FileName.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="JACode.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="EBSearch.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBMultiSearch.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBUTF8Table.cpp">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClCompile>
-    <ClCompile Include="EBFont.cpp" />
+    <ClCompile Include="EBPosition.cpp">
+      <Filter>eburc</Filter>
+    </ClCompile>
+    <ClCompile Include="EBSearchContext.cpp">
+      <Filter>eburc\Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="EBBinaryContext.cpp">
+      <Filter>eburc\Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="EBFont.cpp">
+      <Filter>eburc</Filter>
+    </ClCompile>
+    <ClCompile Include="EBTextContext.cpp">
+      <Filter>eburc\Contexts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="EBInfo.h" />
     <ClInclude Include="defs.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBBook.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBSubbook.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="Zio.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBException.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="FileName.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="build-post.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="JACode.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h" />
     <ClInclude Include="EBSearch.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBMultiSearch.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBUTF8Table.h">
-      <Filter>ebu</Filter>
+      <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="EBFont.h" />
+    <ClInclude Include="EBPosition.h">
+      <Filter>eburc</Filter>
+    </ClInclude>
+    <ClInclude Include="EBSearchContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="EBBinaryContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="EBFont.h">
+      <Filter>eburc</Filter>
+    </ClInclude>
+    <ClInclude Include="EBTextContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libeburc.rc">

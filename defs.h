@@ -12,12 +12,8 @@ typedef int EBSuffixCode;
 typedef int EBFontCode;
 typedef int EBWordCode;
 typedef int EBSubbookCode;
-typedef int EBSearchCode;
-typedef int EBTextCode;
-typedef int EBTextStatusCode;
 typedef int EBMultiSearchCode;
 typedef int EBHookCode;
-typedef int EBBinaryCode;
 
 /*
  * Size of a page (The term `page' means `block' in JIS X 4081).
@@ -120,6 +116,14 @@ typedef int EBBinaryCode;
 #define EB_MAX_ALTERNATION_CACHE	16
 
 /*
+ * Length of cache buffer in a binary context.
+ * It must be greater than 38, size of GIF preamble.
+ * It must be greater than 44, size of WAVE sound header.
+ * It must be greater than 118, size of BMP header + info + 16 rgbquads.
+ */
+#define EB_SIZE_BINARY_CACHE_BUFFER	128
+
+/*
  * The number of text hooks.
  */
 #define EB_NUMBER_OF_HOOKS		55
@@ -129,8 +133,61 @@ typedef int EBBinaryCode;
  */
 #define EB_NUMBER_OF_SEARCH_CONTEXTS	EB_MAX_MULTI_ENTRIES
 
+#define SKIP_CODE_NONE  -1
+
 namespace libeburc
 {
+	/*
+	 * Text-stop status.
+	 */
+	public enum class EBTextStatusCode
+	{
+		EB_TEXT_STATUS_CONTINUED = 0,
+		EB_TEXT_STATUS_SOFT_STOP = 1,
+		EB_TEXT_STATUS_HARD_STOP = 2,
+	};
+	/*
+	 * Text content currently read.
+	 */
+	public enum class EBTextCode
+	{
+		EB_TEXT_INVALID = -1,
+		EB_TEXT_MAIN_TEXT = 1,
+		EB_TEXT_HEADING = 2,
+		EB_TEXT_RAWTEXT = 3,
+		EB_TEXT_OPTIONAL_TEXT = 4,
+		EB_TEXT_SEEKED = 0,
+	};
+	/*
+	 * Binary data types.
+	 */
+	public enum class EBBinaryCode
+	{
+		EB_BINARY_INVALID = -1,
+		EB_BINARY_MONO_GRAPHIC = 0,
+		EB_BINARY_COLOR_GRAPHIC = 1,
+		EB_BINARY_WAVE = 2,
+		EB_BINARY_MPEG = 3,
+		EB_BINARY_GRAY_GRAPHIC = 4,
+	};
+
+	/*
+	 * Search method currently processed.
+	 */
+	public enum class EBSearchCode
+	{
+		EB_SEARCH_NONE = -1,
+		EB_SEARCH_EXACTWORD = 0,
+		EB_SEARCH_WORD = 1,
+		EB_SEARCH_ENDWORD = 2,
+		EB_SEARCH_KEYWORD = 3,
+		EB_SEARCH_MULTI = 4,
+		EB_SEARCH_CROSS = 5,
+	};
+
+	/*
+	 * Index Style flags.
+	 */
 	public enum class EBIndexStyleCode
 	{
 		EB_INDEX_STYLE_CONVERT = 0,
@@ -139,6 +196,9 @@ namespace libeburc
 		EB_INDEX_STYLE_DELETE = 2, // typo?
 	};
 
+	/*
+	 * Disc code
+	 */
 	public enum class EBDiscCode
 	{
 		EB_DISC_INVALID,
@@ -146,6 +206,9 @@ namespace libeburc
 		EB_DISC_EPWING,
 	};
 
+	/*
+	 * Character codes.
+	 */
 	public enum class EBCharCode
 	{
 		EB_CHARCODE_INVALID = -1,
@@ -155,6 +218,9 @@ namespace libeburc
 		EB_CHARCODE_UTF8 = 4,
 	};
 
+	/*
+	 * Error codes.
+	 */
 	public enum class EBErrorCode
 	{
 		/* 0 -- 4 */

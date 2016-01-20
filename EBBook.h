@@ -3,6 +3,9 @@
 #include <pch.h>
 #include <defs.h>
 #include <FileName.h>
+#include <EBSearchContext.h>
+#include <EBBinaryContext.h>
+#include <EBTextContext.h>
 #include <EBException.h>
 #include <JACode.h>
 #include <build-post.h>
@@ -45,10 +48,28 @@ namespace libeburc
 		EBBook( IStorageFolder^ BookDir );
 	internal:
 		int subbook_count;
+
+		// See relative public properties
 		EBCharCode character_code;
 		EBDiscCode disc_code;
 		EBBookCode code;
 		Vector<EBSubbook^>^ subbooks;
+		/*
+		 * Context parameters for text reading.
+		 */
+		Vector<EBSearchContext^>^ search_contexts;
+		/*
+		 * Context parameters for binary reading.
+		 */
+		Vector<EBBinaryContext^>^ binary_context;
+		/*
+		 * Context parameters for text reading.
+		 */
+		Vector<EBTextContext^>^ text_context;
+
+		void ResetSearchContext();
+		void ResetTextContext();
+		void ResetBinaryContext();
 
 	public:
 		/// <summary>

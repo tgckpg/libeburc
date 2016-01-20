@@ -248,6 +248,31 @@ void EBBook::LoadLanguage()
 	}
 }
 
+void EBBook::ResetSearchContext()
+{
+	search_contexts = ref new Vector<EBSearchContext^>();
+}
+
+void EBBook::ResetBinaryContext()
+{
+	binary_context = ref new Vector<EBBinaryContext^>();
+}
+
+void EBBook::ResetTextContext()
+{
+	if ( !text_context )
+	{
+		text_context = ref new Vector<EBTextContext^>();
+	}
+	else
+	{
+		for_each( begin( text_context ), end( text_context ), []( EBTextContext^ TextContext )
+		{
+			TextContext->Reset();
+		} );
+	}
+}
+
 IIterable<EBSubbook^>^ EBBook::Subbooks::get()
 {
 	return subbooks->GetView();

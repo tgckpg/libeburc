@@ -41,3 +41,14 @@
 #define EB_FILE_NAME_HONMON     L"honmon"
 #define EB_FILE_NAME_FUROKU     L"furoku"
 #define EB_FILE_NAME_APPENDIX       L"appendix"
+
+/*
+ * Maximum number of search titles.
+ */
+#define EB_MAX_SEARCH_TITLES		14
+/*
+ * Arrangement style of entries in a search index page.
+ */
+#define EB_ARRANGE_FIXED		0
+#define EB_ARRANGE_VARIABLE		1
+#define EB_ARRANGE_INVALID		-1
