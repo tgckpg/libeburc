@@ -11,6 +11,13 @@
 #define EB_FONT_30		2
 #define EB_FONT_48		3
 #define EB_FONT_INVALID		-1
+/*
+ * Font height.
+ */
+#define EB_HEIGHT_FONT_16		16
+#define EB_HEIGHT_FONT_24		24
+#define EB_HEIGHT_FONT_30		30
+#define EB_HEIGHT_FONT_48		48
 
 using namespace Windows::Storage;
 
@@ -67,5 +74,7 @@ namespace libeburc
 		IStorageFile^ FontFile;
 
 		EBFont( EBSubbook^ subbook );
+
+		static int FontHeight2( EBFontCode fcode );
 	};
 }

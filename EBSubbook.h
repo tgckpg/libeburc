@@ -93,22 +93,22 @@ namespace libeburc
 		/// (temporary need, EPWING only).
 		/// </summary>
 		int search_title_page;
-		/*
-		 * The number of multi-search methods the subbook has.
-		 */
+		/// <summary>
+		/// The number of multi-search methods the subbook has.
+		/// </summary>
 		int multi_count;
-		/*
-		 * Normalization table for UTF-8 subbook.
-		 */
+		/// <summary>
+		/// Normalization table for UTF-8 subbook.
+		/// </summary>
 		int table_page;
 		int table_size;
 		
 		Vector<EBUTF8Table^>^ table;
 		int table_count;
 		byte* table_buffer;
-		/*
-		 * The top page of multi search methods.
-		 */
+		/// <summary>
+		/// The top page of multi search methods.
+		/// </summary>
 		EBMultiSearch^ multis[ EB_MAX_MULTI_SEARCHES ];
 
 		/// <summary>
@@ -155,6 +155,8 @@ namespace libeburc
 		/// Load font files.
 		/// </summary>
 		void LoadFontHeaders();
+
+		void FontList( EBFontCode *font_list, int *font_count );
 
 
 

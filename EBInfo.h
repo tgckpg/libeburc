@@ -27,5 +27,9 @@ namespace libeburc
 		 * Output supported methods.
 		 */
 		static Array<String^>^ SearchMethods( EBSubbook^ Subbook );
+		/*
+		 * Output a font list.
+		 */
+		static Array<int>^ FontList( EBSubbook^ Subbook );
     };
 }

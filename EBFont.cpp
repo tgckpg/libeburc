@@ -41,14 +41,7 @@ void EBFont::Open()
 			zio_code = subbook->TextZio->Code;
 		}
 
-		try
-		{
-			FontFile = FileName::eb_find_file_name( subbook->DirRoot, Utils::ToWStr( file_name ) );
-		}
-		catch ( Exception^ ex )
-		{
-			EBException::Throw( EBErrorCode::EB_ERR_FAIL_OPEN_FONT );
-		}
+		FontFile = subbook->TextFile;
 	}
 	else
 	{
@@ -142,4 +135,20 @@ void EBFont::LoadHeaders()
 			EBException::Throw( EBErrorCode::EB_ERR_UNEXP_FONT );
 		}
 	}
+}
+
+int EBFont::FontHeight2( EBFontCode C )
+{
+	switch ( C )
+	{
+	case EB_FONT_16:
+		return EB_HEIGHT_FONT_16;
+	case EB_FONT_24:
+		return EB_HEIGHT_FONT_24;
+	case EB_FONT_30:
+		return EB_HEIGHT_FONT_30;
+	case EB_FONT_48:
+		return EB_HEIGHT_FONT_48;
+	}
+	EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_FONT );
 }

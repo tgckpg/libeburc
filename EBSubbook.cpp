@@ -647,6 +647,23 @@ void EBSubbook::LoadMultiTitles()
 	}
 }
 
+void EBSubbook::FontList( EBFontCode *font_list, int *font_count )
+{
+	*font_count = 0;
+	for ( int i = 0; i < EB_MAX_FONTS; i++ )
+	{
+		EBFont^ NF = narrow_fonts[ i ];
+		EBFont^ WF = wide_fonts[ i ];
+
+		if ( ( NF && NF->font_code != EB_FONT_INVALID )
+			|| ( WF && WF->font_code != EB_FONT_INVALID ) )
+		{
+			*font_list++ = i;
+			*font_count += 1;
+		}
+	}
+}
+
 void EBSubbook::SetEPWING()
 {
 	throw ref new NotImplementedException( "Subbook SetEPWing is not impl yet" );

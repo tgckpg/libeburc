@@ -85,3 +85,18 @@ Array<String^>^ EBInfo::SearchMethods( EBSubbook^ Subbook )
 
 	return A;
 }
+
+Array<int>^ EBInfo::FontList( EBSubbook^ subbook )
+{
+	EBFontCode font_list[ EB_MAX_FONTS ];
+    int font_count;
+	subbook->FontList( font_list, &font_count );
+
+	Array<int>^ A = ref new Array<int>( font_count );
+	for ( int j = 0; j < font_count; j++ )
+	{
+		A->set( j, EBFont::FontHeight2( font_list[ j ] ) );
+	}
+
+	return A;
+}
