@@ -8,9 +8,6 @@ namespace libeburc
 	ref class EBNarrowFont sealed :
 		public EBFont
 	{
-	internal:
-		void Open() override;
-		void LoadHeaders() override;
 	public:
 		EBNarrowFont( EBSubbook^ subbook ) : EBFont( subbook ) { };
 	};

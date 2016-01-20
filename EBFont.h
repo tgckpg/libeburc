@@ -59,8 +59,8 @@ namespace libeburc
 		 */
 		Zio^ zio;
 
-		virtual void Open() = 0;
-		virtual void LoadHeaders() = 0;
+		void Open();
+		void LoadHeaders();
 
 		EBSubbook^ subbook;
 
