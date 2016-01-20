@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pch.h>
 #include <defs.h>
 #include <Zio.h>
 /*
@@ -11,9 +12,13 @@
 #define EB_FONT_48		3
 #define EB_FONT_INVALID		-1
 
+using namespace Windows::Storage;
+
 namespace libeburc
 {
-	ref class EBFont sealed
+	ref class EBSubbook;
+
+	ref class EBFont
 	{
 	internal:
 		/*
@@ -53,7 +58,14 @@ namespace libeburc
 		 * Compression Information.
 		 */
 		Zio^ zio;
-	public:
-		EBFont();
+
+		virtual void Open() = 0;
+		virtual void LoadHeaders() = 0;
+
+		EBSubbook^ subbook;
+
+		IStorageFile^ FontFile;
+
+		EBFont( EBSubbook^ subbook );
 	};
 }

@@ -11,6 +11,12 @@
     <Filter Include="eburc\Contexts">
       <UniqueIdentifier>{2471c29a-194b-48c7-b1e8-89ec0042c6a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="eburc\Font">
+      <UniqueIdentifier>{b9aa2e31-68af-4aad-aa83-a2bd80fde6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\Helpers">
+      <UniqueIdentifier>{9fe8de29-867b-478b-bafe-9f06f2c696d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -27,20 +33,10 @@
     <ClCompile Include="EBException.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
-    <ClCompile Include="FileName.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
-    <ClCompile Include="JACode.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="EBSearch.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBMultiSearch.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
-    <ClCompile Include="EBUTF8Table.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
     <ClCompile Include="EBPosition.cpp">
@@ -52,11 +48,29 @@
     <ClCompile Include="EBBinaryContext.cpp">
       <Filter>eburc\Contexts</Filter>
     </ClCompile>
-    <ClCompile Include="EBFont.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
     <ClCompile Include="EBTextContext.cpp">
       <Filter>eburc\Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="EBFont.cpp">
+      <Filter>eburc\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="EBNarrowFont.cpp">
+      <Filter>eburc\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="EBWideFont.cpp">
+      <Filter>eburc\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="FileName.cpp">
+      <Filter>eburc\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="JACode.cpp">
+      <Filter>eburc\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="EBUTF8Table.cpp">
+      <Filter>eburc\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>eburc\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,23 +92,13 @@
     <ClInclude Include="EBException.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="FileName.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
     <ClInclude Include="build-post.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="JACode.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="EBSearch.h">
       <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBMultiSearch.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
-    <ClInclude Include="EBUTF8Table.h">
       <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="EBPosition.h">
@@ -106,11 +110,29 @@
     <ClInclude Include="EBBinaryContext.h">
       <Filter>eburc\Contexts</Filter>
     </ClInclude>
-    <ClInclude Include="EBFont.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
     <ClInclude Include="EBTextContext.h">
       <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="EBFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="EBNarrowFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="EBWideFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="JACode.h">
+      <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="FileName.h">
+      <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="EBUTF8Table.h">
+      <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>eburc\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

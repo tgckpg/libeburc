@@ -6,7 +6,8 @@
 #include <EBSearch.h>
 #include <EBMultiSearch.h>
 #include <EBUTF8Table.h>
-#include <EBFont.h>
+#include <EBNarrowFont.h>
+#include <EBWideFont.h>
 #include <Zio.h>
 
 using namespace std;
@@ -22,12 +23,11 @@ namespace libeburc
 	/// </summary>
 	public ref class EBSubbook sealed
 	{
+	internal:
 		/// <summary>
 		/// The parent book containing this subbook
 		/// </summary>
 		EBBook^ ParentBook;
-
-	internal:
 		/// <summary>
 		/// Whether the object has been initialized.
 		/// </summary>
@@ -57,6 +57,13 @@ namespace libeburc
 		/// Subbook directory name.
 		/// </summary>
 		char directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
+
+		/// <summary>
+		/// Sub-directory names. (EPWING only)
+		/// </summary>
+		char data_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
+		char gaiji_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
+		char movie_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
 
 		/// <summary>
 		/// The Subbook Root dir
@@ -143,6 +150,11 @@ namespace libeburc
 		/// Load the UTF8 table.
 		/// </summary>
 		void LoadUTF8Table();
+
+		/// <summary>
+		/// Load font files.
+		/// </summary>
+		void LoadFontHeaders();
 
 		/// <summary>
 		/// The top page of search methods.

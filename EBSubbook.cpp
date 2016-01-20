@@ -33,6 +33,10 @@ void EBSubbook::SetAuto()
      * Load the subbook.
      */
 	Load();
+	/*
+     * Load font files.
+     */
+    LoadFontHeaders();
 }
 
 void EBSubbook::Load()
@@ -338,7 +342,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf1:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBWideFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_16;
 				wide_fonts[ EB_FONT_16 ] = font;
@@ -347,7 +351,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf2:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBNarrowFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_16;
 				narrow_fonts[ EB_FONT_16 ] = font;
@@ -356,7 +360,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf3:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBWideFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_24;
 				wide_fonts[ EB_FONT_24 ] = font;
@@ -365,7 +369,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf4:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBNarrowFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_24;
 				narrow_fonts[ EB_FONT_24 ] = font;
@@ -374,7 +378,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf5:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBWideFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_30;
 				wide_fonts[ EB_FONT_30 ] = font;
@@ -383,7 +387,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf6:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBNarrowFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_30;
 				narrow_fonts[ EB_FONT_30 ] = font;
@@ -392,7 +396,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf7:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBWideFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_48;
 				wide_fonts[ EB_FONT_48 ] = font;
@@ -401,7 +405,7 @@ void EBSubbook::LoadIndexes()
 		case 0xf8:
 			if ( ParentBook->disc_code == EBDiscCode::EB_DISC_EB )
 			{
-				EBFont^ font = ref new EBFont();
+				EBFont^ font = ref new EBNarrowFont( this );
 				font->page = search->start_page;
 				font->font_code = EB_FONT_48;
 				narrow_fonts[ EB_FONT_48 ] = font;
@@ -740,5 +744,45 @@ void EBSubbook::LoadUTF8Table()
 		}
 		zistable->string = read;
 		read += strlen( read ) + 1;
+	}
+}
+
+void InitFont( EBFont^ nfont )
+{
+	if ( !nfont ) return;
+
+	if ( nfont->font_code == EB_FONT_INVALID
+		|| nfont->initialized )
+		return;
+
+	try
+	{
+		nfont->Open();
+		nfont->LoadHeaders();
+	}
+	catch ( Exception^ ex )
+	{
+		nfont->font_code = EB_FONT_INVALID;
+	}
+
+	nfont->initialized = 1;
+}
+
+void EBSubbook::LoadFontHeaders()
+{
+	/*
+	 * Load narrow font headers.
+	 */
+	for ( EBFontCode i = 0; i < EB_MAX_FONTS; i++ )
+	{
+		InitFont( narrow_fonts[ i ] );
+	}
+
+	/*
+	 * Load wide font header.
+	 */
+	for ( EBFontCode i = 0; i < EB_MAX_FONTS; i++ )
+	{
+		InitFont( wide_fonts[ i ] );
 	}
 }
