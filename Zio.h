@@ -10,6 +10,7 @@
 #define ZIO_SIZE_EBZIP_HEADER           22
 
 using namespace concurrency;
+using namespace Platform;
 using namespace Windows::Storage;
 using namespace Windows::Storage::Streams;
 using namespace Windows::Foundation;
@@ -158,7 +159,7 @@ namespace libeburc
 		 * the read() system call.
 		 * *Does not support ebnet
 		 */
-		byte* ReadRaw( size_t length, IBuffer^ buffer = nullptr  );
+		void ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer );
 		/*
 		 * Uncompress an ebzip'ped slice.
 		 *
@@ -187,12 +188,12 @@ namespace libeburc
 		/*
 		 * Read data from `zio' file.
 		 */
-		byte* Read( size_t length, IBuffer^ buffer = nullptr );
+		void Read( size_t length, WriteOnlyArray<byte>^ buffer );
 		/*
 		 * Read data from the `zio' file compressed with the ebzip compression
 		 * format.
 		 */
-		byte* ReadEBZip( size_t length, IBuffer^ buffer = nullptr );
+		void ReadEBZip( size_t length, WriteOnlyArray<byte>^ buffer );
 
 		Zio( IStorageFile^ File, ZioCode ZCode );
 		Zio(); // For definition

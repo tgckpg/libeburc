@@ -96,31 +96,24 @@ Zio::Zio( IStorageFile^ File, ZioCode ZCode )
 	}
 }
 
-byte* Zio::ReadRaw( size_t length, IBuffer^ buffer )
+void Zio::ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer )
 {
-	byte* RByte = nullptr;
-
 	task<IRandomAccessStream^> RandStream( SrcFile->OpenAsync( FileAccessMode::Read ) );
 	RandStream.then( [&] ( IRandomAccessStream^ RStream )
 	{
 		// Create a buffer if buffer not set
-		if ( buffer == nullptr ) buffer = ref new Buffer( length );
-
 		RStream->Seek( posx );
 
-		task<IBuffer^> ReadOp( RStream->ReadAsync( buffer, length, InputStreamOptions::None ) );
-		ReadOp.wait();
-		IBuffer^ RBuffer = ReadOp.get();
-
-		ComPtr<IBufferByteAccess> BuffByteAccess;
-		reinterpret_cast< IInspectable* >( RBuffer )->QueryInterface( IID_PPV_ARGS( &BuffByteAccess ) );
-
-		BuffByteAccess->Buffer( &RByte );
+		DataReader^ reader = ref new DataReader( RStream );
+		task<unsigned int> RLoad( reader->LoadAsync( length ) );
+		RLoad.then( [ & ] ( unsigned int t )
+		{
+			reader->ReadBytes( buffer );
+		} ).wait();
+		reader->DetachStream();
 
 		posx += length;
 	} ).wait();
-
-	return RByte;
 }
 
 void Zio::LSeekRaw( off_t offset )
@@ -128,7 +121,7 @@ void Zio::LSeekRaw( off_t offset )
 	posx = offset;
 }
 
-byte* Zio::Read( size_t length, IBuffer^ buffer )
+void Zio::Read( size_t length, WriteOnlyArray<byte>^ buffer )
 {
 	switch ( Code )
 	{
@@ -145,13 +138,10 @@ byte* Zio::Read( size_t length, IBuffer^ buffer )
 		return ReadSebXA( zio, file_name );
 */
 	}
-
-	return nullptr;
 }
 
-byte* Zio::ReadEBZip( size_t length, IBuffer^ ibuffer )
+void Zio::ReadEBZip( size_t length, WriteOnlyArray<byte>^ ibuffer )
 {
-	byte* temporary_buffer;
 	byte* buffer;
 	SSIZE_T read_length = 0;
 	size_t zipped_slice_size;
@@ -186,7 +176,10 @@ byte* Zio::ReadEBZip( size_t length, IBuffer^ ibuffer )
 			LSeekRaw( location / slice_size * index_width + ZIO_SIZE_EBZIP_HEADER );
 
 			// ORG: if (zio_read_raw(zio, temporary_buffer, zio->index_width * 2) != zio->index_width * 2)
-			temporary_buffer = ReadRaw( index_width * 2 );
+			Array<byte>^ buff = ref new Array<byte>( index_width * 2 );
+			ReadRaw( index_width * 2, buff );
+			byte* temporary_buffer = buff->Data;
+
 
 			switch ( index_width ) {
 			case 2:
@@ -367,7 +360,9 @@ void Zio::OpenEbZip()
 	/*
 	 * Read header part of the ebzip'ped file.
 	 */
-	byte* header = ReadRaw( ZIO_SIZE_EBZIP_HEADER );
+	Array<byte>^ buff = ref new Array<byte>( ZIO_SIZE_EBZIP_HEADER );
+	ReadRaw( ZIO_SIZE_EBZIP_HEADER, buff );
+	byte* header = buff->Data;
 
 	ebzip_mode = zio_uint1( header + 5 ) >> 4;
 	zip_level = zio_uint1( header + 5 ) & 0x0f;

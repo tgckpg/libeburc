@@ -156,6 +156,60 @@ namespace libeburc
 		/// </summary>
 		void LoadFontHeaders();
 
+
+
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `WORD SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_word_search()
+		{
+			return !( word_alphabet->start_page == 0
+				&& word_asis->start_page == 0
+				&& word_kana->start_page == 0 );
+		}
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `ENDWORD SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_endword_search()
+		{
+			return !( endword_alphabet->start_page == 0
+				&& endword_asis->start_page == 0
+				&& endword_kana->start_page == 0 );
+		}
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `KEYWORD SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_keyword_search() { return keyword->start_page != 0; }
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `CROSS SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_cross_search() { return cross->start_page != 0; }
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `MULTI SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_multi_search() { return multi_count != 0; }
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `MENU SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_menu() { return menu->start_page != 0; }
+		/// <summary>
+		/// Examine whether the current subbook in `book' supports `GRAPHIC MENU SEARCH'
+		/// or not.
+		/// </summary>
+		bool have_image_menu() { return image_menu->start_page != 0; }
+		/// <summary>
+		/// Examine whether the current subbook in `book' have a copyright
+		/// notice or not.
+		/// </summary>
+		bool have_copyright() { return copyright->start_page != 0; }
+
+
 		/// <summary>
 		/// The top page of search methods.
 		/// </summary>

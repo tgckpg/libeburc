@@ -117,7 +117,9 @@ void EBBook::LoadCatalogEB( IStorageFile^ File )
 	/*
 	 * Get the number of subbooks in this book.
 	 */
-	byte* NumBooks = ZInst->Read( 16 );
+	Array<byte>^ buff = ref new Array<byte>( 16 );
+	ZInst->Read( 16, buff );
+	byte* NumBooks = buff->Data;
 	subbook_count = eb_uint2( NumBooks );
 
 	if ( EB_MAX_SUBBOOKS < subbook_count )
@@ -141,7 +143,9 @@ void EBBook::LoadCatalogEB( IStorageFile^ File )
 		/*
 		 * Read data from the catalog file.
 		 */
-		byte* buffer = ZInst->Read( EB_SIZE_EB_CATALOG );
+		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_EB_CATALOG );
+		ZInst->Read( EB_SIZE_EB_CATALOG, buff );
+		byte* buffer = buff->Data;
 		/*
 		 * Set a directory name.
 		 */
@@ -230,7 +234,9 @@ void EBBook::LoadLanguage()
 		 * Get a character code of the book, and get the number of langueages
 		 * in the file.
 		 */
-		byte* ByteCode = ZInst->Read( 16 );
+		Array<byte>^ buff = ref new Array<byte>( 16 );
+		ZInst->Read( 16, buff );
+		byte* ByteCode = buff->Data;
 
 		character_code = (EBCharCode) eb_uint2(ByteCode);
 		if ( character_code != EBCharCode::EB_CHARCODE_ISO8859_1

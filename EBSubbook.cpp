@@ -7,6 +7,19 @@ using namespace libeburc;
 EBSubbook::EBSubbook( EBBook^ Book )
 {
 	ParentBook = Book;
+	word_alphabet = ref new EBSearch();
+	word_asis = ref new EBSearch();
+	word_kana = ref new EBSearch();
+	endword_alphabet = ref new EBSearch();
+	endword_asis = ref new EBSearch();
+	endword_kana = ref new EBSearch();
+	keyword = ref new EBSearch();
+	menu = ref new EBSearch();
+	image_menu = ref new EBSearch();
+	cross = ref new EBSearch();
+	copyright = ref new EBSearch();
+	text = ref new EBSearch();
+	sound = ref new EBSearch();
 }
 
 
@@ -81,7 +94,10 @@ void EBSubbook::LoadIndexes()
      */
 	TextZio->LSeekRaw( ( ( off_t ) IndexPage - 1 ) * EB_SIZE_PAGE );
 	String^ str = TextZio->SrcFile->Name;
-	byte* buffer = TextZio->Read( EB_SIZE_PAGE );
+
+	Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+	TextZio->Read( EB_SIZE_PAGE, buff );
+	byte* buffer = buff->Data;
 
 	/*
      * Get start page numbers of the indexes in the subbook.
@@ -441,7 +457,10 @@ void EBSubbook::LoadMultiSearches()
 		 * Read the index table page of the multi search.
 		 */
 		TextZio->LSeekRaw( ( ( off_t ) multi->search->start_page - 1 ) * EB_SIZE_PAGE );
-		byte* buffer = TextZio->Read( EB_SIZE_PAGE );
+
+		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+		TextZio->Read( EB_SIZE_PAGE, buff );
+		byte* buffer = buff->Data;
 
 		/*
 		 * Get the number of entries in this multi search.
@@ -455,7 +474,7 @@ void EBSubbook::LoadMultiSearches()
 		byte* buffer_p = buffer + 16;
 		for ( int j = 0; j < multi->entry_count; j++ )
 		{
-			EBSearch^ entry = multi->entries[ j ];
+			EBSearch^ entry = ref new EBSearch();
 			/*
 			 * Get the number of indexes in this entry, and title
 			 * of this entry.
@@ -504,6 +523,8 @@ void EBSubbook::LoadMultiSearches()
 				}
 				buffer_p += 16;
 			}
+
+			multi->entries[ j ] = entry;
 		}
 	}
 }
@@ -576,7 +597,9 @@ void EBSubbook::LoadMultiTitles()
 	 * Read the page of the multi search.
 	 */
 	TextZio->LSeekRaw( ( ( off_t ) search_title_page - 1 ) * EB_SIZE_PAGE );
-	byte* buffer = TextZio->Read( EB_SIZE_PAGE );
+	Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+	TextZio->Read( EB_SIZE_PAGE, buff );
+	byte* buffer = buff->Data;
 
 	title_count = eb_uint2( buffer );
 	if ( EB_MAX_SEARCH_TITLES < title_count )
@@ -714,7 +737,10 @@ void EBSubbook::LoadUTF8Table()
 	 */
 	size_t buffer_size = table_size * EB_SIZE_PAGE;
 	TextZio->LSeekRaw( ( ( off_t ) table_page - 1 ) * EB_SIZE_PAGE );
-	table_buffer = TextZio->Read( buffer_size );
+
+	Array<byte>^ buff = ref new Array<byte>( buffer_size );
+	TextZio->Read( buffer_size, buff );
+	table_buffer = buff->Data;
 
 	byte* buffer = table_buffer;
 	/*

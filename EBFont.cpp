@@ -40,6 +40,15 @@ void EBFont::Open()
 		{
 			zio_code = subbook->TextZio->Code;
 		}
+
+		try
+		{
+			FontFile = FileName::eb_find_file_name( subbook->DirRoot, Utils::ToWStr( file_name ) );
+		}
+		catch ( Exception^ ex )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_FAIL_OPEN_FONT );
+		}
 	}
 	else
 	{
@@ -79,7 +88,9 @@ void EBFont::LoadHeaders()
 	 * Read information from the text file.
 	 */
 	zio->LSeekRaw( ( ( off_t ) page - 1 ) * EB_SIZE_PAGE );
-	byte* buffer = zio->Read( 16 );
+	Array<byte>^ buff = ref new Array<byte>( 16 );
+	zio->Read( 16, buff );
+	byte* buffer = buff->Data;
 
 	/*
 	 * If the number of characters (`character_count') is 0, the font

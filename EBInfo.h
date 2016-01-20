@@ -1,13 +1,16 @@
 ﻿#pragma once
 
 #include <pch.h>
-#include <EBBook.h>
 
 using namespace Platform;
+using namespace Platform::Collections;
 using namespace Windows::Storage;
 
 namespace libeburc
 {
+	ref class EBBook;
+	ref class EBSubbook;
+
     public ref class EBInfo sealed
     {
         EBInfo();
@@ -20,5 +23,9 @@ namespace libeburc
 		 * Output character code.
 		 */
 		static String^ CharCode( EBBook^ Book );
+		/*
+		 * Output supported methods.
+		 */
+		static Array<String^>^ SearchMethods( EBSubbook^ Subbook );
     };
 }

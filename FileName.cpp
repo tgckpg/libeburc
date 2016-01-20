@@ -32,7 +32,8 @@ StorageFile^ FileName::eb_find_file_name( IStorageFolder^ Folder, wstring Target
 
 	const wchar_t* tName = TargetName.c_str();
 
-	auto Task = task<IVectorView<StorageFile^>^>( Folder->GetFilesAsync() ).then(
+	auto Task = task<IVectorView<StorageFile^>^>( Folder->GetFilesAsync() );
+	Task.then(
 		[ & ] ( IVectorView<StorageFile^>^ Files )
 	{
 		VectorViewIterator<StorageFile^> TargetFile = find_if( begin( Files ), end( Files ), [ & ] ( StorageFile^ File ) {
@@ -68,9 +69,7 @@ StorageFile^ FileName::eb_find_file_name( IStorageFolder^ Folder, wstring Target
 			EBException::Throw( EBErrorCode::EB_ERR_BAD_FILE_NAME );
 
 		FoundFile = *TargetFile;
-	} );
-
-	Task.wait();
+	} ).wait();
 
 	return FoundFile;
 }
