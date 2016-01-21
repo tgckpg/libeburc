@@ -195,6 +195,8 @@ namespace libeburc
 		 */
 		void ReadEBZip( size_t length, WriteOnlyArray<byte>^ buffer );
 
+		static ZioCode Hint( int catolog_hint_value );
+
 		Zio( IStorageFile^ File, ZioCode ZCode );
 		Zio(); // For definition
 

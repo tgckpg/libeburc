@@ -44,6 +44,10 @@ namespace libeburc
 		 * Read information from the `CATALOG' file in 'book'. (EB)
 		 */
 		void LoadCatalogEB( IStorageFile^ File );
+		/*
+		 * Read information from the `CATALOGS' file in 'book'. (EPWING)
+		 */
+		void LoadCatalogEPWING( IStorageFile^ File );
 
 		EBBook( IStorageFolder^ BookDir );
 	internal:

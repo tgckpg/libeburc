@@ -54,9 +54,7 @@ void EBFont::Open()
 		{
 			try
 			{
-				IStorageFolder^ Gaiji = FileName::eb_fix_directory( subbook->DirRoot, Utils::ToWStr( subbook->gaiji_directory_name ) );
-				FontFile = FileName::eb_find_file_name( Gaiji, Utils::ToWStr( file_name ) );
-
+				FontFile = FileName::eb_find_file_name( subbook->GaijiDir, Utils::ToWStr( file_name ) );
 				zio_code = FileName::eb_path_name_zio_code( FontFile, ZioCode::ZIO_PLAIN );
 			}
 			catch ( Exception^ ex )

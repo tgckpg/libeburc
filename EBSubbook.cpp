@@ -666,7 +666,95 @@ void EBSubbook::FontList( EBFontCode *font_list, int *font_count )
 
 void EBSubbook::SetEPWING()
 {
-	throw ref new NotImplementedException( "Subbook SetEPWing is not impl yet" );
+	if ( !initialized )
+	{
+		try
+		{
+			/*
+			 * Adjust directory names.
+			 */
+			DataDir = FileName::eb_fix_directory( DirRoot, EB_DIRECTORY_NAME_DATA );
+			GaijiDir = FileName::eb_fix_directory( DirRoot, EB_DIRECTORY_NAME_GAIJI );
+			MovieDir = FileName::eb_fix_directory( DirRoot, EB_DIRECTORY_NAME_MOVIE );
+		}
+		catch ( Exception^ ex )
+		{
+
+		}
+	}
+
+	/*
+	 * Open a text file if exists.
+	 *
+	 * If a subbook has stream data only, its index_page has been set
+	 * to 0.  In this case, we must not try to open a text file of
+	 * the subbook, since the text file may be for another subbook.
+	 * Remember that subbooks can share a `data' sub-directory.
+	 */
+	ZioCode text_zio_code = ZioCode::ZIO_INVALID;
+
+	if ( initialized )
+	{
+		if ( TextZio->Code != ZioCode::ZIO_INVALID )
+			text_zio_code = ZioCode::ZIO_REOPEN;
+	}
+	else if ( IndexPage > 0 )
+	{
+		TextFile = FileName::eb_find_file_name( DataDir, Utils::ToWStr( text_file_name ) );
+		text_zio_code = FileName::eb_path_name_zio_code( TextFile, text_zio_code );
+	}
+
+	if ( text_zio_code != ZioCode::ZIO_INVALID )
+	{
+		TextZio = ref new Zio( TextFile, text_zio_code );
+		text_zio_code = TextZio->Code;;
+	}
+
+	/*
+	 * Open a graphic file if exists.
+	 */
+	ZioCode graphic_zio_code = ZioCode::ZIO_INVALID;
+
+	if ( initialized )
+	{
+		if ( GraphicZio->Code!= ZioCode::ZIO_INVALID )
+			graphic_zio_code = ZioCode::ZIO_REOPEN;
+	}
+	// text_zio_code in graphzio? Typo in original source?
+	else if ( text_zio_code != ZioCode::ZIO_INVALID )
+	{
+		GraphFile = FileName::eb_find_file_name( DataDir, Utils::ToWStr( graphic_file_name ) );
+		graphic_zio_code = FileName::eb_path_name_zio_code( GraphFile, graphic_zio_code );
+	}
+
+	if ( graphic_zio_code != ZioCode::ZIO_INVALID )
+	{
+		GraphicZio = ref new Zio( GraphFile, graphic_zio_code );
+		graphic_zio_code = GraphicZio->Code;
+	}
+
+	/*
+	 * Open a sound file if exists.
+	 */
+	ZioCode sound_zio_code = ZioCode::ZIO_INVALID;
+
+	if ( initialized )
+	{
+		if ( SoundZio->Code != ZioCode::ZIO_INVALID )
+			sound_zio_code = ZioCode::ZIO_REOPEN;
+	}
+	// text_zio_code in soundzio? Typo in original source?
+	else if ( text_zio_code != ZioCode::ZIO_INVALID )
+	{
+		SoundFile = FileName::eb_find_file_name( DataDir, Utils::ToWStr( sound_file_name ) );
+		sound_zio_code = FileName::eb_path_name_zio_code( SoundFile, sound_zio_code );
+	}
+
+	if ( sound_zio_code != ZioCode::ZIO_INVALID )
+	{
+		SoundZio = ref new Zio( SoundFile, sound_zio_code );
+		sound_zio_code = GraphicZio->Code;
+	}
 }
 
 void EBSubbook::SetEB()

@@ -75,24 +75,22 @@ Zio::Zio( IStorageFile^ File, ZioCode ZCode )
 		break;
 */
 	case ZioCode::ZIO_PLAIN:
+	case ZioCode::ZIO_SEBXA:
 		OpenPlain();
 		break;
 	case ZioCode::ZIO_EBZIP1:
 		OpenEbZip();
 		break;
-/*
-	case ZIO_EPWING:
-		result = zio_open_epwing( zio, file_name );
+	case ZioCode::ZIO_EPWING:
+		throw ref new NotImplementedException( "No such disc type" );
+		// result = zio_open_epwing( zio, file_name );
 		break;
-	case ZIO_EPWING6:
-		result = zio_open_epwing6( zio, file_name );
+	case ZioCode::ZIO_EPWING6:
+		throw ref new NotImplementedException( "No such disc type" );
+		// result = zio_open_epwing6( zio, file_name );
 		break;
-	case ZIO_SEBXA:
-		result = zio_open_plain( zio, file_name );
-		break;
-*/
 	default:
-		result = -1;
+		throw ref new NotImplementedException( "No such disc type" );
 	}
 }
 
@@ -129,14 +127,15 @@ void Zio::Read( size_t length, WriteOnlyArray<byte>^ buffer )
 		return ReadRaw( length, buffer );
 	case ZioCode::ZIO_EBZIP1:
 		return ReadEBZip( length, buffer );
-/*
-	case ZIO_EPWING:
-		return ReadEPWing( zio, file_name );
-	case ZIO_EPWING6:
-		return result = ReadEPWing6( zio, file_name );
-	case ZIO_SEBXA:
-		return ReadSebXA( zio, file_name );
-*/
+	case ZioCode::ZIO_EPWING:
+		throw ref new NotImplementedException( "No such disc type" );
+		// return ReadEPWING( zio, file_name );
+	case ZioCode::ZIO_EPWING6:
+		throw ref new NotImplementedException( "No such disc type" );
+		// return result = ReadEPWing6( zio, file_name );
+	case ZioCode::ZIO_SEBXA:
+		throw ref new NotImplementedException( "No such disc type" );
+		// return ReadSebXA( zio, file_name );
 	}
 }
 
@@ -351,6 +350,24 @@ void Zio::OpenPlain()
 		file = -1;
 		Code = ZioCode::ZIO_INVALID;
 	}
+}
+
+ZioCode Zio::Hint( int catalog_hint_value )
+{
+	switch ( catalog_hint_value )
+	{
+	case 0x00:
+		return ZioCode::ZIO_PLAIN;
+		break;
+	case 0x11:
+		return ZioCode::ZIO_EPWING;
+		break;
+	case 0x12:
+		return ZioCode::ZIO_EPWING6;
+		break;
+	}
+
+	return ZioCode::ZIO_INVALID;
 }
 
 void Zio::OpenEbZip()

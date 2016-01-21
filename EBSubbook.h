@@ -56,14 +56,7 @@ namespace libeburc
 		/// <summary>
 		/// Subbook directory name.
 		/// </summary>
-		char directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
-
-		/// <summary>
-		/// Sub-directory names. (EPWING only)
-		/// </summary>
-		char data_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
-		char gaiji_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
-		char movie_directory_name[EB_MAX_DIRECTORY_NAME_LENGTH + 1];
+		char directory_name[ EB_MAX_DIRECTORY_NAME_LENGTH + 1 ];
 
 		/// <summary>
 		/// The Subbook Root dir
@@ -71,14 +64,29 @@ namespace libeburc
 		IStorageFolder^ DirRoot;
 
 		/// <summary>
+		/// Sub-directory names. (EPWING only)
+		/// </summary>
+		IStorageFolder^ DataDir;
+		IStorageFolder^ GaijiDir;
+		IStorageFolder^ MovieDir;
+		/// <summary>
+		/// filenames
+		/// (temporary need, EPWING only).
+		/// </summary>
+		char text_file_name[ EB_MAX_FILE_NAME_LENGTH + 1 ];
+		char graphic_file_name[ EB_MAX_FILE_NAME_LENGTH + 1 ];
+		char sound_file_name[ EB_MAX_FILE_NAME_LENGTH + 1 ];
+		/// <summary>
+		/// Compression hints of Text, graphic and sound files.
+		/// (temporary need, EPWING only).
+		/// </summary>
+		ZioCode text_hint_zio_code;
+		ZioCode graphic_hint_zio_code;
+		ZioCode sound_hint_zio_code;
+
+		/// <summary>
 		/// Files
 		/// </summary>
-		/* Originally it stores filenames.
-		 *	but lets now use the StorageFile now
-		 * char text_file_name[EB_MAX_FILE_NAME_LENGTH + 1];
-		 * char graphic_file_name[EB_MAX_FILE_NAME_LENGTH + 1];
-		 * char sound_file_name[EB_MAX_FILE_NAME_LENGTH + 1];
-		 */
 		IStorageFile^ TextFile;
 		IStorageFile^ GraphFile;
 		IStorageFile^ SoundFile;
@@ -102,7 +110,7 @@ namespace libeburc
 		/// </summary>
 		int table_page;
 		int table_size;
-		
+
 		Vector<EBUTF8Table^>^ table;
 		int table_count;
 		byte* table_buffer;

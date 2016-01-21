@@ -38,9 +38,17 @@
  * File names.
  */
 #define EB_FILE_NAME_START      L"start"
-#define EB_FILE_NAME_HONMON     L"honmon"
+#define EB_FILE_NAME_HONMON     "honmon"
 #define EB_FILE_NAME_FUROKU     L"furoku"
 #define EB_FILE_NAME_APPENDIX       L"appendix"
+
+/*
+ * Directory names.
+ */
+#define EB_DIRECTORY_NAME_DATA		L"data"
+#define EB_DIRECTORY_NAME_GAIJI		L"gaiji"
+#define EB_DIRECTORY_NAME_STREAM	"stream"
+#define EB_DIRECTORY_NAME_MOVIE		L"movie"
 
 /*
  * Maximum number of search titles.
