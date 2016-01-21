@@ -9,6 +9,7 @@
 #include <EBNarrowFont.h>
 #include <EBPosition.h>
 #include <EBSearch.h>
+#include <EBTextContext.h>
 #include <EBUTF8Table.h>
 #include <EBWideFont.h>
 #include <Zio.h>
@@ -18,6 +19,21 @@ using namespace Platform;
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
 
+/*
+ * The maximum number of arguments for an escape sequence.
+ */
+#define EB_MAX_ARGV 	7
+
+/*
+ * Read next when the length of cached data is shorter than this value.
+ */
+#define SIZE_FEW_REST	48
+
+/*
+ * Special skip-code that represents `no skip-code is set'.
+ */
+#define SKIP_CODE_NONE  -1
+
 namespace libeburc
 {
 	ref class EBBook;
@@ -26,6 +42,12 @@ namespace libeburc
 	/// </summary>
 	public ref class EBSubbook sealed
 	{
+		void ReadTextInternal(
+			EBAppendix^ appendix, EBHookSet^ hookset
+			, void *container
+			, size_t text_max_length, char *text
+			, SSIZE_T *text_length, int forward_only );
+
 	internal:
 		/// <summary>
 		/// The parent book containing this subbook
@@ -260,6 +282,7 @@ namespace libeburc
 		/// </summary>
 		int IndexPage;
 
+		EBPosition^ TellText();
 		void ReadText(
 			EBAppendix^ appendix, EBHookSet^ hookset
 			, void *container, size_t text_max_length
