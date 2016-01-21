@@ -145,7 +145,7 @@ namespace libeburc
 	 * Hook codes.
 	 * (When you add or remove a hook, update EB_NUMER_OF_HOOKS in defs.h.)
 	 */
-	public enum EBHookCode
+	public enum class EBHookCode
 	{
 		EB_HOOK_NULL = -1,
 		EB_HOOK_INITIALIZE = 0,

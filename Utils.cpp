@@ -62,3 +62,51 @@ int Utils::ReadUtf8( const char* buffer, int* code )
 	*code = 0;
 	return 0;
 }
+
+unsigned Utils::eb_bcd2( const char *stream )
+{
+	unsigned value;
+	const unsigned char *s = ( const unsigned char * ) stream;
+
+	value = ( ( *( s ) >> 4 ) & 0x0f ) * 1000;
+	value += ( ( *( s ) ) & 0x0f ) * 100;
+	value += ( ( *( s + 1 ) >> 4 ) & 0x0f ) * 10;
+	value += ( ( *( s + 1 ) ) & 0x0f );
+
+	return value;
+}
+
+unsigned Utils::eb_bcd4( const char *stream )
+{
+	unsigned value;
+	const unsigned char *s = ( const unsigned char * ) stream;
+
+	value = ( ( *( s ) >> 4 ) & 0x0f ) * 10000000;
+	value += ( ( *( s ) ) & 0x0f ) * 1000000;
+	value += ( ( *( s + 1 ) >> 4 ) & 0x0f ) * 100000;
+	value += ( ( *( s + 1 ) ) & 0x0f ) * 10000;
+	value += ( ( *( s + 2 ) >> 4 ) & 0x0f ) * 1000;
+	value += ( ( *( s + 2 ) ) & 0x0f ) * 100;
+	value += ( ( *( s + 3 ) >> 4 ) & 0x0f ) * 10;
+	value += ( ( *( s + 3 ) ) & 0x0f );
+
+	return value;
+}
+
+unsigned Utils::eb_bcd6( const char *stream )
+{
+	unsigned value;
+	const unsigned char *s = ( const unsigned char * ) stream;
+
+	value = ( ( *( s + 1 ) ) & 0x0f );
+	value += ( ( *( s + 2 ) >> 4 ) & 0x0f ) * 10;
+	value += ( ( *( s + 2 ) ) & 0x0f ) * 100;
+	value += ( ( *( s + 3 ) >> 4 ) & 0x0f ) * 1000;
+	value += ( ( *( s + 3 ) ) & 0x0f ) * 10000;
+	value += ( ( *( s + 4 ) >> 4 ) & 0x0f ) * 100000;
+	value += ( ( *( s + 4 ) ) & 0x0f ) * 1000000;
+	value += ( ( *( s + 5 ) >> 4 ) & 0x0f ) * 10000000;
+	value += ( ( *( s + 5 ) ) & 0x0f ) * 100000000;
+
+	return value;
+}

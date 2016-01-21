@@ -5,10 +5,7 @@
 using namespace libeburc;
 
 using namespace std;
-using namespace concurrency;
 using namespace Platform;
-using namespace Microsoft::WRL;
-using namespace Windows::Foundation::Collections;
 
 static EBBookCode BookCounter = 0;
 
@@ -40,22 +37,6 @@ static const char * const misleaded_book_table[] = {
     "%W%m%7!<%I1QOB!&OB1Q<-E5",
     NULL
 };
-
-EBBook::EBBook( IStorageFolder^ BookDir )
-{
-	DirRoot = BookDir;
-	code = EB_BOOK_NONE;
-}
-
-IAsyncOperation<EBBook^>^ EBBook::Parse( IStorageFolder^ BookDir )
-{
-	return create_async( [ & ]
-	{
-		EBBook^ Book = ref new EBBook( BookDir );
-		Book->Bind();
-		return Book;
-	} );
-}
 
 void EBBook::Bind()
 {
@@ -515,9 +496,4 @@ void EBBook::ResetTextContext()
 	if( !text_context )
 		text_context = ref new EBTextContext();
 	else text_context->Reset();
-}
-
-IIterable<EBSubbook^>^ EBBook::Subbooks::get()
-{
-	return subbooks->GetView();
 }

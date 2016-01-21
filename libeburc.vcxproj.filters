@@ -23,13 +23,16 @@
     <Filter Include="eburc\Subbook">
       <UniqueIdentifier>{2ffa3147-b022-447f-9ed4-5d4759f5f720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="eburc\Appendix">
+      <UniqueIdentifier>{ca4a9f0f-87cf-4b1e-9e13-1c3074c128ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\EBBook">
+      <UniqueIdentifier>{e7483afe-016e-4983-be57-e465af14e777}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="EBInfo.cpp" />
-    <ClCompile Include="EBBook.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
     <ClCompile Include="Zio.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
@@ -84,9 +87,6 @@
     <ClCompile Include="EBHookSet.cpp">
       <Filter>eburc\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="EBAppendix.cpp">
-      <Filter>eburc</Filter>
-    </ClCompile>
     <ClCompile Include="EBSubbook.cpp">
       <Filter>eburc\Subbook</Filter>
     </ClCompile>
@@ -99,15 +99,27 @@
     <ClCompile Include="EBSubbookFont.cpp">
       <Filter>eburc\Subbook</Filter>
     </ClCompile>
+    <ClCompile Include="EBAppendix.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="EBAppendixSubbook.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="EBBook.cpp">
+      <Filter>eburc\EBBook</Filter>
+    </ClCompile>
+    <ClCompile Include="EBBookText.cpp">
+      <Filter>eburc\EBBook</Filter>
+    </ClCompile>
+    <ClCompile Include="EBBookABI.cpp">
+      <Filter>eburc\EBBook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="EBInfo.h" />
     <ClInclude Include="defs.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
-    <ClInclude Include="EBBook.h">
       <Filter>eburc</Filter>
     </ClInclude>
     <ClInclude Include="Zio.h">
@@ -167,11 +179,17 @@
     <ClInclude Include="EBHook.h">
       <Filter>eburc\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="EBAppendix.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
     <ClInclude Include="EBSubbook.h">
       <Filter>eburc\Subbook</Filter>
+    </ClInclude>
+    <ClInclude Include="EBAppendix.h">
+      <Filter>eburc\Appendix</Filter>
+    </ClInclude>
+    <ClInclude Include="EBAppendixSubbook.h">
+      <Filter>eburc\Appendix</Filter>
+    </ClInclude>
+    <ClInclude Include="EBBook.h">
+      <Filter>eburc\EBBook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

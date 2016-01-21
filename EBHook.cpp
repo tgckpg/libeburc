@@ -4,3 +4,11 @@
 using namespace libeburc;
 
 EBHook::EBHook() { }
+
+void EBHook::tryFunc(
+	EBSubbook^ book, EBAppendix^ appendix
+	, void *container, EBHookCode hook_code
+	, int argc, const unsigned int *argv )
+{
+	if ( function ) function( book, appendix, container, hook_code, argc, argv );
+}

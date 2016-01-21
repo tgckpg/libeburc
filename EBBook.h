@@ -75,6 +75,13 @@ namespace libeburc
 		void ResetTextContext();
 		void ResetBinaryContext();
 
+		/*
+		 * Write a stream with `length' bytes to a text buffer.
+		 */
+		void WriteText( const char *stream, size_t stream_length );
+		void WriteTextByte1( int byte1 );
+		void WriteTextByte2( int byte1, int byte2 );
+
 	public:
 		/// <summary>
 		/// Book ID

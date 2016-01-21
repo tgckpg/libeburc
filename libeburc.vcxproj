@@ -212,6 +212,7 @@
     <ClInclude Include="CharRange.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="EBAppendix.h" />
+    <ClInclude Include="EBAppendixSubbook.h" />
     <ClInclude Include="EBBinaryContext.h" />
     <ClInclude Include="EBBook.h" />
     <ClInclude Include="EBException.h" />
@@ -238,8 +239,11 @@
   <ItemGroup>
     <ClCompile Include="CharRange.cpp" />
     <ClCompile Include="EBAppendix.cpp" />
+    <ClCompile Include="EBAppendixSubbook.cpp" />
     <ClCompile Include="EBBinaryContext.cpp" />
     <ClCompile Include="EBBook.cpp" />
+    <ClCompile Include="EBBookABI.cpp" />
+    <ClCompile Include="EBBookText.cpp" />
     <ClCompile Include="EBException.cpp" />
     <ClCompile Include="EBFont.cpp" />
     <ClCompile Include="EBHook.cpp" />

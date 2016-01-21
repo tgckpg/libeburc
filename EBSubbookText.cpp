@@ -29,6 +29,28 @@ EBPosition^ EBSubbook::TellText()
 	);
 }
 
+int EBSubbook::IsStopCode( EBAppendix^ appendix
+	, unsigned int code0, unsigned int code1 )
+{
+	int result;
+
+	if ( !appendix
+		|| !appendix->subbook_current
+		|| appendix->subbook_current->stop_code0 == 0 )
+	{
+		result = ( code0 == 0x1f41
+			&& code1 == ParentBook->text_context->auto_stop_code );
+	}
+	else
+	{
+		result = ( code0 == appendix->subbook_current->stop_code0
+			&& code1 == appendix->subbook_current->stop_code1 );
+	}
+
+	return result;
+}
+
+
 void EBSubbook::SeekText( EBPosition^ Pos )
 {
 	ParentBook->ResetTextContext();
@@ -76,10 +98,7 @@ void EBSubbook::ReadText(
 			book->text_context->code = EBTextCode::EB_TEXT_MAIN_TEXT;
 
 		EBHook^ hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_INITIALIZE ];
-		if ( hook->function )
-		{
-			hook->function( this, appendix, container, EB_HOOK_INITIALIZE, 0, NULL );
-		}
+		hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_INITIALIZE, 0, NULL );
 	}
 	else if ( book->text_context->code != EBTextCode::EB_TEXT_MAIN_TEXT
 		&& book->text_context->code != EBTextCode::EB_TEXT_OPTIONAL_TEXT )
@@ -189,6 +208,7 @@ void EBSubbook::ReadTextInternal(
 			memcpy_s( cache_buffer + cache_rest_length, rsize, buff->Data, rsize );
 
 			size_t read_result = rsize;
+			// XXX: Need to dected end read
 			if ( read_result < 0 )
 			{
 				EBException::Throw( EBErrorCode::EB_ERR_FAIL_READ_TEXT );
@@ -216,7 +236,6 @@ void EBSubbook::ReadTextInternal(
 
 		EBHook^ hook = ref new EBHook();
 		unsigned int argv[ EB_MAX_ARGV ];
-		int argc;
 
 		if ( c1 == 0x1f )
 		{
@@ -250,27 +269,27 @@ void EBSubbook::ReadTextInternal(
 			case 0x04:
 				/* beginning of NARROW */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_NARROW ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_NARROW ];
 				context->narrow_flag = 1;
 				break;
 
 			case 0x05:
 				/* end of NARROW */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_NARROW ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_NARROW ];
 				context->narrow_flag = 0;
 				break;
 
 			case 0x06:
 				/* beginning of subscript */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_SUBSCRIPT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_SUBSCRIPT ];
 				break;
 
 			case 0x07:
 				/* end of subscript */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_SUBSCRIPT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_SUBSCRIPT ];
 				break;
 
 			case 0x09:
@@ -286,14 +305,14 @@ void EBSubbook::ReadTextInternal(
 				if ( 0 < context->printable_count
 					&& context->code == EBTextCode::EB_TEXT_MAIN_TEXT )
 				{
-					if ( eb_is_stop_code( book, appendix, argv[ 0 ], argv[ 1 ] ) )
+					if ( IsStopCode( appendix, argv[ 0 ], argv[ 1 ] ) )
 					{
 						context->text_status = EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP;
 						goto succeeded;
 					}
 				}
 
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_SET_INDENT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_SET_INDENT ];
 				break;
 
 			case 0x0a:
@@ -305,55 +324,55 @@ void EBSubbook::ReadTextInternal(
 					context->location += in_step;
 					goto succeeded;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_NEWLINE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_NEWLINE ];
 				break;
 
 			case 0x0b:
 				/* beginning of unicode */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_UNICODE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_UNICODE ];
 				break;
 
 			case 0x0c:
 				/* end of unicode */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_UNICODE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_UNICODE ];
 				break;
 
 			case 0x0e:
 				/* beginning of superscript */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_SUPERSCRIPT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_SUPERSCRIPT ];
 				break;
 
 			case 0x0f:
 				/* end of superscript */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_SUPERSCRIPT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_SUPERSCRIPT ];
 				break;
 
 			case 0x10:
 				/* beginning of newline prohibition */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_NO_NEWLINE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_NO_NEWLINE ];
 				break;
 
 			case 0x11:
 				/* end of newline prohibition */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_NO_NEWLINE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_NO_NEWLINE ];
 				break;
 
 			case 0x12:
 				/* beginning of emphasis */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_EMPHASIS ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_EMPHASIS ];
 				break;
 
 			case 0x13:
 				/* end of emphasis */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_EMPHASIS ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_EMPHASIS ];
 				break;
 
 			case 0x14:
@@ -380,7 +399,7 @@ void EBSubbook::ReadTextInternal(
 				{
 					/* beginning of EBXA-C gaiji */
 					in_step = 2;
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_EBXAC_GAIJI ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_EBXAC_GAIJI ];
 					context->ebxac_gaiji_flag = 1;
 				}
 				else
@@ -403,7 +422,7 @@ void EBSubbook::ReadTextInternal(
 				{
 					/* end of EBXA-C gaiji */
 					in_step = 2;
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_END_EBXAC_GAIJI ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_EBXAC_GAIJI ];
 					context->ebxac_gaiji_flag = 0;
 				}
 				else
@@ -428,7 +447,7 @@ void EBSubbook::ReadTextInternal(
 				argv[ 1 ] = 0;
 				argv[ 2 ] = 0;
 				argv[ 3 ] = 0;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_MONO_GRAPHIC ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_MONO_GRAPHIC ];
 				break;
 
 			case 0x39:
@@ -440,7 +459,7 @@ void EBSubbook::ReadTextInternal(
 				argv[ 3 ] = eb_uint4( cache_p + 26 );
 				argv[ 4 ] = eb_uint4( cache_p + 30 );
 				argv[ 5 ] = eb_uint4( cache_p + 34 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_MPEG ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_MPEG ];
 				break;
 
 			case 0x3c:
@@ -453,12 +472,12 @@ void EBSubbook::ReadTextInternal(
 				}
 				argc = 4;
 				argv[ 1 ] = eb_uint2( cache_p + 2 );
-				argv[ 2 ] = eb_bcd4( cache_p + 14 );
-				argv[ 3 ] = eb_bcd2( cache_p + 18 );
+				argv[ 2 ] = Utils::eb_bcd4( cache_p + 14 );
+				argv[ 3 ] = Utils::eb_bcd2( cache_p + 18 );
 				if ( argv[ 1 ] >> 8 == 0x00 )
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_IN_COLOR_BMP ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_IN_COLOR_BMP ];
 				else
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_IN_COLOR_JPEG ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_IN_COLOR_JPEG ];
 				break;
 
 			case 0x35: case 0x36: case 0x37: case 0x38: case 0x3a:
@@ -481,7 +500,7 @@ void EBSubbook::ReadTextInternal(
 				if ( 0 < context->printable_count
 					&& context->code == EBTextCode::EB_TEXT_MAIN_TEXT )
 				{
-					if ( eb_is_stop_code( book, appendix, argv[ 0 ], argv[ 1 ] ) )
+					if ( IsStopCode( appendix, argv[ 0 ], argv[ 1 ] ) )
 					{
 						context->text_status = EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP;
 						goto succeeded;
@@ -490,7 +509,7 @@ void EBSubbook::ReadTextInternal(
 				if ( context->auto_stop_code < 0 )
 					context->auto_stop_code = eb_uint2( cache_p + 2 );
 
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_KEYWORD ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_KEYWORD ];
 				break;
 
 			case 0x42:
@@ -503,7 +522,7 @@ void EBSubbook::ReadTextInternal(
 				}
 				if ( eb_uint1( cache_p + 2 ) != 0x00 )
 					in_step -= 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_REFERENCE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_REFERENCE ];
 				break;
 
 			case 0x43:
@@ -516,7 +535,7 @@ void EBSubbook::ReadTextInternal(
 					candidate_length = 0;
 					candidate_p = ( unsigned char * ) context->candidate;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_CANDIDATE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_CANDIDATE ];
 				break;
 
 			case 0x44:
@@ -529,10 +548,10 @@ void EBSubbook::ReadTextInternal(
 				}
 				argc = 4;
 				argv[ 1 ] = eb_uint2( cache_p + 2 );
-				argv[ 2 ] = eb_bcd4( cache_p + 4 );
-				argv[ 3 ] = eb_bcd4( cache_p + 8 );
+				argv[ 2 ] = Utils::eb_bcd4( cache_p + 4 );
+				argv[ 3 ] = Utils::eb_bcd4( cache_p + 8 );
 				if ( 0 < argv[ 2 ] && 0 < argv[ 3 ] )
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_MONO_GRAPHIC ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_MONO_GRAPHIC ];
 				break;
 
 			case 0x45:
@@ -546,7 +565,7 @@ void EBSubbook::ReadTextInternal(
 				if ( eb_uint1( cache_p + 2 ) != 0x1f )
 				{
 					argc = 2;
-					argv[ 1 ] = eb_bcd4( cache_p + 2 );
+					argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
 				}
 				else
 				{
@@ -564,11 +583,11 @@ void EBSubbook::ReadTextInternal(
 				}
 				argc = 6;
 				argv[ 1 ] = eb_uint4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd4( cache_p + 6 );
-				argv[ 3 ] = eb_bcd2( cache_p + 10 );
-				argv[ 4 ] = eb_bcd4( cache_p + 12 );
-				argv[ 5 ] = eb_bcd2( cache_p + 16 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_WAVE ];
+				argv[ 2 ] = Utils::eb_bcd4( cache_p + 6 );
+				argv[ 3 ] = Utils::eb_bcd2( cache_p + 10 );
+				argv[ 4 ] = Utils::eb_bcd4( cache_p + 12 );
+				argv[ 5 ] = Utils::eb_bcd2( cache_p + 16 );
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_WAVE ];
 				break;
 
 			case 0x4b:
@@ -580,17 +599,17 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 3;
-				argv[ 1 ] = eb_bcd4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd2( cache_p + 6 );
+				argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 6 );
 				if ( cache_p[ 8 ] == 0x1f && cache_p[ 9 ] == 0x6b )
 				{
 					context->text_status = EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP;
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_GRAPHIC_REFERENCE ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_GRAPHIC_REFERENCE ];
 					in_step = 10;
 				}
 				else
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_GRAPHIC_REFERENCE ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_GRAPHIC_REFERENCE ];
 				}
 				break;
 
@@ -602,7 +621,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_IMAGE_PAGE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_IMAGE_PAGE ];
 				break;
 
 			case 0x4d:
@@ -615,12 +634,12 @@ void EBSubbook::ReadTextInternal(
 				}
 				argc = 4;
 				argv[ 1 ] = eb_uint2( cache_p + 2 );
-				argv[ 2 ] = eb_bcd4( cache_p + 14 );
-				argv[ 3 ] = eb_bcd2( cache_p + 18 );
+				argv[ 2 ] = Utils::eb_bcd4( cache_p + 14 );
+				argv[ 3 ] = Utils::eb_bcd2( cache_p + 18 );
 				if ( argv[ 1 ] >> 8 == 0x00 )
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_COLOR_BMP ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_COLOR_BMP ];
 				else
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_COLOR_JPEG ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_COLOR_JPEG ];
 				break;
 
 			case 0x4f:
@@ -632,13 +651,13 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 7;
-				argv[ 1 ] = eb_bcd2( cache_p + 8 );
-				argv[ 2 ] = eb_bcd2( cache_p + 10 );
-				argv[ 3 ] = eb_bcd2( cache_p + 12 );
-				argv[ 4 ] = eb_bcd2( cache_p + 14 );
-				argv[ 5 ] = eb_bcd4( cache_p + 28 );
-				argv[ 6 ] = eb_bcd2( cache_p + 32 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_CLICKABLE_AREA ];
+				argv[ 1 ] = Utils::eb_bcd2( cache_p + 8 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 10 );
+				argv[ 3 ] = Utils::eb_bcd2( cache_p + 12 );
+				argv[ 4 ] = Utils::eb_bcd2( cache_p + 14 );
+				argv[ 5 ] = Utils::eb_bcd4( cache_p + 28 );
+				argv[ 6 ] = Utils::eb_bcd2( cache_p + 32 );
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_CLICKABLE_AREA ];
 				break;
 
 			case 0x49: case 0x4e:
@@ -656,9 +675,9 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 3;
-				argv[ 1 ] = eb_bcd4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd2( cache_p + 6 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_MONO_GRAPHIC ];
+				argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 6 );
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_MONO_GRAPHIC ];
 				break;
 
 			case 0x53:
@@ -679,7 +698,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_MPEG ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_MPEG ];
 				break;
 
 			case 0x5c:
@@ -690,13 +709,13 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_IN_COLOR_GRAPHIC ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_IN_COLOR_GRAPHIC ];
 				break;
 
 			case 0x61:
 				/* end of keyword */
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_KEYWORD ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_KEYWORD ];
 				break;
 
 			case 0x62:
@@ -708,9 +727,9 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 3;
-				argv[ 1 ] = eb_bcd4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd2( cache_p + 6 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_REFERENCE ];
+				argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 6 );
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_REFERENCE ];
 				break;
 
 			case 0x63:
@@ -722,12 +741,12 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 3;
-				argv[ 1 ] = eb_bcd4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd2( cache_p + 6 );
+				argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 6 );
 				if ( argv[ 1 ] == 0 && argv[ 2 ] == 0 )
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_END_CANDIDATE_LEAF ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_CANDIDATE_LEAF ];
 				else
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_END_CANDIDATE_GROUP ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_CANDIDATE_GROUP ];
 				break;
 
 			case 0x64:
@@ -739,9 +758,9 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				argc = 3;
-				argv[ 1 ] = eb_bcd4( cache_p + 2 );
-				argv[ 2 ] = eb_bcd2( cache_p + 6 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_MONO_GRAPHIC ];
+				argv[ 1 ] = Utils::eb_bcd4( cache_p + 2 );
+				argv[ 2 ] = Utils::eb_bcd2( cache_p + 6 );
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_MONO_GRAPHIC ];
 				break;
 
 			case 0x6b:
@@ -752,7 +771,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_GRAPHIC_REFERENCE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_GRAPHIC_REFERENCE ];
 				break;
 
 			case 0x6a:
@@ -763,7 +782,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_WAVE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_WAVE ];
 				break;
 
 			case 0x6c:
@@ -775,7 +794,7 @@ void EBSubbook::ReadTextInternal(
 					goto failed;
 				}
 				context->text_status = EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_IMAGE_PAGE ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_IMAGE_PAGE ];
 				break;
 
 			case 0x6d:
@@ -786,7 +805,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_COLOR_GRAPHIC ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_COLOR_GRAPHIC ];
 				break;
 
 			case 0x6f:
@@ -797,7 +816,7 @@ void EBSubbook::ReadTextInternal(
 					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
 					goto failed;
 				}
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_CLICKABLE_AREA ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_CLICKABLE_AREA ];
 				break;
 
 			case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75:
@@ -820,18 +839,15 @@ void EBSubbook::ReadTextInternal(
 				}
 
 				argv[ 0 ] = eb_uint2( cache_p + 2 ) | 0x8080;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_NARROW_FONT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_NARROW_FONT ];
 				if ( forward_only )
 				{
 					; /* do nothing */
 				}
-				else if ( hook->function == NULL )
-				{
-					; /* do nothing */
-				}
+				// else if ( hook->function == NULL ) { ; /* do nothing */ }
 				else
 				{
-					hook->function( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
+					hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
 				}
 				break;
 			case 0xd1:
@@ -844,18 +860,15 @@ void EBSubbook::ReadTextInternal(
 				}
 
 				argv[ 0 ] = eb_uint2( cache_p + 2 ) | 0x8080;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_WIDE_FONT ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_WIDE_FONT ];
 				if ( forward_only )
 				{
 					; /* do nothing */
 				}
-				else if ( hook->function == NULL )
-				{
-					; /* do nothing */
-				}
+				// else if ( hook->function == NULL ) { ; /* do nothing */ }
 				else
 				{
-					hook->function( this, appendix, container, EBHookCode::EB_HOOK_WIDE_FONT, argc, argv );
+					hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_WIDE_FONT, argc, argv );
 				}
 			case 0xe0:
 				/* character modification */
@@ -867,7 +880,7 @@ void EBSubbook::ReadTextInternal(
 				}
 				argc = 2;
 				argv[ 1 ] = eb_uint2( cache_p + 2 );
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_BEGIN_DECORATION ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_BEGIN_DECORATION ];
 
 				/* Some old EB books don't take an argument. */
 				if ( ParentBook->disc_code != EBDiscCode::EB_DISC_EPWING
@@ -880,7 +893,7 @@ void EBSubbook::ReadTextInternal(
 
 			case 0xe1:
 				in_step = 2;
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_END_DECORATION ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_END_DECORATION ];
 				break;
 
 			case 0xe4: case 0xe6: case 0xe8: case 0xea: case 0xec: case 0xee:
@@ -901,7 +914,7 @@ void EBSubbook::ReadTextInternal(
 				&& hook->function != NULL
 				&& !forward_only )
 			{
-				hook->function( this, appendix, container, hook->code, argc, argv );
+				hook->tryFunc( this, appendix, container, hook->code, argc, argv );
 			}
 
 			/*
@@ -939,20 +952,18 @@ void EBSubbook::ReadTextInternal(
 						candidate_length++;
 					}
 
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_ISO8859_1 ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_ISO8859_1 ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte1( book, c1 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte1( c1 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_ISO8859_1, argc, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_ISO8859_1, argc, argv );
 					}
 				}
 			}
@@ -971,20 +982,18 @@ void EBSubbook::ReadTextInternal(
 				argv[ 0 ] = eb_uint2( cache_p );
 				if ( context->skip_code == SKIP_CODE_NONE )
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_NARROW_FONT ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_NARROW_FONT ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte1( book, c1 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte1( c1 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
 					}
 				}
 			}
@@ -1044,30 +1053,26 @@ void EBSubbook::ReadTextInternal(
 				{
 					if ( in_step == 1 )
 					{
-						hook = hookset->hooks[ EBHookCode::EB_HOOK_ISO8859_1 ];
+						hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_ISO8859_1 ];
 						if ( hook->function == NULL )
 						{
-							error_code = eb_write_text_byte1( book, c1 );
-							if ( error_code != EB_SUCCESS )
-								goto failed;
+							ParentBook->WriteTextByte1( c1 );
 						}
 						else
 						{
-							hook->function( this, appendix, container, EBHookCode::EB_HOOK_ISO8859_1, argc, argv );
+							hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_ISO8859_1, argc, argv );
 						}
 					}
 					else
 					{
-						hook = hookset->hooks[ EBHookCode::EB_HOOK_UNICODE ];
+						hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_UNICODE ];
 						if ( hook->function == NULL )
 						{
-							error_code = eb_write_text( book, cache_p, in_step );
-							if ( error_code != EB_SUCCESS )
-								goto failed;
+							ParentBook->WriteText( cache_p, in_step );
 						}
 						else
 						{
-							hook->function( this, appendix, container, EBHookCode::EB_HOOK_UNICODE, argc, argv );
+							hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_UNICODE, argc, argv );
 						}
 					}
 				}
@@ -1087,7 +1092,7 @@ void EBSubbook::ReadTextInternal(
 				goto failed;
 			}
 
-			c2 = eb_uint1( cache_p + 1 );
+			unsigned char c2 = eb_uint1( cache_p + 1 );
 
 			if ( context->skip_code != SKIP_CODE_NONE )
 			{
@@ -1111,59 +1116,50 @@ void EBSubbook::ReadTextInternal(
 
 				if ( context->ebxac_gaiji_flag )
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_EBXAC_GAIJI ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_EBXAC_GAIJI ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte2( book, c1 | 0x80,
-							c2 | 0x80 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte2( c1 | 0x80, c2 | 0x80 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_EBXAC_GAIJI, 0, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_EBXAC_GAIJI, 0, argv );
 					}
 				}
 				else if ( context->narrow_flag )
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_NARROW_JISX0208 ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_NARROW_JISX0208 ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte2( book, c1 | 0x80,
-							c2 | 0x80 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte2( c1 | 0x80, c2 | 0x80 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_NARROW_JISX0208, 0, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_NARROW_JISX0208, 0, argv );
 					}
 				}
 				else
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_WIDE_JISX0208 ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_WIDE_JISX0208 ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte2( book, c1 | 0x80,
-							c2 | 0x80 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte2( c1 | 0x80, c2 | 0x80 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_WIDE_JISX0208, argc, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_WIDE_JISX0208, argc, argv );
 					}
 				}
 			}
@@ -1183,20 +1179,18 @@ void EBSubbook::ReadTextInternal(
 					candidate_length += 2;
 				}
 
-				hook = hookset->hooks[ EBHookCode::EB_HOOK_GB2312 ];
+				hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_GB2312 ];
 				if ( forward_only )
 				{
 					; /* do nothing */
 				}
 				else if ( hook->function == NULL )
 				{
-					error_code = eb_write_text_byte2( book, c1 | 0x80, c2 );
-					if ( error_code != EB_SUCCESS )
-						goto failed;
+					ParentBook->WriteTextByte2( c1 | 0x80, c2 );
 				}
 				else
 				{
-					hook->function( this, appendix, container, EBHookCode::EB_HOOK_GB2312, 0, argv );
+					hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_GB2312, 0, argv );
 				}
 			}
 			else if ( 0xa0 < c1 && c1 < 0xff && 0x20 < c2 && c2 < 0x7f )
@@ -1208,38 +1202,34 @@ void EBSubbook::ReadTextInternal(
 
 				if ( context->narrow_flag )
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_NARROW_FONT ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_NARROW_FONT ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte2( book, c1, c2 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte2( c1, c2 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_NARROW_FONT, argc, argv );
 					}
 				}
 				else
 				{
-					hook = hookset->hooks[ EBHookCode::EB_HOOK_WIDE_FONT ];
+					hook = hookset->hooks[ (int) EBHookCode::EB_HOOK_WIDE_FONT ];
 					if ( forward_only )
 					{
 						; /* do nothing */
 					}
 					else if ( hook->function == NULL )
 					{
-						error_code = eb_write_text_byte2( book, c1, c2 );
-						if ( error_code != EB_SUCCESS )
-							goto failed;
+						ParentBook->WriteTextByte2( c1, c2 );
 					}
 					else
 					{
-						hook->function( this, appendix, container, EBHookCode::EB_HOOK_WIDE_FONT, argc, argv );
+						hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_WIDE_FONT, argc, argv );
 					}
 				}
 			}
@@ -1285,3 +1275,4 @@ failed:
 		*text = '\0';
 	}
 }
+

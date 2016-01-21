@@ -282,6 +282,8 @@ namespace libeburc
 		/// </summary>
 		int IndexPage;
 
+		int EBSubbook::IsStopCode( EBAppendix^ appendix
+			, unsigned int code0, unsigned int code1 );
 		EBPosition^ TellText();
 		void ReadText(
 			EBAppendix^ appendix, EBHookSet^ hookset
