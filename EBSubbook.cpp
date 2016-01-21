@@ -961,3 +961,65 @@ void EBSubbook::SetFont( EBFontCode code )
 		wide_current->Open();
 	}
 }
+
+
+void EBSubbook::SeekText( EBPosition^ Pos )
+{
+	ParentBook->ResetTextContext();
+	ParentBook->text_context->code = EBTextCode::EB_TEXT_SEEKED;
+	ParentBook->text_context->location
+		= ( ( off_t ) Pos->page - 1 ) * EB_SIZE_PAGE + Pos->offset;
+}
+
+void EBSubbook::ReadText(
+	EBAppendix^ appendix, EBHookSet^ hookset
+	, void *container, size_t text_max_length
+	, char *text, SSIZE_T *text_length )
+{
+	/*
+	 * Use `eb_default_hookset' when `hookset' is `NULL'.
+	 */
+
+	if ( !hookset )
+		hookset = ref new EBHookSet();
+
+	/*
+	 * Set text mode to `text'.
+	 */
+	EBBook^ book = ParentBook;
+	if ( book->text_context->code == EBTextCode::EB_TEXT_INVALID )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_NO_PREV_SEEK );
+	}
+	else if ( book->text_context->code == EBTextCode::EB_TEXT_SEEKED )
+	{
+		eb_tell_text( book, &position );
+		eb_reset_text_context( book );
+
+		if ( menu->start_page <= position->page && position->page <= menu->end_page )
+			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
+
+		else if ( image_menu->start_page <= position->page && position->page <= image_menu->end_page )
+			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
+
+		else if ( copyright->start_page <= position->page && position->page <= copyright->end_page )
+			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
+
+		else
+			book->text_context->code = EBTextCode::EB_TEXT_MAIN_TEXT;
+
+		EBHook^ hook = hookset->hooks + EB_HOOK_INITIALIZE;
+		if ( hook->function != NULL )
+		{
+			hook->function( book, appendix, container, EB_HOOK_INITIALIZE, 0, NULL );
+		}
+	}
+	else if ( book->text_context->code != EBTextCode::EB_TEXT_MAIN_TEXT
+		&& book->text_context->code != EBTextCode::EB_TEXT_OPTIONAL_TEXT )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_DIFF_CONTENT );
+	}
+
+	eb_read_text_internal( book, appendix, hookset, container,
+		text_max_length, text, text_length, 0 );
+}

@@ -321,7 +321,7 @@ void EBBook::LoadCatalogEPWING( IStorageFile^ File )
 		}
 
 		subbook->initialized = 0;
-		subbook->Code = i;
+		subbook->code = i;
 
 		/*
 		 * Set default file names and compression types.
@@ -502,27 +502,19 @@ void EBBook::LoadLanguage()
 
 void EBBook::ResetSearchContext()
 {
-	search_contexts = ref new Vector<EBSearchContext^>();
+	search_contexts = ref new EBSearchContext();
 }
 
 void EBBook::ResetBinaryContext()
 {
-	binary_context = ref new Vector<EBBinaryContext^>();
+	binary_context = ref new EBBinaryContext();
 }
 
 void EBBook::ResetTextContext()
 {
-	if ( !text_context )
-	{
-		text_context = ref new Vector<EBTextContext^>();
-	}
-	else
-	{
-		for_each( begin( text_context ), end( text_context ), []( EBTextContext^ TextContext )
-		{
-			TextContext->Reset();
-		} );
-	}
+	if( !text_context )
+		text_context = ref new EBTextContext();
+	else text_context->Reset();
 }
 
 IIterable<EBSubbook^>^ EBBook::Subbooks::get()

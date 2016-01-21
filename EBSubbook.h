@@ -3,10 +3,13 @@
 #include <pch.h>
 #include <defs.h>
 #include <FileName.h>
-#include <EBSearch.h>
+#include <EBAppendix.h>
+#include <EBHookSet.h>
 #include <EBMultiSearch.h>
-#include <EBUTF8Table.h>
 #include <EBNarrowFont.h>
+#include <EBPosition.h>
+#include <EBSearch.h>
+#include <EBUTF8Table.h>
 #include <EBWideFont.h>
 #include <Zio.h>
 
@@ -252,17 +255,26 @@ namespace libeburc
 
 		EBSubbook( EBBook^ Book );
 
-	public:
 		/// <summary>
 		/// Index page.
 		/// </summary>
-		property int IndexPage;
+		int IndexPage;
 
+		void ReadText(
+			EBAppendix^ appendix, EBHookSet^ hookset
+			, void *container, size_t text_max_length
+			, char *text, SSIZE_T *text_length );
+
+		EBSubbookCode code;
+	public:
 		/// <summary>
 		/// Subbook ID.
 		/// This subbook is not available, if the code is EB_SUBBOOK_INVALID.
 		/// </summary>
-		property EBSubbookCode Code;
+		property EBSubbookCode Code
+		{
+			EBSubbookCode get() { return code; }
+		}
 
 		property String^ Title
 		{
@@ -272,10 +284,20 @@ namespace libeburc
 			}
 		}
 
+		property EBPosition^ FirstPage
+		{
+			EBPosition^ get()
+			{
+				return ref new EBPosition( text->start_page, 0 );
+			}
+		}
+
 		property String^ Directory
 		{
 			String^ get() { return DirRoot->Name; }
 		}
+
+		void SeekText( EBPosition^ Pos );
 
 		IAsyncAction^ OpenAsync();
 

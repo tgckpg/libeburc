@@ -211,10 +211,13 @@
     <ClInclude Include="build-post.h" />
     <ClInclude Include="CharRange.h" />
     <ClInclude Include="defs.h" />
+    <ClInclude Include="EBAppendix.h" />
     <ClInclude Include="EBBinaryContext.h" />
     <ClInclude Include="EBBook.h" />
     <ClInclude Include="EBException.h" />
     <ClInclude Include="EBFont.h" />
+    <ClInclude Include="EBHook.h" />
+    <ClInclude Include="EBHookSet.h" />
     <ClInclude Include="EBMultiSearch.h" />
     <ClInclude Include="EBNarrowFont.h" />
     <ClInclude Include="EBPosition.h" />
@@ -234,10 +237,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharRange.cpp" />
+    <ClCompile Include="EBAppendix.cpp" />
     <ClCompile Include="EBBinaryContext.cpp" />
     <ClCompile Include="EBBook.cpp" />
     <ClCompile Include="EBException.cpp" />
     <ClCompile Include="EBFont.cpp" />
+    <ClCompile Include="EBHook.cpp" />
+    <ClCompile Include="EBHookSet.cpp" />
     <ClCompile Include="EBMultiSearch.cpp" />
     <ClCompile Include="EBNarrowFont.cpp" />
     <ClCompile Include="EBPosition.cpp" />

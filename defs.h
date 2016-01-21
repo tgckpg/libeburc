@@ -16,6 +16,11 @@ typedef int EBMultiSearchCode;
 typedef int EBHookCode;
 
 /*
+ * The number of text hooks.
+ */
+#define EB_NUMBER_OF_HOOKS		55
+
+/*
  * Size of a page (The term `page' means `block' in JIS X 4081).
  */
 #define EB_SIZE_PAGE			2048

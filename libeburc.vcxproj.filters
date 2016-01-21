@@ -78,6 +78,15 @@
     <ClCompile Include="CharRange.cpp">
       <Filter>eburc\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="EBHook.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="EBHookSet.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="EBAppendix.cpp">
+      <Filter>eburc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -142,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="CharRange.h">
       <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="EBHookSet.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="EBHook.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="EBAppendix.h">
+      <Filter>eburc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

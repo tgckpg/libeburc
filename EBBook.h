@@ -61,15 +61,15 @@ namespace libeburc
 		/*
 		 * Context parameters for text reading.
 		 */
-		Vector<EBSearchContext^>^ search_contexts;
+		EBSearchContext^ search_contexts;
 		/*
 		 * Context parameters for binary reading.
 		 */
-		Vector<EBBinaryContext^>^ binary_context;
+		EBBinaryContext^ binary_context;
 		/*
 		 * Context parameters for text reading.
 		 */
-		Vector<EBTextContext^>^ text_context;
+		EBTextContext^ text_context;
 
 		void ResetSearchContext();
 		void ResetTextContext();

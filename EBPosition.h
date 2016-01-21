@@ -2,8 +2,9 @@
 
 namespace libeburc
 {
-	ref class EBPosition sealed
+	public ref class EBPosition sealed
 	{
+	internal:
 		/*
 		 * Page. (1, 2, 3 ...)
 		 */
@@ -13,7 +14,16 @@ namespace libeburc
 		 * Offset in `page'. (0 ... 2047)
 		 */
 		int offset;
+
+		EBPosition( int Page = 0, int Offset = 0 );
+
 	public:
-		EBPosition();
+		property int Page {
+			int get() { return page; }
+		}
+
+		property int Offset {
+			int get() { return Offset; }
+		}
 	};
 }

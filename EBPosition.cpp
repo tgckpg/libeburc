@@ -3,8 +3,8 @@
 
 using namespace libeburc;
 
-EBPosition::EBPosition()
+EBPosition::EBPosition( int Page, int Offset )
 {
-	page = 0;
-	offset = 0;
+	page = Page;
+	offset = Offset;
 }
