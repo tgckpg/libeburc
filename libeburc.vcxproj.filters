@@ -114,6 +114,21 @@
     <ClCompile Include="EBBookABI.cpp">
       <Filter>eburc\EBBook</Filter>
     </ClCompile>
+    <ClCompile Include="EBSubbookABI.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="EBAppendixSubbookWideAlt.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="EBAlternationCache.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="EBAppendixSubbookNarrowAlt.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="EBHookSetInternal.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -190,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="EBBook.h">
       <Filter>eburc\EBBook</Filter>
+    </ClInclude>
+    <ClInclude Include="EBAlternationCache.h">
+      <Filter>eburc\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,7 @@ using namespace libeburc;
 EBHook::EBHook() { }
 
 void EBHook::tryFunc(
-	EBSubbook^ book, EBAppendix^ appendix
+	EBSubbook^ book, EBAppendixSubbook^ appendix
 	, void *container, EBHookCode hook_code
 	, int argc, const unsigned int *argv )
 {

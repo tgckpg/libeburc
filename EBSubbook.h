@@ -3,7 +3,7 @@
 #include <pch.h>
 #include <defs.h>
 #include <FileName.h>
-#include <EBAppendix.h>
+#include <EBAppendixSubbook.h>
 #include <EBHookSet.h>
 #include <EBMultiSearch.h>
 #include <EBNarrowFont.h>
@@ -43,7 +43,7 @@ namespace libeburc
 	public ref class EBSubbook sealed
 	{
 		void ReadTextInternal(
-			EBAppendix^ appendix, EBHookSet^ hookset
+			EBAppendixSubbook^ appendix, EBHookSet^ hookset
 			, void *container
 			, size_t text_max_length, char *text
 			, SSIZE_T *text_length, int forward_only );
@@ -282,13 +282,14 @@ namespace libeburc
 		/// </summary>
 		int IndexPage;
 
-		int EBSubbook::IsStopCode( EBAppendix^ appendix
+		int EBSubbook::IsStopCode( EBAppendixSubbook^ appendix
 			, unsigned int code0, unsigned int code1 );
 		EBPosition^ TellText();
 		void ReadText(
-			EBAppendix^ appendix, EBHookSet^ hookset
+			EBAppendixSubbook^ appendix, EBHookSet^ hookset
 			, void *container, size_t text_max_length
 			, char *text, SSIZE_T *text_length );
+		void SeekText( EBPosition^ Pos );
 
 		EBSubbookCode code;
 	public:
@@ -322,9 +323,9 @@ namespace libeburc
 			String^ get() { return DirRoot->Name; }
 		}
 
-		void SeekText( EBPosition^ Pos );
-
 		IAsyncAction^ OpenAsync();
+
+		String^ GetPage( EBPosition^ Pos );
 
 	};
 }

@@ -2,12 +2,13 @@
 
 #include <pch.h>
 #include <defs.h>
-#include <EBAppendixSubbook.h>
+#include <EBAlternationCache.h>
 
 using namespace Platform::Collections;
 
 namespace libeburc
 {
+	ref class EBAppendixSubbook;
 	public ref class EBAppendix sealed
 	{
 	internal:
@@ -49,8 +50,11 @@ namespace libeburc
 		/*
 		 * Cache table for alternation text.
 		 */
-		// EB_Alternation_Cache narrow_cache[ EB_MAX_ALTERNATION_CACHE ];
-		// EB_Alternation_Cache wide_cache[ EB_MAX_ALTERNATION_CACHE ];
+		EBAlternationCache^ narrow_cache[ EB_MAX_ALTERNATION_CACHE ];
+		EBAlternationCache^ wide_cache[ EB_MAX_ALTERNATION_CACHE ];
+
+		EBAlternationCache^ AcquireWideCache( int i );
+		EBAlternationCache^ AcquireNarrowCache( int i );
 		EBAppendix();
 	public:
 	};

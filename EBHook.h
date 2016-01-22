@@ -6,7 +6,7 @@ namespace libeburc
 {
 	ref class EBBook;
 	ref class EBSubbook;
-	ref class EBAppendix;
+	ref class EBAppendixSubbook;
 
 	public ref class EBHook sealed
 	{
@@ -17,14 +17,14 @@ namespace libeburc
 		EBHookCode code;
 
 		void tryFunc(
-			EBSubbook^ book, EBAppendix^ appendix
+			EBSubbook^ book, EBAppendixSubbook^ appendix
 			, void *container, EBHookCode hook_code
 			, int argc, const unsigned int *argv );
 		/*
 		 * Hook function for the hook code `code'.
 		 */
 		void ( *function )(
-			EBSubbook^ book, EBAppendix^ appendix
+			EBSubbook^ book, EBAppendixSubbook^ appendix
 			, void *container, EBHookCode hook_code
 			, int argc, const unsigned int *argv );
 

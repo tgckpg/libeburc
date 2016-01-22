@@ -1,13 +1,16 @@
 #pragma once
 #include <defs.h>
+#include <EBAlternationCache.h>
+#include <EBException.h>
 #include <Zio.h>
 
 namespace libeburc
 {
-
+	ref class EBAppendix;
 	ref class EBAppendixSubbook sealed
 	{
 	internal:
+		EBAppendix^ ParentBook;
 		/*
 		* Initialization flag.
 		*/
@@ -65,8 +68,18 @@ namespace libeburc
 		/*
 		 * Compression Information for appendix file.
 		 */
-		Zio zio;
+		Zio^ zio;
+
+		/*
+		 * Get the alternation text of the character number `character_number'.
+		 */
+		void WideAltCharText( int character_number, char *text );
+		void WideCharTextJIS( int character_number, char *text );
+		void WideCharTextLatin( int character_number, char *text );
+		void NarrowAltCharText( int character_number, char *text );
+		void NarrowCharTextJIS( int character_number, char *text );
+		void NarrowCharTextLatin( int character_number, char *text );
 	public:
-		EBAppendixSubbook();
+		EBAppendixSubbook( EBAppendix^ appendix );
 	};
 }

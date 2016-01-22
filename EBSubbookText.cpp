@@ -29,22 +29,20 @@ EBPosition^ EBSubbook::TellText()
 	);
 }
 
-int EBSubbook::IsStopCode( EBAppendix^ appendix
+int EBSubbook::IsStopCode( EBAppendixSubbook^ appendix
 	, unsigned int code0, unsigned int code1 )
 {
 	int result;
 
-	if ( !appendix
-		|| !appendix->subbook_current
-		|| appendix->subbook_current->stop_code0 == 0 )
+	if ( appendix != nullptr || appendix->stop_code0 == 0 )
 	{
 		result = ( code0 == 0x1f41
 			&& code1 == ParentBook->text_context->auto_stop_code );
 	}
 	else
 	{
-		result = ( code0 == appendix->subbook_current->stop_code0
-			&& code1 == appendix->subbook_current->stop_code1 );
+		result = ( code0 == appendix->stop_code0
+			&& code1 == appendix->stop_code1 );
 	}
 
 	return result;
@@ -61,16 +59,14 @@ void EBSubbook::SeekText( EBPosition^ Pos )
 
 
 void EBSubbook::ReadText(
-	EBAppendix^ appendix, EBHookSet^ hookset
+	EBAppendixSubbook^ appendix, EBHookSet^ hookset
 	, void *container, size_t text_max_length
 	, char *text, SSIZE_T *text_length )
 {
 	/*
 	 * Use `eb_default_hookset' when `hookset' is `NULL'.
 	 */
-
-	if ( !hookset )
-		hookset = ref new EBHookSet();
+	if ( !hookset ) hookset = ref new EBHookSet();
 
 	/*
 	 * Set text mode to `text'.
@@ -111,7 +107,7 @@ void EBSubbook::ReadText(
 }
 
 void EBSubbook::ReadTextInternal(
-	EBAppendix^ appendix, EBHookSet^ hookset
+	EBAppendixSubbook^ appendix, EBHookSet^ hookset
 	, void *container
 	, size_t text_max_length, char *text
     , SSIZE_T *text_length, int forward_only )

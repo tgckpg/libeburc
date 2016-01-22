@@ -109,3 +109,25 @@ void EBBook::WriteTextByte2( int byte1, int byte2 )
 		text_context->out_step += 2;
 	}
 }
+
+void EBBook::WriteTextString( const char *string )
+{
+	/*
+	 * If the text buffer has enough space to write `sting',
+	 * save the string in `book->text_context.unprocessed'.
+	 */
+	size_t string_length = strlen( string );
+
+	if ( text_context->unprocessed != NULL
+		|| text_context->out_rest_length < string_length )
+	{
+		WriteText( string, string_length );
+	}
+	else
+	{
+		memcpy_s( text_context->out, string_length, string, string_length );
+		text_context->out += string_length;
+		text_context->out_rest_length -= string_length;
+		text_context->out_step += string_length;
+	}
+}
