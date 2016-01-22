@@ -27,7 +27,7 @@ Original Source: [EB Library with UTF-8 support](http://green.ribbon.to/~ikazuhi
 `EBHook`
 
 #### Sample code ( C# )
-```
+```C#
 try
 {
 	EBBook ebb = await EBBook.Parse( KnownFolders.SavedPictures );
@@ -39,13 +39,9 @@ try
 	Logger.Log( ID, "", LogType.INFO );
 	foreach( EBSubbook Sbook in ebb.Subbooks )
 	{
-		Logger.Log( ID, "Subbook " + Sbook.Code, LogType.INFO );
-		Logger.Log( ID, "Title: " + Sbook.Title, LogType.INFO );
-		Logger.Log( ID, "Directory: " + Sbook.Directory, LogType.INFO );
-
+		Logger.Log( ID, "Subbook " + Sbook.Code + ":", LogType.INFO );
 		await Sbook.OpenAsync();
 
-		Logger.Log( ID, "Subbook: " + Sbook.Code, LogType.INFO );
 		Logger.Log( ID, "  Title: " + Sbook.Title, LogType.INFO );
 		Logger.Log( ID, "  Directory: " + Sbook.Directory, LogType.INFO );
 		Logger.Log( ID, "  Search methods: " + string.Join( " ", EBInfo.SearchMethods( Sbook ) ), LogType.INFO );
