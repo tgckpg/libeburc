@@ -15,6 +15,7 @@
 #include <Zio.h>
 
 using namespace std;
+using namespace concurrency;
 using namespace Platform;
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
@@ -282,8 +283,8 @@ namespace libeburc
 		/// </summary>
 		int IndexPage;
 
-		int EBSubbook::IsStopCode( EBAppendixSubbook^ appendix
-			, unsigned int code0, unsigned int code1 );
+		int IsTextStopped();
+		int IsStopCode( EBAppendixSubbook^ appendix, unsigned int code0, unsigned int code1 );
 		EBPosition^ TellText();
 		void ReadText(
 			EBAppendixSubbook^ appendix, EBHookSet^ hookset
@@ -292,6 +293,8 @@ namespace libeburc
 		void SeekText( EBPosition^ Pos );
 
 		EBSubbookCode code;
+
+		String^ GetPage( EBPosition^ Pos );
 	public:
 		/// <summary>
 		/// Subbook ID.
@@ -325,8 +328,7 @@ namespace libeburc
 
 		IAsyncAction^ OpenAsync();
 
-		String^ GetPage( EBPosition^ Pos );
-
+		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos );
 	};
 }
 

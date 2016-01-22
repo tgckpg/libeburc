@@ -5,6 +5,7 @@
 #include <EBAlternationCache.h>
 
 using namespace Platform::Collections;
+using namespace Windows::Foundation::Collections;
 
 namespace libeburc
 {
@@ -57,5 +58,10 @@ namespace libeburc
 		EBAlternationCache^ AcquireNarrowCache( int i );
 		EBAppendix();
 	public:
+
+		property IIterable<EBAppendixSubbook^>^ Subbooks
+		{
+			IIterable<EBAppendixSubbook^>^ get();
+		}
 	};
 }

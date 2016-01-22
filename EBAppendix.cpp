@@ -19,3 +19,8 @@ EBAlternationCache^ EBAppendix::AcquireNarrowCache( int i )
 		narrow_cache[ i ] = ref new EBAlternationCache();
 	return narrow_cache[ i ];
 }
+
+IIterable<EBAppendixSubbook^>^ EBAppendix::Subbooks::get()
+{
+	return subbooks->GetView();
+}

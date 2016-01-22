@@ -34,7 +34,7 @@ int EBSubbook::IsStopCode( EBAppendixSubbook^ appendix
 {
 	int result;
 
-	if ( appendix != nullptr || appendix->stop_code0 == 0 )
+	if ( appendix == nullptr || appendix->stop_code0 == 0 )
 	{
 		result = ( code0 == 0x1f41
 			&& code1 == ParentBook->text_context->auto_stop_code );
@@ -46,6 +46,24 @@ int EBSubbook::IsStopCode( EBAppendixSubbook^ appendix
 	}
 
 	return result;
+}
+
+int EBSubbook::IsTextStopped()
+{
+	int is_stopped = 0;
+
+	if ( ParentBook->text_context->code == EBTextCode::EB_TEXT_HEADING
+		|| ParentBook->text_context->code == EBTextCode::EB_TEXT_MAIN_TEXT
+		|| ParentBook->text_context->code == EBTextCode::EB_TEXT_OPTIONAL_TEXT )
+	{
+		if ( ParentBook->text_context->text_status != EBTextStatusCode::EB_TEXT_STATUS_CONTINUED
+			&& ParentBook->text_context->unprocessed == NULL )
+		{
+			is_stopped = 1;
+		}
+	}
+
+	return is_stopped;
 }
 
 
@@ -230,7 +248,7 @@ void EBSubbook::ReadTextInternal(
 		}
 		unsigned char c1 = eb_uint1( cache_p );
 
-		EBHook^ hook = ref new EBHook();
+		EBHook^ hook = ref new EBHook( EBHookCode::EB_HOOK_INITIALIZE );
 		unsigned int argv[ EB_MAX_ARGV ];
 
 		if ( c1 == 0x1f )
@@ -883,7 +901,7 @@ void EBSubbook::ReadTextInternal(
 					&& eb_uint1( cache_p + 2 ) >= 0x1f )
 				{
 					in_step = 2;
-					hook = ref new EBHook();
+					hook = ref new EBHook( EBHookCode::EB_HOOK_INITIALIZE );
 				}
 				break;
 

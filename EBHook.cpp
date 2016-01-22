@@ -3,7 +3,11 @@
 
 using namespace libeburc;
 
-EBHook::EBHook() { }
+EBHook::EBHook( EBHookCode HookCode )
+{
+	code = HookCode;
+	function = NULL;
+}
 
 void EBHook::tryFunc(
 	EBSubbook^ book, EBAppendixSubbook^ appendix

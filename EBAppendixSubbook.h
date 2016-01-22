@@ -7,7 +7,7 @@
 namespace libeburc
 {
 	ref class EBAppendix;
-	ref class EBAppendixSubbook sealed
+	public ref class EBAppendixSubbook sealed
 	{
 	internal:
 		EBAppendix^ ParentBook;
@@ -79,7 +79,10 @@ namespace libeburc
 		void NarrowAltCharText( int character_number, char *text );
 		void NarrowCharTextJIS( int character_number, char *text );
 		void NarrowCharTextLatin( int character_number, char *text );
-	public:
+
 		EBAppendixSubbook( EBAppendix^ appendix );
+
+	public:
+
 	};
 }

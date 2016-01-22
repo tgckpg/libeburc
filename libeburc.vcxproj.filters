@@ -26,7 +26,7 @@
     <Filter Include="eburc\Appendix">
       <UniqueIdentifier>{ca4a9f0f-87cf-4b1e-9e13-1c3074c128ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="eburc\EBBook">
+    <Filter Include="eburc\Book">
       <UniqueIdentifier>{e7483afe-016e-4983-be57-e465af14e777}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -106,13 +106,13 @@
       <Filter>eburc\Appendix</Filter>
     </ClCompile>
     <ClCompile Include="EBBook.cpp">
-      <Filter>eburc\EBBook</Filter>
+      <Filter>eburc\Book</Filter>
     </ClCompile>
     <ClCompile Include="EBBookText.cpp">
-      <Filter>eburc\EBBook</Filter>
+      <Filter>eburc\Book</Filter>
     </ClCompile>
     <ClCompile Include="EBBookABI.cpp">
-      <Filter>eburc\EBBook</Filter>
+      <Filter>eburc\Book</Filter>
     </ClCompile>
     <ClCompile Include="EBSubbookABI.cpp">
       <Filter>eburc\Subbook</Filter>
@@ -204,7 +204,7 @@
       <Filter>eburc\Appendix</Filter>
     </ClInclude>
     <ClInclude Include="EBBook.h">
-      <Filter>eburc\EBBook</Filter>
+      <Filter>eburc\Book</Filter>
     </ClInclude>
     <ClInclude Include="EBAlternationCache.h">
       <Filter>eburc\Objects</Filter>

@@ -28,7 +28,7 @@ namespace libeburc
 			, void *container, EBHookCode hook_code
 			, int argc, const unsigned int *argv );
 
-		EBHook();
+		EBHook( EBHookCode HookCode );
 	public:
 	};
 }
