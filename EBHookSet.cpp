@@ -13,3 +13,10 @@ EBHookSet::EBHookSet()
 	BindDefaultHooks();
 }
 
+EBHookSet::EBHookSet( IIterable<EBHook^>^ Hooks )
+{
+	for_each( begin( Hooks ), end( Hooks ), [ = ](EBHook^ Hook)
+	{
+		hooks[ ( int ) Hook->code ] = Hook;
+	} );
+}

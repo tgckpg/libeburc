@@ -7,22 +7,37 @@ using namespace libeburc;
 #define MAX_HITS 50
 #define MAXLEN_TEXT 1023
 
-String^ EBSubbook::GetPage( EBPosition^ Pos )
+String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet )
 {
 	SeekText( Pos );
 
-	SSIZE_T text_length;
 	char text[ MAXLEN_TEXT + 1 ];
-
-	int stopped = 0;
-	while ( !stopped )
+	try
 	{
-		ReadText( nullptr, nullptr, nullptr, MAXLEN_TEXT, text, &text_length );
-		stopped = IsTextStopped();
-		break;
+		SSIZE_T text_length;
+
+		int stopped = 0;
+		while ( !stopped )
+		{
+			ReadText( nullptr, HookSet, nullptr, MAXLEN_TEXT, text, &text_length );
+			stopped = IsTextStopped();
+
+			// Call for action
+			if ( Action )
+			{
+				Action( ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) ) );
+			}
+		}
+
+		// ForwardText( nullptr );
+	}
+	catch ( Exception^ ex )
+	{
+		EBErrorCode code = ( EBErrorCode ) -ex->HResult;
+		if ( code != EBErrorCode::EB_ERR_END_OF_CONTENT )
+			throw ex;
 	}
 
-	ForwardText( nullptr );
 	EBPosition^ npos = TellText();
 	Pos->page = npos->page;
 	Pos->offset = npos->offset;
@@ -74,6 +89,16 @@ IIterable<EBHit^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
 IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 {
 	return create_async( [ = ] { return GetPage( Pos ); } );
+}
+
+IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos, ReadAction^ Action )
+{
+	return create_async( [ = ] { return GetPage( Pos, Action ); } );
+}
+
+IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet )
+{
+	return create_async( [ = ] { return GetPage( Pos, Action, HookSet ); } );
 }
 
 IAsyncOperation<IIterable<EBHit^>^>^ EBSubbook::SearchAysnc( String^ Phrase, EBSearchCode Code )

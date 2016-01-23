@@ -1,6 +1,10 @@
 #pragma once
 
+#include <pch.h>
 #include <defs.h>
+
+using namespace Platform;
+using namespace Windows::Foundation::Collections;
 
 namespace libeburc
 {
@@ -8,6 +12,7 @@ namespace libeburc
 	ref class EBSubbook;
 	ref class EBAppendixSubbook;
 
+	public delegate void HookAction( EBSubbook^ book );
 	public ref class EBHook sealed
 	{
 	internal:
@@ -15,6 +20,14 @@ namespace libeburc
 		 * Hook code.
 		 */
 		EBHookCode code;
+
+		/*
+		 * ABI Action call
+		 */
+		void ActionFunc(
+			EBSubbook^ book, EBAppendixSubbook^ appendix
+			, void *container, EBHookCode hook_code
+			, int argc, const unsigned int *argv );
 
 		void tryFunc(
 			EBSubbook^ book, EBAppendixSubbook^ appendix
@@ -28,7 +41,11 @@ namespace libeburc
 			, void *container, EBHookCode hook_code
 			, int argc, const unsigned int *argv );
 
+		HookAction^ action;
+
 		EBHook( EBHookCode HookCode );
+
 	public:
+		EBHook( HookAction^ Action, EBHookCode HookCode );
 	};
 }

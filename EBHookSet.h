@@ -2,6 +2,8 @@
 #include <defs.h>
 #include <EBHook.h>
 
+using namespace Windows::Foundation::Collections;
+
 namespace libeburc
 {
 	public ref class EBHookSet sealed
@@ -11,5 +13,6 @@ namespace libeburc
 		EBHook^ hooks[ EB_NUMBER_OF_HOOKS ];
 		EBHookSet();
 	public:
+		EBHookSet( IIterable<EBHook^>^ Hooks );
 	};
 }

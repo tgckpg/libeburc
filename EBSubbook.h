@@ -43,6 +43,8 @@ using namespace Windows::Foundation::Collections;
 namespace libeburc
 {
 	ref class EBBook;
+
+	public delegate void ReadAction( String^ Text );
 	/// <summary>
 	/// A subbook in a book.
 	/// </summary>
@@ -361,7 +363,7 @@ namespace libeburc
 		int IndexPage;
 
 		EBSubbookCode code;
-		String^ GetPage( EBPosition^ Pos );
+		String^ GetPage( EBPosition^ Pos, ReadAction^ Action = nullptr, EBHookSet^ HookSet = ref new EBHookSet() );
 		IIterable<EBHit^>^ EBSubbook::Search( const char *phrase, EBSearchCode Code );
 	public:
 		/// <summary>
@@ -396,7 +398,9 @@ namespace libeburc
 
 		IAsyncAction^ OpenAsync();
 
-		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos );
+		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos);
+		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action );
+		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet );
 
 		IAsyncOperation<IIterable<EBHit^>^>^ SearchAysnc( String^ Phrase, EBSearchCode Code );
 	};
