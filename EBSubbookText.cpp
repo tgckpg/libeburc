@@ -1319,7 +1319,7 @@ void EBSubbook::ForwardText( EBAppendixSubbook^ appendix )
 	/*
 	 * Forward text.
 	 */
-	ReadTextInternal( appendix, nullptr, NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
+	ReadTextInternal( appendix, ref new EBHookSet(), NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
 
 	/*
 	 * Unlock the book and hookset.

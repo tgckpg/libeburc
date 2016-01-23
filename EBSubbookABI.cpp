@@ -4,6 +4,7 @@
 
 using namespace libeburc;
 
+#define MAX_HITS 50
 #define MAXLEN_TEXT 1023
 
 String^ EBSubbook::GetPage( EBPosition^ Pos )
@@ -18,6 +19,7 @@ String^ EBSubbook::GetPage( EBPosition^ Pos )
 	{
 		ReadText( nullptr, nullptr, nullptr, MAXLEN_TEXT, text, &text_length );
 		stopped = IsTextStopped();
+		break;
 	}
 
 	ForwardText( nullptr );
@@ -28,9 +30,9 @@ String^ EBSubbook::GetPage( EBPosition^ Pos )
 	return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
 }
 
-IIterable<EBPosition^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
+IIterable<EBHit^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
 {
-	Vector<EBPosition^>^ results = ref new Vector<EBPosition^>();
+	Vector<EBHit^>^ results = ref new Vector<EBHit^>();
 
 	try
 	{
@@ -51,6 +53,15 @@ IIterable<EBPosition^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code
 		default:
 			EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
 		}
+
+		EBHit^ hits[ MAX_HITS ];
+		int hit_count;
+		HitList( MAX_HITS, hits, &hit_count );
+
+		for ( int i = 0; i < hit_count; i++ )
+		{
+			results->Append( hits[ i ] );
+		}
 	}
 	catch ( Exception^ ex )
 	{
@@ -65,7 +76,7 @@ IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 	return create_async( [ = ] { return GetPage( Pos ); } );
 }
 
-IAsyncOperation<IIterable<EBPosition^>^>^ EBSubbook::SearchAysnc( String^ Phrase, EBSearchCode Code )
+IAsyncOperation<IIterable<EBHit^>^>^ EBSubbook::SearchAysnc( String^ Phrase, EBSearchCode Code )
 {
 	return create_async( [ = ]
 	{

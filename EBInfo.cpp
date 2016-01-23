@@ -123,10 +123,10 @@ CharRange^ EBInfo::WideFontRange( EBSubbook^ subbook )
 
 IAsyncOperation<CharRange^>^ EBInfo::GetNarrowFontRangeAsync( EBSubbook^ subbook )
 {
-	return create_async( [ & ] { return NarrowFontRange( subbook ); } );
+	return create_async( [ = ] { return NarrowFontRange( subbook ); } );
 }
 
 IAsyncOperation<CharRange^>^ EBInfo::GetWideFontRangeAsync( EBSubbook^ subbook )
 {
-	return create_async( [ & ] { return WideFontRange( subbook ); } );
+	return create_async( [ = ] { return WideFontRange( subbook ); } );
 }

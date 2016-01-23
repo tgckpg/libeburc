@@ -362,7 +362,7 @@ namespace libeburc
 
 		EBSubbookCode code;
 		String^ GetPage( EBPosition^ Pos );
-		IIterable<EBPosition^>^ EBSubbook::Search( const char *phrase, EBSearchCode Code );
+		IIterable<EBHit^>^ EBSubbook::Search( const char *phrase, EBSearchCode Code );
 	public:
 		/// <summary>
 		/// Subbook ID.
@@ -398,7 +398,7 @@ namespace libeburc
 
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos );
 
-		IAsyncOperation<IIterable<EBPosition^>^>^ SearchAysnc( String^ Phrase, EBSearchCode Code );
+		IAsyncOperation<IIterable<EBHit^>^>^ SearchAysnc( String^ Phrase, EBSearchCode Code );
 	};
 }
 

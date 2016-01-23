@@ -18,7 +18,7 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	 * Make a fixed word and a canonicalized word to search from
 	 * `input_word'.
 	 */
-	EBWordCode word_code;
+	EBWordCode word_code = EBWordCode::EB_WORD_INVALID;
 	SetWord( input_word, context->word, context->canonicalized_word, &word_code );
 
 	/*

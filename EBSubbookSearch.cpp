@@ -616,6 +616,7 @@ void EBSubbook::PreSearchWord( EBSearchContext^ context )
 		TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
 
 		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+		TextZio->Read( EB_SIZE_PAGE, buff );
 		memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
 
 		/*
@@ -914,14 +915,14 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 							context->entry_length );
 					if ( context->comparison_result == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 6 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 10 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 4 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 6 ),
+								eb_uint2( cache_p + context->entry_length + 10 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length ),
+								eb_uint2( cache_p + context->entry_length + 4 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}
@@ -964,14 +965,14 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 							context->entry_length );
 					if ( context->comparison_result == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 7 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 11 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length + 1 );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 5 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 7 ),
+								eb_uint2( cache_p + context->entry_length + 11 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 1 ),
+								eb_uint2( cache_p + context->entry_length + 5 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}
@@ -1020,14 +1021,14 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 								cache_p + 2, context->entry_length );
 						if ( context->comparison_result == 0 )
 						{
-							( *hit )->heading->page
-								= eb_uint4( cache_p + context->entry_length + 8 );
-							( *hit )->heading->offset
-								= eb_uint2( cache_p + context->entry_length + 12 );
-							( *hit )->text->page
-								= eb_uint4( cache_p + context->entry_length + 2 );
-							( *hit )->text->offset
-								= eb_uint2( cache_p + context->entry_length + 6 );
+							*hit = ref new EBHit(
+								ref new EBPosition(
+									eb_uint4( cache_p + context->entry_length + 8 ),
+									eb_uint2( cache_p + context->entry_length + 12 ) ),
+								ref new EBPosition(
+									eb_uint4( cache_p + context->entry_length + 2 ),
+									eb_uint2( cache_p + context->entry_length + 6 ) )
+								);
 							hit++;
 							*hit_count += 1;
 						}
@@ -1082,10 +1083,14 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 							&& context->comparison_result == 0 )
 						{
 							context->keyword_heading = TellText();
-							( *hit )->heading->page = context->keyword_heading->page;
-							( *hit )->heading->offset = context->keyword_heading->offset;
-							( *hit )->text->page = eb_uint4( cache_p + 1 );
-							( *hit )->text->offset = eb_uint2( cache_p + 5 );
+							*hit = ref new EBHit(
+								ref new EBPosition(
+									context->keyword_heading->page,
+									context->keyword_heading->offset ),
+								ref new EBPosition(
+									eb_uint4( cache_p + 1 ),
+									eb_uint2( cache_p + 5 ) )
+								);
 							hit++;
 							*hit_count += 1;
 							ForwardHeading();
@@ -1231,14 +1236,14 @@ void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit
 							context->entry_length );
 					if ( context->comparison_result == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 6 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 10 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 4 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 6 ),
+								eb_uint2( cache_p + context->entry_length + 10 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length ),
+								eb_uint2( cache_p + context->entry_length + 4 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}
@@ -1283,14 +1288,14 @@ void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit
 							context->entry_length );
 					if ( context->comparison_result == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 7 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 11 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length + 1 );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 5 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 7 ),
+								eb_uint2( cache_p + context->entry_length + 11 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 1 ),
+								eb_uint2( cache_p + context->entry_length + 5 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}
@@ -1339,14 +1344,14 @@ void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit
 								cache_p + 2, context->entry_length );
 						if ( context->comparison_result == 0 )
 						{
-							( *hit )->heading->page
-								= eb_uint4( cache_p + context->entry_length + 8 );
-							( *hit )->heading->offset
-								= eb_uint2( cache_p + context->entry_length + 12 );
-							( *hit )->text->page
-								= eb_uint4( cache_p + context->entry_length + 2 );
-							( *hit )->text->offset
-								= eb_uint2( cache_p + context->entry_length + 6 );
+							*hit = ref new EBHit(
+								ref new EBPosition(
+									eb_uint4( cache_p + context->entry_length + 8 ),
+									eb_uint2( cache_p + context->entry_length + 12 ) ),
+								ref new EBPosition(
+									eb_uint4( cache_p + context->entry_length + 2 ),
+									eb_uint2( cache_p + context->entry_length + 6 ) )
+								);
 							hit++;
 							*hit_count += 1;
 						}
@@ -1391,10 +1396,14 @@ void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit
 						if ( context->in_group_entry
 							&& context->comparison_result == 0 )
 						{
-							( *hit )->heading->page = eb_uint4( cache_p + 7 );
-							( *hit )->heading->offset = eb_uint2( cache_p + 11 );
-							( *hit )->text->page = eb_uint4( cache_p + 1 );
-							( *hit )->text->offset = eb_uint2( cache_p + 5 );
+							*hit = ref new EBHit(
+								ref new EBPosition(
+									eb_uint4( cache_p + 7 ),
+									eb_uint2( cache_p + 11 ) ),
+								ref new EBPosition(
+									eb_uint4( cache_p + 1 ),
+									eb_uint2( cache_p + 5 ) )
+								);
 							hit++;
 							*hit_count += 1;
 						}
@@ -1655,14 +1664,14 @@ void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count
 						context->entry_length );
 				if ( context->comparison_result == 0 )
 				{
-					( *hit )->heading->page
-						= eb_uint4( cache_p + context->entry_length + 6 );
-					( *hit )->heading->offset
-						= eb_uint2( cache_p + context->entry_length + 10 );
-					( *hit )->text->page
-						= eb_uint4( cache_p + context->entry_length );
-					( *hit )->text->offset
-						= eb_uint2( cache_p + context->entry_length + 4 );
+					*hit = ref new EBHit(
+						ref new EBPosition(
+							eb_uint4( cache_p + context->entry_length + 6 ),
+							eb_uint2( cache_p + context->entry_length + 10 ) ),
+						ref new EBPosition(
+							eb_uint4( cache_p + context->entry_length ),
+							eb_uint2( cache_p + context->entry_length + 4 ) )
+						);
 					hit++;
 					*hit_count += 1;
 				}
@@ -1705,14 +1714,14 @@ void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count
 						context->entry_length );
 				if ( context->comparison_result == 0 )
 				{
-					( *hit )->heading->page
-						= eb_uint4( cache_p + context->entry_length + 7 );
-					( *hit )->heading->offset
-						= eb_uint2( cache_p + context->entry_length + 11 );
-					( *hit )->text->page
-						= eb_uint4( cache_p + context->entry_length + 1 );
-					( *hit )->text->offset
-						= eb_uint2( cache_p + context->entry_length + 5 );
+					*hit = ref new EBHit(
+						ref new EBPosition(
+							eb_uint4( cache_p + context->entry_length + 7 ),
+							eb_uint2( cache_p + context->entry_length + 11 ) ),
+						ref new EBPosition(
+							eb_uint4( cache_p + context->entry_length + 1 ),
+							eb_uint2( cache_p + context->entry_length + 5 ) )
+						);
 					hit++;
 					*hit_count += 1;
 				}
@@ -1759,14 +1768,14 @@ void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count
 							cache_p + 2, context->entry_length );
 					if ( context->comparison_result == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 8 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 12 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length + 2 );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 6 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 8 ),
+								eb_uint2( cache_p + context->entry_length + 12 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 2 ),
+								eb_uint2( cache_p + context->entry_length + 6 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}
@@ -1814,14 +1823,14 @@ void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count
 						&& context->compare_group( context->word, cache_p + 2,
 							context->entry_length ) == 0 )
 					{
-						( *hit )->heading->page
-							= eb_uint4( cache_p + context->entry_length + 8 );
-						( *hit )->heading->offset
-							= eb_uint2( cache_p + context->entry_length + 12 );
-						( *hit )->text->page
-							= eb_uint4( cache_p + context->entry_length + 2 );
-						( *hit )->text->offset
-							= eb_uint2( cache_p + context->entry_length + 6 );
+						*hit = ref new EBHit(
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 8 ),
+								eb_uint2( cache_p + context->entry_length + 12 ) ),
+							ref new EBPosition(
+								eb_uint4( cache_p + context->entry_length + 2 ),
+								eb_uint2( cache_p + context->entry_length + 6 ) )
+							);
 						hit++;
 						*hit_count += 1;
 					}

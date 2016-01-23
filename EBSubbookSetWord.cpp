@@ -24,7 +24,8 @@ void EBSubbook::SetWord( const char *input_word, char *word,
 	else
 		JACode::ConvertEUCJP( input_word, word, word_code );
 
-	strcpy_s( canonicalized_word, strlen( word ), word );
+	size_t slen = strlen( word );
+	memcpy_s( canonicalized_word, slen , word, slen );
 
 	/*
 	 * Determine search method.
@@ -235,6 +236,9 @@ void EBSubbook::FixWord( const EBSearch^ search, char *word, char *canonicalized
 	}
 
 	if ( search->index_id != 0x70 && search->index_id != 0x90 )
-		strcpy_s( word, strlen( canonicalized_word ), canonicalized_word );
+	{
+		size_t slen = strlen( canonicalized_word );
+		memcpy_s( word, slen, canonicalized_word, slen );
+	}
 }
 
