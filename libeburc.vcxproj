@@ -260,8 +260,10 @@
     <ClCompile Include="EBSearchContext.cpp" />
     <ClCompile Include="EBSubbook.cpp" />
     <ClCompile Include="EBSubbookABI.cpp" />
+    <ClCompile Include="EBSubbookExactWord.cpp" />
     <ClCompile Include="EBSubbookFont.cpp" />
     <ClCompile Include="EBSubbookSearch.cpp" />
+    <ClCompile Include="EBSubbookSetWord.cpp" />
     <ClCompile Include="EBSubbookText.cpp" />
     <ClCompile Include="EBTextContext.cpp" />
     <ClCompile Include="EBUTF8Table.cpp" />

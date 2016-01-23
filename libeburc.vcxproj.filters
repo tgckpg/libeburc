@@ -129,6 +129,12 @@
     <ClCompile Include="EBHookSetInternal.cpp">
       <Filter>eburc\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="EBSubbookExactWord.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="EBSubbookSetWord.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

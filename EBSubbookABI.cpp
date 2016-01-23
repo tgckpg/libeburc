@@ -20,14 +20,17 @@ String^ EBSubbook::GetPage( EBPosition^ Pos )
 		stopped = IsTextStopped();
 	}
 
+	ForwardText( nullptr );
+	EBPosition^ npos = TellText();
+	Pos->page = npos->page;
+	Pos->offset = npos->offset;
 
-	// eb_forward_text( &book, NULL );
 	return ref new String( ( LPWSTR ) Utils::MBEUCJP16( text ) );
 }
 
 IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 {
-	return create_async( [ & ]
+	return create_async( [ = ]
 	{
 		return GetPage( Pos );
 	} );

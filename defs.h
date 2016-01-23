@@ -10,7 +10,6 @@ typedef int EBBookCode;
 typedef int EBCaseCode;
 typedef int EBSuffixCode;
 typedef int EBFontCode;
-typedef int EBWordCode;
 typedef int EBSubbookCode;
 typedef int EBMultiSearchCode;
 
@@ -141,6 +140,16 @@ typedef int EBMultiSearchCode;
 
 namespace libeburc
 {
+	/*
+	 * Search word types.
+	 */
+	public enum class EBWordCode
+	{
+		EB_WORD_ALPHABET = 0,
+		EB_WORD_KANA = 1,
+		EB_WORD_OTHER = 2,
+		EB_WORD_INVALID = -1,
+	};
 	/*
 	 * Hook codes.
 	 * (When you add or remove a hook, update EB_NUMER_OF_HOOKS in defs.h.)

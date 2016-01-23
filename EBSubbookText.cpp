@@ -66,7 +66,6 @@ int EBSubbook::IsTextStopped()
 	return is_stopped;
 }
 
-
 void EBSubbook::SeekText( EBPosition^ Pos )
 {
 	ParentBook->ResetTextContext();
@@ -74,7 +73,6 @@ void EBSubbook::SeekText( EBPosition^ Pos )
 	ParentBook->text_context->location
 		= ( ( off_t ) Pos->page - 1 ) * EB_SIZE_PAGE + Pos->offset;
 }
-
 
 void EBSubbook::ReadText(
 	EBAppendixSubbook^ appendix, EBHookSet^ hookset
@@ -1290,3 +1288,42 @@ failed:
 	}
 }
 
+void EBSubbook::ForwardText( EBAppendixSubbook^ appendix )
+{
+	EBTextContext^ text_context = ParentBook->text_context;
+
+	if ( text_context->code == EBTextCode::EB_TEXT_SEEKED )
+	{
+		text_context->code = EBTextCode::EB_TEXT_MAIN_TEXT;
+	}
+	else if ( text_context->code == EBTextCode::EB_TEXT_INVALID )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_NO_PREV_SEEK );
+	}
+	else if ( text_context->code != EBTextCode::EB_TEXT_MAIN_TEXT
+		&& text_context->code != EBTextCode::EB_TEXT_OPTIONAL_TEXT )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_DIFF_CONTENT );
+	}
+
+	if ( text_context->text_status == EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP )
+	{
+		text_context->text_status = EBTextStatusCode::EB_TEXT_STATUS_CONTINUED;
+		goto succeeded;
+	}
+	else if ( text_context->text_status == EBTextStatusCode::EB_TEXT_STATUS_HARD_STOP )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_END_OF_CONTENT );
+	}
+
+	/*
+	 * Forward text.
+	 */
+	ReadTextInternal( appendix, nullptr, NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
+
+	/*
+	 * Unlock the book and hookset.
+	 */
+succeeded:
+	ParentBook->ResetTextContext();
+}

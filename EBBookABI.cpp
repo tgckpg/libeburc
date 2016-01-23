@@ -15,7 +15,7 @@ EBBook::EBBook( IStorageFolder^ BookDir )
 
 IAsyncOperation<EBBook^>^ EBBook::Parse( IStorageFolder^ BookDir )
 {
-	return create_async( [ & ]
+	return create_async( [=]
 	{
 		EBBook^ Book = ref new EBBook( BookDir );
 		Book->Bind();

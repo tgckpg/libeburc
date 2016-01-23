@@ -131,15 +131,7 @@ namespace libeburc
 		/// The number of multi-search methods the subbook has.
 		/// </summary>
 		int multi_count;
-		/// <summary>
-		/// Normalization table for UTF-8 subbook.
-		/// </summary>
-		int table_page;
-		int table_size;
 
-		Vector<EBUTF8Table^>^ table;
-		int table_count;
-		byte* table_buffer;
 		/// <summary>
 		/// The top page of multi search methods.
 		/// </summary>
@@ -193,8 +185,7 @@ namespace libeburc
 		void FontList( EBFontCode *font_list, int *font_count );
 		void SetFont( EBFontCode font_code );
 
-
-
+		#pragma region Propety Tests
 		/// <summary>
 		/// Examine whether the current subbook in `book' supports `WORD SEARCH'
 		/// or not.
@@ -245,7 +236,7 @@ namespace libeburc
 		/// notice or not.
 		/// </summary>
 		bool have_copyright() { return copyright->start_page != 0; }
-
+		#pragma endregion
 
 		/// <summary>
 		/// The top page of search methods.
@@ -278,10 +269,7 @@ namespace libeburc
 
 		EBSubbook( EBBook^ Book );
 
-		/// <summary>
-		/// Index page.
-		/// </summary>
-		int IndexPage;
+		#pragma region Text Scope
 
 		int IsTextStopped();
 		int IsStopCode( EBAppendixSubbook^ appendix, unsigned int code0, unsigned int code1 );
@@ -291,9 +279,72 @@ namespace libeburc
 			, void *container, size_t text_max_length
 			, char *text, SSIZE_T *text_length );
 		void SeekText( EBPosition^ Pos );
+		void ForwardText( EBAppendixSubbook^ appendix );
+
+		#pragma endregion
+
+		#pragma region Set word Scope
+
+		void SeachExactWord( const char * input_word );
+		/*
+		 * Make a fixed word and a cannonicalized word for `WORD SEARCH'.
+		 *
+		 * If `inputword' is a KANA word,  EB_WORD_KANA is returned.
+		 * If `inputword' is a alphabetic word, EB_WORD_ALPHABET is returned.
+		 * Otherwise, -1 is returned.  It means that an error occurs.
+		 */
+		void SetWord( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
+		/*
+		 * Convert `input_word' to ISO 8859 1 and put it into `word'.
+		 *
+		 * If `input_word' is a valid string to search, EB_WORD_ALPHABET is returned.
+		 * Otherwise, -1 is returned.
+		 */
+		void ConvertLatin( const char *input_word, char *word, EBWordCode *word_code );
+		/*
+		 * Convert `input_word' to UTF 8 and put it into `word'.
+		 *
+		 * If `input_word' is a valid string to search, EB_WORD_OTHER is returned.
+		 * Otherwise, -1 is returned.
+		 */
+		void ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code );
+		/*
+		 * Convert `input_word' to JIS X0208 and put it into `word'.
+		 *
+		 * If `input_word' is a valid string to search, EB_WORD_ALPHABET or
+		 * EB_WORD_KANA is returned.
+		 * Otherwise, -1 is returned.
+		 */
+		void ConvertEUCJP( const char *input_word, char *word, EBWordCode *word_code );
+		/*
+		 * Fix `canonicalized_word' and `word' according with `book->character_code'
+		 * and `search'.
+		 */
+		void FixWord( const EBSearch^ search, char *word, char *canonicalized_word );
+		#pragma endregion
+
+		#pragma region UTF8
+
+		/// <summary>
+		/// Normalization table for UTF-8 subbook.
+		/// </summary>
+		int table_page;
+		int table_size;
+
+		Vector<EBUTF8Table^>^ table;
+		int table_count;
+		byte* table_buffer;
+
+		char* EBSubbook::NormalizeUtf8( int code );
+
+		#pragma endregion
+
+		/// <summary>
+		/// Index page.
+		/// </summary>
+		int IndexPage;
 
 		EBSubbookCode code;
-
 		String^ GetPage( EBPosition^ Pos );
 	public:
 		/// <summary>

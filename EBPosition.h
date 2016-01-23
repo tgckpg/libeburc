@@ -23,7 +23,7 @@ namespace libeburc
 		}
 
 		property int Offset {
-			int get() { return Offset; }
+			int get() { return offset; }
 		}
 	};
 }
