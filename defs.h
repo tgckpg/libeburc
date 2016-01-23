@@ -117,6 +117,10 @@ typedef int EBMultiSearchCode;
  * Maximum number of characters for alternation cache.
  */
 #define EB_MAX_ALTERNATION_CACHE	16
+/*
+ * The maximum index depth of search indexes.
+ */
+#define EB_MAX_INDEX_DEPTH		6
 
 /*
  * Length of cache buffer in a binary context.

@@ -4,6 +4,28 @@
 
 using namespace libeburc;
 
+/*
+ * Page-ID macros.
+ */
+#define PAGE_ID_IS_LEAF_LAYER(page_id)		(((page_id) & 0x80) == 0x80)
+#define PAGE_ID_IS_LAYER_START(page_id)		(((page_id) & 0x40) == 0x40)
+#define PAGE_ID_IS_LAYER_END(page_id)		(((page_id) & 0x20) == 0x20)
+#define PAGE_ID_HAVE_GROUP_ENTRY(page_id)	(((page_id) & 0x10) == 0x10)
+/*
+ * Book-code of the book in which you want to search a word.
+ */
+static EBBookCode cache_book_code = EB_BOOK_NONE;
+
+/*
+ * Cache buffer for the current page.
+ */
+static char cache_buffer[ EB_SIZE_PAGE ];
+
+/*
+ * Cache buffer for the current page.
+ */
+static int cache_page;
+
 void EBSubbook::LoadIndexes()
 {
 	/*
@@ -564,3 +586,95 @@ void EBSubbook::LoadMultiTitles()
 	}
 }
 
+void EBSubbook::PreSearchWord( EBSearchContext^ context )
+{
+	int next_page;
+	int index_depth;
+	char *cache_p;
+
+	/*
+	 * Discard cache data.
+	 */
+	cache_book_code = EB_BOOK_NONE;
+
+	/*
+	 * Search the word in intermediate indexes.
+	 * Find a page number of the leaf index page.
+	 */
+	for ( index_depth = 0; index_depth < EB_MAX_INDEX_DEPTH; index_depth++ )
+	{
+		next_page = context->page;
+
+		/*
+		 * Seek and read a page.
+		 */
+		TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+
+		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+		memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
+
+		/*
+		 * Get some data from the read page.
+		 */
+		context->page_id = eb_uint1( cache_buffer );
+		context->entry_length = eb_uint1( cache_buffer + 1 );
+		if ( context->entry_length == 0 )
+			context->entry_arrangement = EB_ARRANGE_VARIABLE;
+		else
+			context->entry_arrangement = EB_ARRANGE_FIXED;
+		context->entry_count = eb_uint2( cache_buffer + 2 );
+		context->offset = 4;
+		cache_p = cache_buffer + 4;
+
+		/*
+		 * Exit the loop if it reached to the leaf index.
+		 */
+		if ( PAGE_ID_IS_LEAF_LAYER( context->page_id ) )
+			break;
+
+		/*
+		 * Search a page of next level index.
+		 */
+		for ( context->entry_index = 0;
+		context->entry_index < context->entry_count;
+			context->entry_index++ )
+		{
+			if ( EB_SIZE_PAGE < context->offset + context->entry_length + 4 )
+			{
+				EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+			}
+			if ( context->compare_pre( context->canonicalized_word, cache_p,
+				context->entry_length ) <= 0 )
+			{
+				next_page = eb_uint4( cache_p + context->entry_length );
+				break;
+			}
+			cache_p += context->entry_length + 4;
+			context->offset += context->entry_length + 4;
+		}
+		if ( context->entry_count <= context->entry_index
+			|| context->page == next_page )
+		{
+			context->comparison_result = -1;
+			return;
+		}
+		context->page = next_page;
+	}
+
+	/*
+	 * Check for the index depth.
+	 */
+	if ( index_depth == EB_MAX_INDEX_DEPTH )
+	{
+		EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+	}
+
+	/*
+	 * Update search context and cache information.
+	 */
+	context->entry_index = 0;
+	context->comparison_result = 1;
+	context->in_group_entry = 0;
+	cache_book_code = ParentBook->code;
+	cache_page = context->page;
+}

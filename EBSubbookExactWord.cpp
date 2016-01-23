@@ -87,9 +87,7 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	/*
 	 * Pre-search.
 	 */
-	error_code = eb_presearch_word( book, context );
-	if ( error_code != EB_SUCCESS )
-		goto failed;
+	PreSearchWord( context );
 
 	return;
 

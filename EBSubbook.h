@@ -9,6 +9,7 @@
 #include <EBNarrowFont.h>
 #include <EBPosition.h>
 #include <EBSearch.h>
+#include <EBSearchContext.h>
 #include <EBTextContext.h>
 #include <EBUTF8Table.h>
 #include <EBWideFont.h>
@@ -307,9 +308,19 @@ namespace libeburc
 		void ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code );
 		#pragma endregion
 
-		#pragma region Set Word
+		#pragma region Search
+		/*
+		 * Pre-search for a word described in the current search context.
+		 * It descends intermediate indexes and reached to a leaf page that
+		 * may have the word.
+		 * If succeeded, 0 is returned.  Otherwise -1 is returned.
+		 */
+		void PreSearchWord( EBSearchContext^ context );
 
 		void SeachExactWord( const char * input_word );
+		#pragma endregion
+
+		#pragma region Set Word
 		/*
 		 * Make a fixed word and a cannonicalized word for `WORD SEARCH'.
 		 *
