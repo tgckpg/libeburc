@@ -483,7 +483,8 @@ void EBBook::LoadLanguage()
 
 void EBBook::ResetSearchContext()
 {
-	search_contexts = ref new EBSearchContext();
+	search_contexts = ref new Vector<EBSearchContext^>();
+	search_contexts->Append( ref new EBSearchContext() );
 }
 
 void EBBook::ResetBinaryContext()
@@ -496,4 +497,10 @@ void EBBook::ResetTextContext()
 	if( !text_context )
 		text_context = ref new EBTextContext();
 	else text_context->Reset();
+}
+
+void EBBook::InvalidateTextContext()
+{
+	ResetTextContext();
+	text_context->code = EBTextCode::EB_TEXT_INVALID;
 }

@@ -15,7 +15,7 @@ wstring Utils::ToWStr( const char * c )
 	return wc;
 }
 
-byte* Utils::MBEUCJP16( const char * c )
+byte* Utils::EucJP2Utf16( const char * c )
 {
 	LPCSTR pBuff = ( LPCSTR ) c;
 	size_t Size = MultiByteToWideChar( CP_EUCJP, 0, pBuff, -1, NULL, 0 );
@@ -24,6 +24,17 @@ byte* Utils::MBEUCJP16( const char * c )
 	MultiByteToWideChar( CP_EUCJP, 0, pBuff, -1, ( LPWSTR ) buff16, Size );
 
 	return buff16;
+}
+
+byte* Utils::Utf82EucJP( const wchar_t * c )
+{
+	LPWSTR pBuff = ( LPWSTR ) c;
+	size_t Size = WideCharToMultiByte( CP_EUCJP, 0, pBuff, -1, NULL, 0, NULL, NULL );
+
+	byte* buffjp = new byte[ Size * 2 + 2 ];
+	WideCharToMultiByte( CP_EUCJP, 0, pBuff, -1, ( LPSTR ) buffjp, Size, NULL, NULL );
+
+	return buffjp;
 }
 
 int Utils::ReadUtf8( const char* buffer, int* code )

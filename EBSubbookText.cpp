@@ -1327,3 +1327,46 @@ void EBSubbook::ForwardText( EBAppendixSubbook^ appendix )
 succeeded:
 	ParentBook->ResetTextContext();
 }
+
+void EBSubbook::ForwardHeading()
+{
+	try
+	{
+		if ( ParentBook->text_context->code == EBTextCode::EB_TEXT_SEEKED )
+		{
+			ParentBook->text_context->code = EBTextCode::EB_TEXT_HEADING;
+		}
+		else if ( ParentBook->text_context->code == EBTextCode::EB_TEXT_INVALID )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_NO_PREV_SEEK );
+		}
+		else if ( ParentBook->text_context->code != EBTextCode::EB_TEXT_HEADING )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_DIFF_CONTENT );
+		}
+
+		if ( ParentBook->text_context->text_status == EBTextStatusCode::EB_TEXT_STATUS_SOFT_STOP )
+		{
+			ParentBook->text_context->text_status = EBTextStatusCode::EB_TEXT_STATUS_CONTINUED;
+			return;
+		}
+		else if ( ParentBook->text_context->text_status == EBTextStatusCode::EB_TEXT_STATUS_HARD_STOP )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_END_OF_CONTENT );
+		}
+
+		/*
+		 * Forward text
+		 */
+		ReadTextInternal( nullptr, nullptr, NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
+
+		ParentBook->ResetTextContext();
+	}
+	catch ( Exception^ ex )
+	{
+		if ( ex->HResult != ( int ) EBErrorCode::EB_ERR_END_OF_CONTENT )
+			ParentBook->InvalidateTextContext();
+
+		throw ex;
+	}
+}

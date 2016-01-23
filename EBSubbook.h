@@ -4,6 +4,7 @@
 #include <defs.h>
 #include <FileName.h>
 #include <EBAppendixSubbook.h>
+#include <EBHit.h>
 #include <EBHookSet.h>
 #include <EBMultiSearch.h>
 #include <EBNarrowFont.h>
@@ -22,6 +23,7 @@ using namespace concurrency;
 using namespace Platform;
 using namespace Platform::Collections;
 using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
 
 /*
  * The maximum number of arguments for an escape sequence.
@@ -283,7 +285,11 @@ namespace libeburc
 			, char *text, SSIZE_T *text_length );
 		void SeekText( EBPosition^ Pos );
 		void ForwardText( EBAppendixSubbook^ appendix );
-
+		/*
+		 * Forward heading position to the next paragraph.
+		 * (for keyword search.)
+		 */
+		void ForwardHeading();
 		#pragma endregion
 
 		#pragma region UTF8
@@ -318,6 +324,22 @@ namespace libeburc
 		void PreSearchWord( EBSearchContext^ context );
 
 		void SeachExactWord( const char * input_word );
+		/*
+		 * Get hit entries of a submitted exactword/word/endword search request.
+		 */
+		void HitList( int max_hit_count, EBHit^ *hit_list, int *hit_count );
+		/*
+		 * Get hit entries of a submitted exactword/word/endword search request.
+		 */
+		void HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count );
+		/*
+		 * Get hit entries of a submitted keyword search request.
+		 */
+		void HitListKeyword( EBSearchContext^ context, int max_hit_count, EBHit^ *hit_list, int *hit_count );
+		/*
+		 * Get hit entries of a submitted multi search request.
+		 */
+		void HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit^ *hit_list, int *hit_count );
 		#pragma endregion
 
 		#pragma region Set Word
@@ -340,6 +362,7 @@ namespace libeburc
 
 		EBSubbookCode code;
 		String^ GetPage( EBPosition^ Pos );
+		IIterable<EBPosition^>^ EBSubbook::Search( const char *phrase, EBSearchCode Code );
 	public:
 		/// <summary>
 		/// Subbook ID.
@@ -354,7 +377,7 @@ namespace libeburc
 		{
 			String^ get()
 			{
-				return ref new String( ( LPWSTR ) Utils::MBEUCJP16( title ) );
+				return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( title ) );
 			}
 		}
 
@@ -374,6 +397,8 @@ namespace libeburc
 		IAsyncAction^ OpenAsync();
 
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos );
+
+		IAsyncOperation<IIterable<EBPosition^>^>^ SearchAysnc( String^ Phrase, EBSearchCode Code );
 	};
 }
 

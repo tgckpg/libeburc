@@ -25,13 +25,50 @@ String^ EBSubbook::GetPage( EBPosition^ Pos )
 	Pos->page = npos->page;
 	Pos->offset = npos->offset;
 
-	return ref new String( ( LPWSTR ) Utils::MBEUCJP16( text ) );
+	return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
+}
+
+IIterable<EBPosition^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
+{
+	Vector<EBPosition^>^ results = ref new Vector<EBPosition^>();
+
+	try
+	{
+		switch ( Code )
+		{
+		case EBSearchCode::EB_SEARCH_CROSS:
+		case EBSearchCode::EB_SEARCH_ENDWORD:
+		case EBSearchCode::EB_SEARCH_KEYWORD:
+		case EBSearchCode::EB_SEARCH_MULTI:
+		case EBSearchCode::EB_SEARCH_WORD:
+			throw ref new NotImplementedException( "This method is not yet implemented" );
+		case EBSearchCode::EB_SEARCH_NONE:
+			break;
+		case EBSearchCode::EB_SEARCH_EXACTWORD:
+			SeachExactWord( phrase );
+			break;
+
+		default:
+			EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
+		}
+	}
+	catch ( Exception^ ex )
+	{
+		ParentBook->ResetSearchContext();
+	}
+
+	return results->GetView();
 }
 
 IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 {
+	return create_async( [ = ] { return GetPage( Pos ); } );
+}
+
+IAsyncOperation<IIterable<EBPosition^>^>^ EBSubbook::SearchAysnc( String^ Phrase, EBSearchCode Code )
+{
 	return create_async( [ = ]
 	{
-		return GetPage( Pos );
+		return Search( ( char * ) Utils::Utf82EucJP( Phrase->Data() ), Code );
 	} );
 }

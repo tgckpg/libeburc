@@ -91,5 +91,6 @@ namespace libeburc
 		void Reset();
 	public:
 		EBTextContext();
+		EBTextContext( EBTextContext^ Context );
 	};
 }

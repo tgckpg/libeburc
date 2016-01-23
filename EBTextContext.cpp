@@ -5,6 +5,28 @@ using namespace libeburc;
 
 EBTextContext::EBTextContext() { }
 
+EBTextContext::EBTextContext( EBTextContext^ Context )
+{
+	code = Context->code;
+	out = Context->out;
+	out_rest_length = Context->out_rest_length;
+	unprocessed = Context->unprocessed;
+	unprocessed_size = Context->unprocessed_size;
+	out_step = Context->out_step;
+	narrow_flag = Context->narrow_flag;
+	printable_count = Context->printable_count;
+	file_end_flag = Context->file_end_flag;
+	text_status = Context->text_status;
+	skip_code = Context->skip_code;
+	auto_stop_code = Context->auto_stop_code;
+
+	size_t csize = strlen( Context->candidate );
+	strcpy_s( candidate, csize, Context->candidate );
+
+	is_candidate = Context->is_candidate;
+	ebxac_gaiji_flag = Context->ebxac_gaiji_flag;
+}
+
 void EBTextContext::Reset()
 {
 	out = NULL;

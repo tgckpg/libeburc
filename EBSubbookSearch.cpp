@@ -25,6 +25,11 @@ static char cache_buffer[ EB_SIZE_PAGE ];
  * Cache buffer for the current page.
  */
 static int cache_page;
+/*
+ * The maximum number of hit entries for tomporary hit lists.
+ * This is used in eb_hit_list().
+ */
+#define EB_TMP_MAX_HITS		64
 
 void EBSubbook::LoadIndexes()
 {
@@ -678,3 +683,1175 @@ void EBSubbook::PreSearchWord( EBSearchContext^ context )
 	cache_book_code = ParentBook->code;
 	cache_page = context->page;
 }
+
+/*
+ * Do AND operation of hit lists.
+ * and_list = hit_lists[0] AND hit_lists[1] AND ...
+ */
+static void AndHitLists( EBHit^ and_list[ EB_TMP_MAX_HITS ], int *and_count,
+	int max_and_count, int hit_list_count,
+	EBHit^ hit_lists[ EB_NUMBER_OF_SEARCH_CONTEXTS ][ EB_TMP_MAX_HITS ],
+	int hit_counts[ EB_NUMBER_OF_SEARCH_CONTEXTS ] )
+{
+	int hit_indexes[ EB_NUMBER_OF_SEARCH_CONTEXTS ];
+	/*
+	 * Initialize indexes for the hit_lists[].
+	 */
+	for ( int i = 0; i < hit_list_count; i++ )
+		hit_indexes[ i ] = 0;
+
+	/*
+	 * Generate the new list `and_list'.
+	 */
+	*and_count = 0;
+	while ( *and_count < max_and_count )
+	{
+		/*
+		 * Initialize variables.
+		 */
+		int greatest_list = -1;
+		int greatest_page = 0;
+		int greatest_offset = 0;
+		int current_page = 0;
+		int current_offset = 0;
+		int equal_count = 0;
+
+		/*
+		 * Compare the current elements of the lists.
+		 */
+		for ( int i = 0; i < hit_list_count; i++ )
+		{
+			/*
+			 * If we have been reached to the tail of the hit_lists[i],
+			 * skip the list.
+			 */
+			if ( hit_counts[ i ] <= hit_indexes[ i ] )
+				continue;
+
+			/*
+			 * Compare {current_page, current_offset} and {greatest_page,
+			 * greatest_offset}.
+			 */
+			current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->page;
+			current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->offset;
+
+			if ( greatest_list == -1 )
+			{
+				greatest_page = current_page;
+				greatest_offset = current_offset;
+				greatest_list = i;
+				equal_count++;
+			}
+			else if ( greatest_page < current_page )
+			{
+				greatest_page = current_page;
+				greatest_offset = current_offset;
+				greatest_list = i;
+			}
+			else if ( current_page == greatest_page
+				&& greatest_offset < current_offset )
+			{
+				greatest_page = current_page;
+				greatest_offset = current_offset;
+				greatest_list = i;
+			}
+			else if ( current_page == greatest_page
+				&& current_offset == greatest_offset )
+			{
+				equal_count++;
+			}
+		}
+
+		if ( equal_count == hit_list_count )
+		{
+			/*
+			 * All the current elements of the lists point to the same
+			 * position.  This is hit element.  Increase indexes of all
+			 * lists.
+			 */
+			and_list[ *and_count ] = ref new EBHit( hit_lists[ 0 ][ hit_indexes[ 0 ] ] );
+			*and_count += 1;
+			for ( int i = 0; i < hit_list_count; i++ )
+			{
+				if ( hit_counts[ i ] <= hit_indexes[ i ] )
+					continue;
+				hit_indexes[ i ]++;
+			}
+		}
+		else
+		{
+			/*
+			 * This is not hit element.  Increase indexes of all lists
+			 * except for greatest element(s).  If there is no list
+			 * whose index is incremented, our job has been completed.
+			 */
+			int increment_count = 0;
+			for ( int i = 0; i < hit_list_count; i++ )
+			{
+				if ( hit_counts[ i ] <= hit_indexes[ i ] )
+					continue;
+				current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->page;
+				current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->offset;
+				if ( current_page != greatest_page
+					|| current_offset != greatest_offset )
+				{
+					hit_indexes[ i ]++;
+					increment_count++;
+				}
+			}
+			if ( increment_count == 0 )
+				break;
+		}
+	}
+
+	/*
+	 * Update hit_counts[].
+	 * The hit counts of the lists are set to the current indexes.
+	 */
+	for ( int i = 0; i < hit_list_count; i++ )
+		hit_counts[ i ] = hit_indexes[ i ];
+}
+
+void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBHit^ *hit_list, int *hit_count )
+{
+	EBHit^ *hit = hit_list;
+	*hit_count = 0;
+
+	/*
+	 * Backup the text context in `book'
+	 */
+	EBTextContext^ text_context = ref new EBTextContext( ParentBook->text_context );
+
+	try
+	{
+
+		/*
+		 * Seek text file
+		 */
+		if ( context->in_group_entry && context->comparison_result == 0 )
+		{
+			SeekText( context->keyword_heading );
+		}
+
+		/*
+		 * If the result of previous comparison is negative value, all
+		 * matched entries have been found
+		 */
+		if ( context->comparison_result < 0 || max_hit_count <= 0 )
+			goto succeeded;
+
+		for ( ;;)
+		{
+			/*
+			 * Read a page to search, if the page is not on the cache buffer
+			 *
+			 * Cache may be missed by the two reasons:
+			 *   1-> the search process reaches to the end of an index page,
+			 *      and tries to read the next page
+			 *   2-> Someone else used the cache buffer
+			 *
+			 * At the case of 1, the search process reads the page and update
+			 * the search context->  At the case of 2-> it reads the page but
+			 * must not update the context!
+			 */
+			if ( cache_book_code != ParentBook->code || cache_page != context->page )
+			{
+				TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+				Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+				TextZio->Read( EB_SIZE_PAGE, buff );
+				memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
+				/*
+				 * Update search context.
+				 */
+				if ( context->entry_index == 0 )
+				{
+					context->page_id = eb_uint1( cache_buffer );
+					context->entry_length = eb_uint1( cache_buffer + 1 );
+					if ( context->entry_length == 0 )
+						context->entry_arrangement = EB_ARRANGE_VARIABLE;
+					else
+						context->entry_arrangement = EB_ARRANGE_FIXED;
+					context->entry_count = eb_uint2( cache_buffer + 2 );
+					context->entry_index = 0;
+					context->offset = 4;
+				}
+
+				cache_book_code = ParentBook->code;
+				cache_page = context->page;
+			}
+
+			char *cache_p = cache_buffer + context->offset;
+
+			if ( !PAGE_ID_IS_LEAF_LAYER( context->page_id ) )
+			{
+				/*
+				 * Not a leaf index->  It is an error
+				 */
+				EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+			}
+
+			if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+				&& context->entry_arrangement == EB_ARRANGE_FIXED )
+			{
+				/*
+				 * The leaf index doesn't have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 12 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					/*
+					 * Compare word and pattern
+					 * If matched, add it to a hit list
+					 */
+					context->comparison_result
+						= context->compare_single( context->word, cache_p,
+							context->entry_length );
+					if ( context->comparison_result == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 6 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 10 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 4 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->entry_index++;
+					context->offset += context->entry_length + 12;
+					cache_p += context->entry_length + 12;
+
+					if ( context->comparison_result < 0
+						|| max_hit_count <= *hit_count )
+						goto succeeded;
+				}
+
+			}
+			else if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+				&& context->entry_arrangement == EB_ARRANGE_VARIABLE )
+			{
+				/*
+				 * The leaf index doesn't have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE < context->offset + 1 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+					context->entry_length = eb_uint1( cache_p );
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 13 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					/*
+					 * Compare word and pattern
+					 * If matched, add it to a hit list
+					 */
+					context->comparison_result
+						= context->compare_single( context->word, cache_p + 1,
+							context->entry_length );
+					if ( context->comparison_result == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 7 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 11 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length + 1 );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 5 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->entry_index++;
+					context->offset += context->entry_length + 13;
+					cache_p += context->entry_length + 13;
+
+					if ( context->comparison_result < 0
+						|| max_hit_count <= *hit_count )
+						goto succeeded;
+				}
+
+			}
+			else
+			{
+				/*
+				 * The leaf index have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE < context->offset + 2 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+					int group_id = eb_uint1( cache_p );
+
+					if ( group_id == 0x00 )
+					{
+						/*
+						 * 0x00 -- Single entry
+						 */
+						context->entry_length = eb_uint1( cache_p + 1 );
+						if ( EB_SIZE_PAGE
+							< context->offset + context->entry_length + 14 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+
+						/*
+						 * Compare word and pattern
+						 * If matched, add it to a hit list
+						 */
+						context->comparison_result
+							= context->compare_single( context->canonicalized_word,
+								cache_p + 2, context->entry_length );
+						if ( context->comparison_result == 0 )
+						{
+							( *hit )->heading->page
+								= eb_uint4( cache_p + context->entry_length + 8 );
+							( *hit )->heading->offset
+								= eb_uint2( cache_p + context->entry_length + 12 );
+							( *hit )->text->page
+								= eb_uint4( cache_p + context->entry_length + 2 );
+							( *hit )->text->offset
+								= eb_uint2( cache_p + context->entry_length + 6 );
+							hit++;
+							*hit_count += 1;
+						}
+						context->in_group_entry = 0;
+						context->offset += context->entry_length + 14;
+						cache_p += context->entry_length + 14;
+
+					}
+					else if ( group_id == 0x80 )
+					{
+						/*
+						 * 0x80 -- Start of group entry
+						 */
+						context->entry_length = eb_uint1( cache_p + 1 );
+						if ( EB_SIZE_PAGE
+							< context->offset + context->entry_length + 12 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+						context->comparison_result
+							= context->compare_single( context->word, cache_p + 6,
+								context->entry_length );
+						context->keyword_heading->page
+							= eb_uint4( cache_p + context->entry_length + 6 );
+						context->keyword_heading->offset
+							= eb_uint2( cache_p + context->entry_length + 10 );
+						context->in_group_entry = 1;
+						cache_p += context->entry_length + 12;
+						context->offset += context->entry_length + 12;
+
+						if ( context->comparison_result == 0 )
+						{
+							SeekText( context->keyword_heading );
+						}
+
+					}
+					else if ( group_id == 0xc0 )
+					{
+						/*
+						 * Element of the group entry
+						 */
+						if ( EB_SIZE_PAGE < context->offset + 7 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+
+						/*
+						 * Compare word and pattern
+						 * If matched, add it to a hit list
+						 */
+						if ( context->in_group_entry
+							&& context->comparison_result == 0 )
+						{
+							context->keyword_heading = TellText();
+							( *hit )->heading->page = context->keyword_heading->page;
+							( *hit )->heading->offset = context->keyword_heading->offset;
+							( *hit )->text->page = eb_uint4( cache_p + 1 );
+							( *hit )->text->offset = eb_uint2( cache_p + 5 );
+							hit++;
+							*hit_count += 1;
+							ForwardHeading();
+						}
+						context->offset += 7;
+						cache_p += 7;
+
+					}
+					else
+					{
+						/*
+						 * Unknown group ID.
+						 */
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					context->entry_index++;
+					if ( context->comparison_result < 0
+						|| max_hit_count <= *hit_count )
+						goto succeeded;
+				}
+			}
+
+			/*
+			 * Go to a next page if available.
+			 */
+			if ( PAGE_ID_IS_LAYER_END( context->page_id ) )
+			{
+				context->comparison_result = -1;
+				goto succeeded;
+			}
+			context->page++;
+			context->entry_index = 0;
+		}
+
+	succeeded:
+		if ( context->in_group_entry && context->comparison_result == 0 )
+		{
+			context->keyword_heading = TellText();
+		}
+
+		/*
+		 * Restore the text context in `book'
+		 */
+		ParentBook->text_context = text_context;
+	}
+	catch ( Exception^ ex )
+	{
+		*hit_count = 0;
+		ParentBook->text_context = text_context;
+		throw ex;
+	}
+}
+
+void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit^ *hit_list, int *hit_count )
+{
+	EBHit^ *hit = hit_list;
+	*hit_count = 0;
+
+	/*
+	 * If the result of previous comparison is negative value, all
+	 * matched entries have been found
+	 */
+	if ( context->comparison_result < 0 || max_hit_count <= 0 ) return;
+
+	try
+	{
+
+		for ( ;;)
+		{
+			/*
+			 * Read a page to search, if the page is not on the cache buffer
+			 *
+			 * Cache may be missed by the two reasons:
+			 *   1-> the search process reaches to the end of an index page,
+			 *      and tries to read the next page
+			 *   2-> Someone else used the cache buffer
+			 *
+			 * At the case of 1, the search process reads the page and update
+			 * the search context->  At the case of 2-> it reads the page but
+			 * must not update the context!
+			 */
+			if ( cache_book_code != ParentBook->code || cache_page != context->page )
+			{
+				TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+				Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+				TextZio->Read( EB_SIZE_PAGE, buff );
+				memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
+
+				/*
+				 * Update search context
+				 */
+				if ( context->entry_index == 0 )
+				{
+					context->page_id = eb_uint1( cache_buffer );
+					context->entry_length = eb_uint1( cache_buffer + 1 );
+					if ( context->entry_length == 0 )
+						context->entry_arrangement = EB_ARRANGE_VARIABLE;
+					else
+						context->entry_arrangement = EB_ARRANGE_FIXED;
+					context->entry_count = eb_uint2( cache_buffer + 2 );
+					context->entry_index = 0;
+					context->offset = 4;
+				}
+
+				cache_book_code = ParentBook->code;
+				cache_page = context->page;
+			}
+
+			char *cache_p = cache_buffer + context->offset;
+
+			if ( !PAGE_ID_IS_LEAF_LAYER( context->page_id ) )
+			{
+				/*
+				 * Not a leaf index.  It is an error
+				 */
+				EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+
+			}
+
+			if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+				&& context->entry_arrangement == EB_ARRANGE_FIXED )
+			{
+				/*
+				 * The leaf index doesn't have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 13 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+
+					}
+
+					/*
+					 * Compare word and pattern
+					 * If matched, add it to a hit list
+					 */
+					context->comparison_result
+						= context->compare_single( context->word, cache_p,
+							context->entry_length );
+					if ( context->comparison_result == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 6 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 10 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 4 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->entry_index++;
+					context->offset += context->entry_length + 12;
+					cache_p += context->entry_length + 12;
+
+					if ( context->comparison_result < 0
+						|| max_hit_count <= *hit_count )
+						return;
+				}
+
+			}
+			else if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+				&& context->entry_arrangement == EB_ARRANGE_VARIABLE )
+			{
+				/*
+				 * The leaf index doesn't have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE < context->offset + 1 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+
+					}
+					context->entry_length = eb_uint1( cache_p );
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 13 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+
+					}
+
+					/*
+					 * Compare word and pattern
+					 * If matched, add it to a hit list
+					 */
+					context->comparison_result
+						= context->compare_single( context->word, cache_p + 1,
+							context->entry_length );
+					if ( context->comparison_result == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 7 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 11 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length + 1 );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 5 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->entry_index++;
+					context->offset += context->entry_length + 13;
+					cache_p += context->entry_length + 13;
+
+					if ( context->comparison_result < 0
+						|| max_hit_count <= *hit_count )
+						return;
+				}
+
+			}
+			else
+			{
+				/*
+				 * The leaf index have a group entry
+				 * Find text and heading locations
+				 */
+				while ( context->entry_index < context->entry_count )
+				{
+					if ( EB_SIZE_PAGE < context->offset + 2 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+					int group_id = eb_uint1( cache_p );
+
+					if ( group_id == 0x00 )
+					{
+						/*
+						 * 0x00 -- Single entry
+						 */
+						context->entry_length = eb_uint1( cache_p + 1 );
+						if ( EB_SIZE_PAGE
+							< context->offset + context->entry_length + 14 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+
+						/*
+						 * Compare word and pattern
+						 * If matched, add it to a hit list
+						 */
+						context->comparison_result
+							= context->compare_single( context->canonicalized_word,
+								cache_p + 2, context->entry_length );
+						if ( context->comparison_result == 0 )
+						{
+							( *hit )->heading->page
+								= eb_uint4( cache_p + context->entry_length + 8 );
+							( *hit )->heading->offset
+								= eb_uint2( cache_p + context->entry_length + 12 );
+							( *hit )->text->page
+								= eb_uint4( cache_p + context->entry_length + 2 );
+							( *hit )->text->offset
+								= eb_uint2( cache_p + context->entry_length + 6 );
+							hit++;
+							*hit_count += 1;
+						}
+						context->in_group_entry = 0;
+						context->offset += context->entry_length + 14;
+						cache_p += context->entry_length + 14;
+
+					}
+					else if ( group_id == 0x80 )
+					{
+						/*
+						 * 0x80 -- Start of group entry
+						 */
+						context->entry_length = eb_uint1( cache_p + 1 );
+						if ( EB_SIZE_PAGE
+							< context->offset + context->entry_length + 6 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+						context->comparison_result
+							= context->compare_single( context->word, cache_p + 6,
+								context->entry_length );
+						context->in_group_entry = 1;
+						cache_p += context->entry_length + 6;
+						context->offset += context->entry_length + 6;
+
+					}
+					else if ( group_id == 0xc0 )
+					{
+						/*
+						 * Element of the group entry
+						 */
+						if ( EB_SIZE_PAGE < context->offset + 13 )
+						{
+							EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+						}
+
+						/*
+						 * Compare word and pattern
+						 * If matched, add it to a hit list
+						 */
+						if ( context->in_group_entry
+							&& context->comparison_result == 0 )
+						{
+							( *hit )->heading->page = eb_uint4( cache_p + 7 );
+							( *hit )->heading->offset = eb_uint2( cache_p + 11 );
+							( *hit )->text->page = eb_uint4( cache_p + 1 );
+							( *hit )->text->offset = eb_uint2( cache_p + 5 );
+							hit++;
+							*hit_count += 1;
+						}
+						context->offset += 13;
+						cache_p += 13;
+
+					}
+					else
+					{
+						/*
+						 * Unknown group ID
+						 */
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					context->entry_index++;
+					if ( context->comparison_result < 0 || max_hit_count <= *hit_count )
+						return;
+				}
+			}
+
+			/*
+			 * Go to a next page if available.
+			 */
+			if ( PAGE_ID_IS_LAYER_END( context->page_id ) )
+			{
+				context->comparison_result = -1;
+				return;
+			}
+			context->page++;
+			context->entry_index = 0;
+		}
+
+	}
+	catch ( Exception^ ex )
+	{
+		*hit_count = 0;
+		throw ex;
+	}
+}
+
+void EBSubbook::HitList( int max_hit_count, EBHit^ *hit_list, int *hit_count )
+{
+	EBHit^ temporary_hit_lists[ EB_NUMBER_OF_SEARCH_CONTEXTS ][ EB_TMP_MAX_HITS ];
+	int temporary_hit_counts[ EB_NUMBER_OF_SEARCH_CONTEXTS ];
+	int more_hit_count;
+	int i;
+
+
+	if ( max_hit_count == 0 ) return;
+
+	*hit_count = 0;
+
+	/*
+	 * Get a list of hit entries.
+	 */
+	switch ( ParentBook->search_contexts->GetAt(0)->code )
+	{
+	case EBSearchCode::EB_SEARCH_EXACTWORD:
+	case EBSearchCode::EB_SEARCH_WORD:
+	case EBSearchCode::EB_SEARCH_ENDWORD:
+		/*
+		 * In case of exactword, word of endword search.
+		 */
+		HitListWord( max_hit_count, hit_list, hit_count );
+		break;
+
+	case EBSearchCode::EB_SEARCH_KEYWORD:
+	case EBSearchCode::EB_SEARCH_CROSS:
+		/*
+		 * In case of keyword or cross search.
+		 */
+		for ( ;;)
+		{
+			int search_is_over = 0;
+
+			for ( i = 0; i < EB_MAX_KEYWORDS; i++ )
+			{
+				EBSearchContext^ search_context = ParentBook->search_contexts->GetAt( i );
+				if ( search_context->code != EBSearchCode::EB_SEARCH_KEYWORD
+					&& search_context->code != EBSearchCode::EB_SEARCH_CROSS )
+					break;
+				EBSearchContext^ temporary_context = ref new EBSearchContext( search_context );
+
+				HitListKeyword( temporary_context,
+					EB_TMP_MAX_HITS, temporary_hit_lists[ i ],
+					temporary_hit_counts + i );
+
+				if ( temporary_hit_counts[ i ] == 0 )
+				{
+					search_is_over = 1;
+					break;
+				}
+			}
+			if ( search_is_over )
+				break;
+
+			AndHitLists( hit_list + *hit_count, &more_hit_count,
+				max_hit_count - *hit_count, i, temporary_hit_lists,
+				temporary_hit_counts );
+
+			for ( i = 0; i < EB_MAX_MULTI_ENTRIES; i++ )
+			{
+				EBSearchContext^ search_context = ParentBook->search_contexts->GetAt( i );
+				if ( search_context->code != EBSearchCode::EB_SEARCH_KEYWORD
+					&& search_context->code != EBSearchCode::EB_SEARCH_CROSS )
+					break;
+
+				HitListKeyword(
+					search_context, temporary_hit_counts[ i ],
+					temporary_hit_lists[ i ], temporary_hit_counts + i );
+			}
+
+			*hit_count += more_hit_count;
+			if ( max_hit_count <= *hit_count )
+				break;
+		}
+		break;
+
+	case EBSearchCode::EB_SEARCH_MULTI:
+		/*
+		 * In case of multi search.
+		 */
+		for ( ;;)
+		{
+			int search_is_over = 0;
+
+			for ( i = 0; i < EB_MAX_MULTI_ENTRIES; i++ )
+			{
+				EBSearchContext^ search_context = ParentBook->search_contexts->GetAt( i );
+				if ( search_context->code != EBSearchCode::EB_SEARCH_MULTI )
+					break;
+				EBSearchContext^ temporary_context = ref new EBSearchContext( search_context );
+
+				HitListMulti( temporary_context,
+					EB_TMP_MAX_HITS, temporary_hit_lists[ i ],
+					temporary_hit_counts + i );
+
+				if ( temporary_hit_counts[ i ] == 0 )
+				{
+					search_is_over = 1;
+					break;
+				}
+			}
+			if ( search_is_over )
+				break;
+
+			AndHitLists( hit_list + *hit_count, &more_hit_count,
+				max_hit_count - *hit_count, i, temporary_hit_lists,
+				temporary_hit_counts );
+
+			for ( i = 0; i < EB_MAX_MULTI_ENTRIES; i++ )
+			{
+				EBSearchContext^ search_context = ParentBook->search_contexts->GetAt( i );
+				if ( search_context->code != EBSearchCode::EB_SEARCH_MULTI )
+					break;
+
+				HitListMulti( search_context, temporary_hit_counts[ i ],
+					temporary_hit_lists[ i ], temporary_hit_counts + i );
+			}
+
+			*hit_count += more_hit_count;
+			if ( max_hit_count <= *hit_count )
+				break;
+		}
+		break;
+
+	default:
+		/* not reached */
+		EBException::Throw( EBErrorCode::EB_ERR_NO_PREV_SEARCH );
+	}
+}
+
+void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count )
+{
+	EBHit^ *hit = hit_list;
+	*hit_count = 0;
+
+	EBSearchContext^ context = ParentBook->search_contexts->GetAt( 0 );
+	/*
+	 * If the result of previous comparison is negative value, all
+	 * matched entries have been found.
+	 */
+	if ( context->comparison_result < 0 || max_hit_count <= 0 ) return;
+
+	for ( ;;)
+	{
+		/*
+		 * Read a page to search, if the page is not on the cache buffer.
+		 *
+		 * Cache may be missed by the two reasons:
+		 *   1. the search process reaches to the end of an index page,
+		 *      and tries to read the next page.
+		 *   2. Someone else used the cache buffer.
+		 *
+		 * At the case of 1, the search process reads the page and update
+		 * the search context.  At the case of 2. it reads the page but
+		 * must not update the context!
+		 */
+		if ( cache_book_code != ParentBook->code || cache_page != context->page )
+		{
+			TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+			Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
+			TextZio->Read( EB_SIZE_PAGE, buff );
+			memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
+
+			/*
+			 * Update search context.
+			 */
+			if ( context->entry_index == 0 )
+			{
+				context->page_id = eb_uint1( cache_buffer );
+				context->entry_length = eb_uint1( cache_buffer + 1 );
+				if ( context->entry_length == 0 )
+					context->entry_arrangement = EB_ARRANGE_VARIABLE;
+				else
+					context->entry_arrangement = EB_ARRANGE_FIXED;
+				context->entry_count = eb_uint2( cache_buffer + 2 );
+				context->entry_index = 0;
+				context->offset = 4;
+			}
+
+			cache_book_code = ParentBook->code;
+			cache_page = context->page;
+		}
+
+		char *cache_p = cache_buffer + context->offset;
+
+		if ( !PAGE_ID_IS_LEAF_LAYER( context->page_id ) )
+		{
+			/*
+			 * Not a leaf index.  It is an error.
+			 */
+			EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+		}
+
+		if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+			&& context->entry_arrangement == EB_ARRANGE_FIXED )
+		{
+			/*
+			 * The leaf index doesn't have a group entry.
+			 * Find text and heading locations.
+			 */
+			while ( context->entry_index < context->entry_count )
+			{
+				if ( EB_SIZE_PAGE
+					< context->offset + context->entry_length + 12 )
+				{
+					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+				}
+
+				/*
+				 * Compare word and pattern.
+				 * If matched, add it to a hit list.
+				 */
+				context->comparison_result
+					= context->compare_single( context->word, cache_p,
+						context->entry_length );
+				if ( context->comparison_result == 0 )
+				{
+					( *hit )->heading->page
+						= eb_uint4( cache_p + context->entry_length + 6 );
+					( *hit )->heading->offset
+						= eb_uint2( cache_p + context->entry_length + 10 );
+					( *hit )->text->page
+						= eb_uint4( cache_p + context->entry_length );
+					( *hit )->text->offset
+						= eb_uint2( cache_p + context->entry_length + 4 );
+					hit++;
+					*hit_count += 1;
+				}
+				context->entry_index++;
+				context->offset += context->entry_length + 12;
+				cache_p += context->entry_length + 12;
+
+				if ( context->comparison_result < 0 || max_hit_count <= *hit_count )
+					return;
+			}
+
+		}
+		else if ( !PAGE_ID_HAVE_GROUP_ENTRY( context->page_id )
+			&& context->entry_arrangement == EB_ARRANGE_VARIABLE )
+		{
+
+			/*
+			 * The leaf index doesn't have a group entry.
+			 * Find text and heading locations.
+			 */
+			while ( context->entry_index < context->entry_count )
+			{
+				if ( EB_SIZE_PAGE < context->offset + 1 )
+				{
+					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+				}
+				context->entry_length = eb_uint1( cache_p );
+				if ( EB_SIZE_PAGE
+					< context->offset + context->entry_length + 13 )
+				{
+					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+				}
+
+				/*
+				 * Compare word and pattern.
+				 * If matched, add it to a hit list.
+				 */
+				context->comparison_result
+					= context->compare_single( context->word, cache_p + 1,
+						context->entry_length );
+				if ( context->comparison_result == 0 )
+				{
+					( *hit )->heading->page
+						= eb_uint4( cache_p + context->entry_length + 7 );
+					( *hit )->heading->offset
+						= eb_uint2( cache_p + context->entry_length + 11 );
+					( *hit )->text->page
+						= eb_uint4( cache_p + context->entry_length + 1 );
+					( *hit )->text->offset
+						= eb_uint2( cache_p + context->entry_length + 5 );
+					hit++;
+					*hit_count += 1;
+				}
+				context->entry_index++;
+				context->offset += context->entry_length + 13;
+				cache_p += context->entry_length + 13;
+
+				if ( context->comparison_result < 0 || max_hit_count <= *hit_count ) return;
+			}
+
+		}
+		else
+		{
+			/*
+			 * The leaf index have a group entry.
+			 * Find text and heading locations.
+			 */
+			while ( context->entry_index < context->entry_count )
+			{
+				if ( EB_SIZE_PAGE < context->offset + 2 )
+				{
+					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+				}
+				int group_id = eb_uint1( cache_p );
+
+				if ( group_id == 0x00 )
+				{
+					/*
+					 * 0x00 -- Single entry.
+					 */
+					context->entry_length = eb_uint1( cache_p + 1 );
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 14 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					/*
+					 * Compare word and pattern.
+					 * If matched, add it to a hit list.
+					 */
+					context->comparison_result
+						= context->compare_single( context->canonicalized_word,
+							cache_p + 2, context->entry_length );
+					if ( context->comparison_result == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 8 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 12 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length + 2 );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 6 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->in_group_entry = 0;
+					context->offset += context->entry_length + 14;
+					cache_p += context->entry_length + 14;
+
+				}
+				else if ( group_id == 0x80 )
+				{
+					/*
+					 * 0x80 -- Start of group entry.
+					 */
+					context->entry_length = eb_uint1( cache_p + 1 );
+					if ( EB_SIZE_PAGE
+						< context->offset + context->entry_length + 4 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+					context->comparison_result
+						= context->compare_single( context->canonicalized_word,
+							cache_p + 4, context->entry_length );
+					context->in_group_entry = 1;
+					cache_p += context->entry_length + 4;
+					context->offset += context->entry_length + 4;
+
+				}
+				else if ( group_id == 0xc0 )
+				{
+					/*
+					 * Element of the group entry
+					 */
+					context->entry_length = eb_uint1( cache_p + 1 );
+					if ( EB_SIZE_PAGE < context->offset + 14 )
+					{
+						EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+					}
+
+					/*
+					 * Compare word and pattern.
+					 * If matched, add it to a hit list.
+					 */
+					if ( context->comparison_result == 0
+						&& context->in_group_entry
+						&& context->compare_group( context->word, cache_p + 2,
+							context->entry_length ) == 0 )
+					{
+						( *hit )->heading->page
+							= eb_uint4( cache_p + context->entry_length + 8 );
+						( *hit )->heading->offset
+							= eb_uint2( cache_p + context->entry_length + 12 );
+						( *hit )->text->page
+							= eb_uint4( cache_p + context->entry_length + 2 );
+						( *hit )->text->offset
+							= eb_uint2( cache_p + context->entry_length + 6 );
+						hit++;
+						*hit_count += 1;
+					}
+					context->offset += context->entry_length + 14;
+					cache_p += context->entry_length + 14;
+				}
+				else
+				{
+					/*
+					 * Unknown group ID.
+					 */
+					EBException::Throw( EBErrorCode::EB_ERR_UNEXP_TEXT );
+				}
+
+				context->entry_index++;
+				if ( context->comparison_result < 0 || max_hit_count <= *hit_count )
+					return;
+			}
+		}
+
+		/*
+		 * Go to a next page if available.
+		 */
+		if ( PAGE_ID_IS_LAYER_END( context->page_id ) )
+		{
+			context->comparison_result = -1;
+			return;
+		}
+		context->page++;
+		context->entry_index = 0;
+	}
+}
+

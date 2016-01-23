@@ -61,7 +61,7 @@ namespace libeburc
 		/*
 		 * Context parameters for text reading.
 		 */
-		EBSearchContext^ search_contexts;
+		Vector<EBSearchContext^>^ search_contexts;
 		/*
 		 * Context parameters for binary reading.
 		 */
@@ -74,6 +74,7 @@ namespace libeburc
 		void ResetSearchContext();
 		void ResetTextContext();
 		void ResetBinaryContext();
+		void InvalidateTextContext();
 
 		/*
 		 * Write a stream with `length' bytes to a text buffer.

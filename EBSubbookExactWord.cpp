@@ -11,7 +11,7 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	 */
 
 	ParentBook->ResetSearchContext();
-	EBSearchContext^ context = ParentBook->search_contexts;
+	EBSearchContext^ context = ParentBook->search_contexts->GetAt( 0 );
 	context->code = EBSearchCode::EB_SEARCH_EXACTWORD;
 
 	/*

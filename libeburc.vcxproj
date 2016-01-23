@@ -218,6 +218,7 @@
     <ClInclude Include="EBBook.h" />
     <ClInclude Include="EBException.h" />
     <ClInclude Include="EBFont.h" />
+    <ClInclude Include="EBHit.h" />
     <ClInclude Include="EBHook.h" />
     <ClInclude Include="EBHookSet.h" />
     <ClInclude Include="EBMultiSearch.h" />
@@ -251,6 +252,7 @@
     <ClCompile Include="EBBookText.cpp" />
     <ClCompile Include="EBException.cpp" />
     <ClCompile Include="EBFont.cpp" />
+    <ClCompile Include="EBHit.cpp" />
     <ClCompile Include="EBHook.cpp" />
     <ClCompile Include="EBHookSetInternal.cpp" />
     <ClCompile Include="EBHookSet.cpp" />

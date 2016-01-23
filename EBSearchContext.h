@@ -83,5 +83,9 @@ namespace libeburc
 		EBPosition^ keyword_heading;
 	public:
 		EBSearchContext();
+		/*
+		 * Clones the reference Context
+		 */
+		EBSearchContext( EBSearchContext^ Context );
 	};
 }
