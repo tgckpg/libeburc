@@ -8,6 +8,7 @@ namespace libeburc
 {
 	ref class EBSearchContext sealed
 	{
+	internal:
 		/*
 		 * Current search method type.
 		 * The context is not active, if this code is EB_SEARCH_NONE.
@@ -17,12 +18,9 @@ namespace libeburc
 		/*
 		 * Function which compares word to search and pattern in an index page.
 		 */
-		int( *compare_pre )( const char *word, const char *pattern,
-			size_t length );
-		int( *compare_single )( const char *word, const char *pattern,
-			size_t length );
-		int( *compare_group )( const char *word, const char *pattern,
-			size_t length );
+		int( *compare_pre )( const char *word, const char *pattern, size_t length );
+		int( *compare_single )( const char *word, const char *pattern, size_t length );
+		int( *compare_group )( const char *word, const char *pattern, size_t length );
 
 		/*
 		 * Result of comparison by `compare'.

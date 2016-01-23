@@ -135,6 +135,9 @@
     <ClCompile Include="EBSubbookSetWord.cpp">
       <Filter>eburc\Subbook</Filter>
     </ClCompile>
+    <ClCompile Include="Match.cpp">
+      <Filter>eburc\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -214,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="EBAlternationCache.h">
       <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Match.h">
+      <Filter>eburc\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

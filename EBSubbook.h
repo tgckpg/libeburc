@@ -12,6 +12,8 @@
 #include <EBTextContext.h>
 #include <EBUTF8Table.h>
 #include <EBWideFont.h>
+#include <Match.h>
+#include <JACode.h>
 #include <Zio.h>
 
 using namespace std;
@@ -283,46 +285,6 @@ namespace libeburc
 
 		#pragma endregion
 
-		#pragma region Set word Scope
-
-		void SeachExactWord( const char * input_word );
-		/*
-		 * Make a fixed word and a cannonicalized word for `WORD SEARCH'.
-		 *
-		 * If `inputword' is a KANA word,  EB_WORD_KANA is returned.
-		 * If `inputword' is a alphabetic word, EB_WORD_ALPHABET is returned.
-		 * Otherwise, -1 is returned.  It means that an error occurs.
-		 */
-		void SetWord( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
-		/*
-		 * Convert `input_word' to ISO 8859 1 and put it into `word'.
-		 *
-		 * If `input_word' is a valid string to search, EB_WORD_ALPHABET is returned.
-		 * Otherwise, -1 is returned.
-		 */
-		void ConvertLatin( const char *input_word, char *word, EBWordCode *word_code );
-		/*
-		 * Convert `input_word' to UTF 8 and put it into `word'.
-		 *
-		 * If `input_word' is a valid string to search, EB_WORD_OTHER is returned.
-		 * Otherwise, -1 is returned.
-		 */
-		void ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code );
-		/*
-		 * Convert `input_word' to JIS X0208 and put it into `word'.
-		 *
-		 * If `input_word' is a valid string to search, EB_WORD_ALPHABET or
-		 * EB_WORD_KANA is returned.
-		 * Otherwise, -1 is returned.
-		 */
-		void ConvertEUCJP( const char *input_word, char *word, EBWordCode *word_code );
-		/*
-		 * Fix `canonicalized_word' and `word' according with `book->character_code'
-		 * and `search'.
-		 */
-		void FixWord( const EBSearch^ search, char *word, char *canonicalized_word );
-		#pragma endregion
-
 		#pragma region UTF8
 
 		/// <summary>
@@ -335,8 +297,29 @@ namespace libeburc
 		int table_count;
 		byte* table_buffer;
 
-		char* EBSubbook::NormalizeUtf8( int code );
+		char* NormalizeUtf8( int code );
+		/*
+		 * Convert `input_word' to UTF 8 and put it into `word'.
+		 *
+		 * If `input_word' is a valid string to search, EB_WORD_OTHER is returned.
+		 * Otherwise, -1 is returned.
+		 */
+		void ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code );
+		#pragma endregion
 
+		#pragma region Set Word
+
+		void SeachExactWord( const char * input_word );
+		/*
+		 * Make a fixed word and a cannonicalized word for `WORD SEARCH'.
+		 *
+		 * If `inputword' is a KANA word,  EB_WORD_KANA is returned.
+		 * If `inputword' is a alphabetic word, EB_WORD_ALPHABET is returned.
+		 * Otherwise, -1 is returned.  It means that an error occurs.
+		 */
+		void SetWord( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
+
+		void FixWord( const EBSearch^ search, char *word, char *canonicalized_word );
 		#pragma endregion
 
 		/// <summary>

@@ -18,10 +18,8 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	 * Make a fixed word and a canonicalized word to search from
 	 * `input_word'.
 	 */
-	error_code = eb_set_word( book, input_word, context->word,
-		context->canonicalized_word, &word_code );
-	if ( error_code != EB_SUCCESS )
-		goto failed;
+	EBWordCode word_code;
+	SetWord( input_word, context->word, context->canonicalized_word, &word_code );
 
 	/*
 	 * Get a page number.
@@ -29,65 +27,61 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	switch ( word_code )
 	{
 	case EBWordCode::EB_WORD_ALPHABET:
-		if ( book->subbook_current->word_alphabet.start_page != 0 )
-			context->page = book->subbook_current->word_alphabet.start_page;
-		else if ( book->subbook_current->word_asis.start_page != 0 )
-			context->page = book->subbook_current->word_asis.start_page;
+		if ( word_alphabet->start_page != 0 )
+			context->page = word_alphabet->start_page;
+		else if ( word_asis->start_page != 0 )
+			context->page = word_asis->start_page;
 		else
 		{
-			error_code = EB_ERR_NO_SUCH_SEARCH;
-			goto failed;
+			EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
 		}
 		break;
 
 	case EBWordCode::EB_WORD_KANA:
-		if ( book->subbook_current->word_kana.start_page != 0 )
-			context->page = book->subbook_current->word_kana.start_page;
-		else if ( book->subbook_current->word_asis.start_page != 0 )
-			context->page = book->subbook_current->word_asis.start_page;
+		if ( word_kana->start_page != 0 )
+			context->page = word_kana->start_page;
+		else if ( word_asis->start_page != 0 )
+			context->page = word_asis->start_page;
 		else
 		{
-			error_code = EB_ERR_NO_SUCH_SEARCH;
-			goto failed;
+			EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
 		}
 		break;
 
 	case EBWordCode::EB_WORD_OTHER:
-		if ( book->subbook_current->word_asis.start_page != 0 )
-			context->page = book->subbook_current->word_asis.start_page;
+		if ( word_asis->start_page != 0 )
+			context->page = word_asis->start_page;
 		else
 		{
-			error_code = EB_ERR_NO_SUCH_SEARCH;
-			goto failed;
+			EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
 		}
 		break;
 
 	default:
-		error_code = EB_ERR_NO_SUCH_SEARCH;
-		goto failed;
+		EBException::Throw( EBErrorCode::EB_ERR_NO_SUCH_SEARCH );
 	}
 
 	/*
 	 * Choose comparison functions.
 	 */
-	if ( book->character_code == EB_CHARCODE_ISO8859_1
-		|| book->character_code == EB_CHARCODE_UTF8 )
+	if ( ParentBook->character_code == EBCharCode::EB_CHARCODE_ISO8859_1
+		|| ParentBook->character_code == EBCharCode::EB_CHARCODE_UTF8 )
 	{
-		context->compare_pre = eb_exact_pre_match_word_latin;
-		context->compare_single = eb_exact_match_word_latin;
-		context->compare_group = eb_exact_match_word_latin;
+		context->compare_pre = Match::ExactPreWordLatin;
+		context->compare_single = Match::ExactWordLatin;
+		context->compare_group = Match::ExactWordLatin;
 	}
-	else if ( context->page == book->subbook_current->word_kana.start_page )
+	else if ( context->page == word_kana->start_page )
 	{
-		context->compare_pre = eb_exact_pre_match_word_jis;
-		context->compare_single = eb_exact_match_word_kana_single;
-		context->compare_group = eb_exact_match_word_kana_group;
+		context->compare_pre = Match::ExactPreWordJIS;
+		context->compare_single = Match::ExactWordKanaSingle;
+		context->compare_group = Match::ExactWordKanaGroup;
 	}
 	else
 	{
-		context->compare_pre = eb_exact_pre_match_word_jis;
-		context->compare_single = eb_exact_match_word_jis;
-		context->compare_group = eb_exact_match_word_kana_group;
+		context->compare_pre = Match::ExactPreWordJIS;
+		context->compare_single = Match::ExactWordJIS;
+		context->compare_group = Match::ExactWordKanaGroup;
 	}
 
 	/*
@@ -97,10 +91,7 @@ void EBSubbook::SeachExactWord( const char * input_word )
 	if ( error_code != EB_SUCCESS )
 		goto failed;
 
-	LOG( ( "out: eb_search_exactword() = %s", eb_error_string( EB_SUCCESS ) ) );
-	eb_unlock( &book->lock );
-
-	return EB_SUCCESS;
+	return;
 
 	/*
 	 * An error occurs...
