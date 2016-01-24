@@ -5,9 +5,28 @@
 #include <EBException.h>
 #include <robuffer.h>
 #include <build-post.h>
+#include <zlib/zconf.h>
+#include <zlib/zlib.h>
+
+/*
+ * NULL Zio ID.
+ */
+#define ZIO_ID_NONE         -1
 
 #define ZIO_MAX_EBZIP_LEVEL             5
 #define ZIO_SIZE_EBZIP_HEADER           22
+/*
+ * Size of a page (The term `page' means `block' in JIS X 4081).
+ */
+#define ZIO_SIZE_PAGE			2048
+/*
+ * Size of a cache buffer.
+ * It must be large enough to memory an uncompressed slice.
+ *
+ * (In EBZIP and EPWING compressions, the size of uncompressed slice
+ * is 2048.  In S-EBXA compression, the size is 4096.)
+ */
+#define ZIO_CACHE_BUFFER_SIZE (ZIO_SIZE_PAGE << ZIO_MAX_EBZIP_LEVEL)
 
 using namespace concurrency;
 using namespace Platform;
@@ -50,6 +69,21 @@ namespace libeburc
 		 * ID.
 		 */
 		int id;
+
+		/*
+		 * Zio ID which caches data in `cache_buffer'.
+		 */
+		int cache_zio_id = ZIO_ID_NONE;
+
+		/*
+		 * Offset of the beginning of the cached data `cache_buffer'.
+		 */
+		off_t cache_location;
+
+		/*
+		 * Buffer for caching uncompressed data.
+		 */
+		byte cache_buffer[ ZIO_CACHE_BUFFER_SIZE ];
 
 		/*
 		 * Source File
@@ -165,7 +199,7 @@ namespace libeburc
 		 *
 		 * If it succeeds, 0 is returned.  Otherwise, -1 is returned.
 		 */
-		byte* UnzipSlice( size_t zipped_slice_size );
+		void UnzipSlice( size_t zipped_slice_size, byte *out_buffer );
 
 		/*
 		 * Open an non-compressed file.

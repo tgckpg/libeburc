@@ -2,8 +2,12 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/x86/Debug
-/x64/Debug
-/ARM/Debug
+x86/
+x64/
+ARM/
+Debug/
+Release/
 *.swp
 *.aps
+*.obj
+*.tlog

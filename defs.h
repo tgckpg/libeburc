@@ -120,7 +120,7 @@ typedef int EBMultiSearchCode;
 /*
  * The maximum index depth of search indexes.
  */
-#define EB_MAX_INDEX_DEPTH		6
+#define EB_MAX_INDEX_DEPTH		100
 
 /*
  * Length of cache buffer in a binary context.
@@ -409,6 +409,9 @@ namespace libeburc
 		EB_ERR_EBNET_NO_PERMISSION,
 		EB_ERR_UNBOUND_BOOKLIST,
 		EB_ERR_NO_SUCH_BOOK,
+
+		/* 70 -- 74 */
+		EB_ERR_FAIL_READ_EBZ,
 	};
 
 }

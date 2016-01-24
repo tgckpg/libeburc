@@ -7,27 +7,9 @@ using namespace Microsoft::WRL;
 using namespace Platform;
 
 /*
- * NULL Zio ID.
- */
-#define ZIO_ID_NONE         -1
-
-/*
  * Zio object counter.
  */
 static int zio_counter = 0;
-/*
- * Zio ID which caches data in `cache_buffer'.
- */
-static int cache_zio_id = ZIO_ID_NONE;
-/*
- * Offset of the beginning of the cached data `cache_buffer'.
- */
-static off_t cache_location;
-/*
- * Buffer for caching uncompressed data.
- */
-static byte* cache_buffer = nullptr;
-
 
 /*
  * Get an unsigned value from an octet stream buffer.
@@ -52,12 +34,10 @@ static byte* cache_buffer = nullptr;
 	+ (*(const unsigned char *)((p) + 3) << 8) \
 	+ (*(const unsigned char *)((p) + 4)))
 
-/*
- * Size of a page (The term `page' means `block' in JIS X 4081).
- */
-#define ZIO_SIZE_PAGE			2048
-
-Zio::Zio() {}
+Zio::Zio()
+{
+	cache_buffer;
+}
 
 Zio::Zio( IStorageFile^ File, ZioCode ZCode )
 {
@@ -106,7 +86,20 @@ void Zio::ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer )
 		task<unsigned int> RLoad( reader->LoadAsync( length ) );
 		RLoad.then( [ & ] ( unsigned int t )
 		{
-			reader->ReadBytes( buffer );
+			if ( t == buffer->Length )
+			{
+				reader->ReadBytes( buffer );
+			}
+			else if( t < buffer->Length )
+			{
+				Array<byte>^ b = ref new Array<byte>( t );
+				reader->ReadBytes( b );
+				memcpy_s( buffer->Data, t, b->Data, t );
+			}
+			else
+			{
+				throw ref new Exception( EXCEPTION_STACK_OVERFLOW );
+			}
 		} ).wait();
 		reader->DetachStream();
 
@@ -124,9 +117,11 @@ void Zio::Read( size_t length, WriteOnlyArray<byte>^ buffer )
 	switch ( Code )
 	{
 	case ZioCode::ZIO_PLAIN:
-		return ReadRaw( length, buffer );
+		ReadRaw( length, buffer );
+		break;
 	case ZioCode::ZIO_EBZIP1:
-		return ReadEBZip( length, buffer );
+		ReadEBZip( length, buffer );
+		break;
 	case ZioCode::ZIO_EPWING:
 		throw ref new NotImplementedException( "No such disc type" );
 		// return ReadEPWING( zio, file_name );
@@ -141,22 +136,13 @@ void Zio::Read( size_t length, WriteOnlyArray<byte>^ buffer )
 
 void Zio::ReadEBZip( size_t length, WriteOnlyArray<byte>^ ibuffer )
 {
-	byte* buffer;
 	SSIZE_T read_length = 0;
-	size_t zipped_slice_size;
-	off_t slice_location;
-	off_t next_slice_location;
-	int n;
-
-	LOG( ( "in: zio_read_ebzip(zio=%d, length=%ld)", ( int ) id,
-		( long ) length ) );
 
 	/*
 	 * Read data.
 	 */
 	while ( read_length < length ) {
-		if ( file_size <= location )
-			goto succeeded;
+		if ( file_size <= location ) return;
 
 		/*
 		 * If data in `cache_buffer' is out of range, read data from
@@ -175,11 +161,13 @@ void Zio::ReadEBZip( size_t length, WriteOnlyArray<byte>^ ibuffer )
 			LSeekRaw( location / slice_size * index_width + ZIO_SIZE_EBZIP_HEADER );
 
 			// ORG: if (zio_read_raw(zio, temporary_buffer, zio->index_width * 2) != zio->index_width * 2)
-			Array<byte>^ buff = ref new Array<byte>( index_width * 2 );
+			Array<byte>^ buff = ref new Array<byte>( 8 );
 			ReadRaw( index_width * 2, buff );
-			byte* temporary_buffer = buff->Data;
+			char* temporary_buffer = ( char * ) buff->Data;
 
 
+			off_t slice_location;
+			off_t next_slice_location;
 			switch ( index_width ) {
 			case 2:
 				slice_location = zio_uint2( temporary_buffer );
@@ -198,13 +186,14 @@ void Zio::ReadEBZip( size_t length, WriteOnlyArray<byte>^ ibuffer )
 				next_slice_location = zio_uint5( temporary_buffer + 5 );
 				break;
 			default:
-				goto failed;
+				EBException::Throw( EBErrorCode::EB_ERR_FAIL_READ_EBZ );
 			}
-			zipped_slice_size = next_slice_location - slice_location;
+
+			size_t zipped_slice_size = next_slice_location - slice_location;
 
 			if ( next_slice_location <= slice_location
 				|| slice_size < zipped_slice_size )
-				goto failed;
+				EBException::Throw( EBErrorCode::EB_ERR_FAIL_READ_EBZ );
 
 			/*
 			 * Read a compressed slice from `file' and uncompress it.
@@ -214,56 +203,46 @@ void Zio::ReadEBZip( size_t length, WriteOnlyArray<byte>^ ibuffer )
 			 */
 			LSeekRaw( slice_location );
 
-			// ORG: 
-			cache_buffer = UnzipSlice( zipped_slice_size );
+			UnzipSlice( zipped_slice_size, cache_buffer );
 
 			cache_zio_id = id;
 		}
 
 		/*
 		 * Copy data from `cache_buffer' to `buffer'.
-		n = slice_size - ( location % slice_size );
-		if ( length - read_length < n )
-			n = length - read_length;
-		if ( file_size - location < n )
-			n = file_size - location;
-		memcpy( buffer + read_length,
-			cache_buffer + ( location % slice_size ), n );
+		 */
+		int n = slice_size - ( location % slice_size );
+		if ( length - read_length < n ) n = length - read_length;
+		if ( file_size - location < n ) n = file_size - location;
+
+		byte* buffer = ibuffer->Data;
+		memcpy_s( buffer + read_length, n
+			, cache_buffer + ( location % slice_size ), n );
+
 		read_length += n;
 		location += n;
-		 */
 	}
-
-succeeded:
-	throw ref new NotImplementedException();
-
-	/*
-	 * An error occurs...
-	 */
-failed:
-	throw ref new NotImplementedException();
 }
 
-byte* Zio::UnzipSlice( size_t zipped_slice_size )
+void Zio::UnzipSlice( size_t zipped_slice_size, byte *out_buffer )
 {
-	byte* out_buffer = nullptr;
-	throw ref new NotImplementedException();
-	/*
 	char in_buffer[ ZIO_SIZE_PAGE ];
+
 	z_stream stream;
 	size_t read_length;
 	int z_result;
 
-	LOG( ( "in: zio_unzip_slice_ebzip1(zio=%d, zipped_slice_size=%ld)",
-		( int ) id, ( long ) zipped_slice_size ) );
-
-	if ( slice_size == zipped_slice_size ) {
+	if ( slice_size == zipped_slice_size )
+	{
 		/*
 		 * The input slice is not compressed.
 		 * Read the target page in the slice.
 		 * ORG. if ( zio_read_raw( zio, out_buffer, zipped_slice_size ) != zipped_slice_size )
 		 *
-		out_buffer = ReadRaw( zipped_slice_size );
+		 */
+		Array<byte>^ buff = ref new Array<byte>( zipped_slice_size );
+		ReadRaw( zipped_slice_size, buff );
+		out_buffer = buff->Data;
 	}
 	else
 	{
@@ -271,61 +250,61 @@ byte* Zio::UnzipSlice( size_t zipped_slice_size )
 		 * The input slice is compressed.
 		 * Read and uncompress the target page in the slice.
 		 *
+		 */
 		stream.zalloc = NULL;
 		stream.zfree = NULL;
 		stream.opaque = NULL;
 
 		if ( inflateInit( &stream ) != Z_OK )
-			goto failed;
+			EBException::Throw( EBErrorCode::EB_ERR_FAIL_READ_EBZ );
 
 		stream.next_in = ( Bytef * ) in_buffer;
 		stream.avail_in = 0;
 		stream.next_out = ( Bytef * ) out_buffer;
 		stream.avail_out = slice_size;
 
-		while ( stream.total_out < slice_size ) {
+		while ( stream.total_out < slice_size )
+		{
 			if ( 0 < stream.avail_in )
-				memmove( in_buffer, stream.next_in, stream.avail_in );
+				memmove_s( in_buffer, stream.avail_in, stream.next_in, stream.avail_in );
 
-			if ( zipped_slice_size - stream.total_in < ZIO_SIZE_PAGE ) {
-				read_length = zipped_slice_size - stream.total_in
-					- stream.avail_in;
+			if ( zipped_slice_size - stream.total_in < ZIO_SIZE_PAGE )
+			{
+				read_length = zipped_slice_size - stream.total_in - stream.avail_in;
 			}
-			else {
+			else
+			{
 				read_length = ZIO_SIZE_PAGE - stream.avail_in;
 			}
 
-			if ( zio_read_raw( zio, in_buffer + stream.avail_in,
-				read_length ) != read_length )
-				goto failed;
+			Array<byte>^ buff = ref new Array<byte>( read_length );
+			ReadRaw( read_length, buff );
+			memcpy_s( in_buffer + stream.avail_in, read_length, buff->Data, read_length );
 
 			stream.next_in = ( Bytef * ) in_buffer;
 			stream.avail_in += read_length;
 			stream.avail_out = slice_size - stream.total_out;
 
-			z_result = inflate( &stream, Z_SYNC_FLUSH );
-			if ( z_result == Z_STREAM_END ) {
-				break;
+			try
+			{
+				z_result = inflate( &stream, Z_SYNC_FLUSH );
+				if ( z_result == Z_STREAM_END )
+				{
+					break;
+				}
+				else if ( z_result != Z_OK && z_result != Z_BUF_ERROR )
+				{
+					EBException::Throw( EBErrorCode::EB_ERR_FAIL_READ_EBZ );
+				}
 			}
-			else if ( z_result != Z_OK && z_result != Z_BUF_ERROR ) {
-				goto failed;
+			catch ( Exception^ ex )
+			{
+				inflateEnd( &stream );
+				throw ex;
 			}
+
 		}
-
-		inflateEnd( &stream );
 	}
-
-	LOG( ( "out: zio_unzip_slice_ebzip1() = %d", 0 ) );
-	return 0;
-
-	/*
-	 * An error occurs...
-	 *
-failed:
-	LOG( ( "out: zio_unzip_slice_ebzip1() = %d", -1 ) );
-	inflateEnd( &stream );
-	return -1;
-	*/
 }
 
 void Zio::OpenPlain()

@@ -101,6 +101,9 @@ static const wchar_t * const error_messages[] = {
 	L"booklist not bound",
 	L"no such book",
 
+	/* 70 -- 74 */
+	L"Failed to read ebz",
+
 };
 
 
