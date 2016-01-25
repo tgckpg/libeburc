@@ -6,226 +6,233 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="eburc">
-      <UniqueIdentifier>{1bea14b4-8439-4329-bf1c-ac9cf85035e2}</UniqueIdentifier>
+      <UniqueIdentifier>{136b888e-dedb-43d8-a168-0757a073bc9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\Search">
+      <UniqueIdentifier>{b70f69ae-357e-41b4-b0fb-2f30ec5ee842}</UniqueIdentifier>
     </Filter>
     <Filter Include="eburc\Contexts">
-      <UniqueIdentifier>{2471c29a-194b-48c7-b1e8-89ec0042c6a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="eburc\Font">
-      <UniqueIdentifier>{b9aa2e31-68af-4aad-aa83-a2bd80fde6d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="eburc\Helpers">
-      <UniqueIdentifier>{9fe8de29-867b-478b-bafe-9f06f2c696d6}</UniqueIdentifier>
+      <UniqueIdentifier>{34e8701f-28eb-45cb-b5d7-cf1cee7b1591}</UniqueIdentifier>
     </Filter>
     <Filter Include="eburc\Objects">
-      <UniqueIdentifier>{05db2761-b50a-4357-a8f3-7fb79d437dd2}</UniqueIdentifier>
+      <UniqueIdentifier>{ca54d97e-e255-47df-a6c1-bf1f37499f03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="eburc\Subbook">
-      <UniqueIdentifier>{2ffa3147-b022-447f-9ed4-5d4759f5f720}</UniqueIdentifier>
+    <Filter Include="eburc\Font">
+      <UniqueIdentifier>{35da898c-6c9f-4347-9eef-b509047002d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="eburc\Appendix">
-      <UniqueIdentifier>{ca4a9f0f-87cf-4b1e-9e13-1c3074c128ef}</UniqueIdentifier>
+    <Filter Include="eburc\Helpers">
+      <UniqueIdentifier>{bf927459-b8fa-410d-b393-8cd1b27c5b70}</UniqueIdentifier>
     </Filter>
     <Filter Include="eburc\Book">
-      <UniqueIdentifier>{e7483afe-016e-4983-be57-e465af14e777}</UniqueIdentifier>
+      <UniqueIdentifier>{d113cd1a-12d3-4412-a151-e7731b3cf032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\Subbook">
+      <UniqueIdentifier>{98ae5c19-d325-4c75-bfbd-cde383b7382a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="eburc\Appendix">
+      <UniqueIdentifier>{1c51f103-0754-4241-bd6c-5c3cbbfa74c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="EBInfo.cpp" />
-    <ClCompile Include="Zio.cpp">
+    <ClCompile Include="eburc\EBException.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
-    <ClCompile Include="EBException.cpp">
+    <ClCompile Include="eburc\EBInfo.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
-    <ClCompile Include="EBSearch.cpp">
+    <ClCompile Include="eburc\Zio.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
-    <ClCompile Include="EBMultiSearch.cpp">
-      <Filter>eburc</Filter>
+    <ClCompile Include="eburc\Appendix\EBAppendix.cpp">
+      <Filter>eburc\Appendix</Filter>
     </ClCompile>
-    <ClCompile Include="EBSearchContext.cpp">
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbook.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbookNarrowAlt.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbookWideAlt.cpp">
+      <Filter>eburc\Appendix</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\CharRange.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Contexts\EBBinaryContext.cpp">
       <Filter>eburc\Contexts</Filter>
     </ClCompile>
-    <ClCompile Include="EBBinaryContext.cpp">
+    <ClCompile Include="eburc\Book\EBBookText.cpp">
+      <Filter>eburc\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Book\EBBook.cpp">
+      <Filter>eburc\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Book\EBBookABI.cpp">
+      <Filter>eburc\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBAlternationCache.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Font\EBFont.cpp">
+      <Filter>eburc\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBHit.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBHook.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBHookSet.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBHookSetInternal.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBPosition.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Search\EBSearch.cpp">
+      <Filter>eburc\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Contexts\EBSearchContext.cpp">
+      <Filter>eburc\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbook.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookABI.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookExactWord.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookFont.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookSearch.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookSetWord.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookText.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Font\EBNarrowFont.cpp">
+      <Filter>eburc\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Search\EBMultiSearch.cpp">
+      <Filter>eburc\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Helpers\EBUTF8Table.cpp">
+      <Filter>eburc\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Contexts\EBTextContext.cpp">
       <Filter>eburc\Contexts</Filter>
     </ClCompile>
-    <ClCompile Include="EBTextContext.cpp">
-      <Filter>eburc\Contexts</Filter>
-    </ClCompile>
-    <ClCompile Include="EBFont.cpp">
+    <ClCompile Include="eburc\Font\EBWideFont.cpp">
       <Filter>eburc\Font</Filter>
     </ClCompile>
-    <ClCompile Include="EBNarrowFont.cpp">
-      <Filter>eburc\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="EBWideFont.cpp">
-      <Filter>eburc\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="FileName.cpp">
+    <ClCompile Include="eburc\Helpers\FileName.cpp">
       <Filter>eburc\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="JACode.cpp">
+    <ClCompile Include="eburc\Helpers\JACode.cpp">
       <Filter>eburc\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="EBUTF8Table.cpp">
+    <ClCompile Include="eburc\Search\Match.cpp">
+      <Filter>eburc\Search</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Helpers\Utils.cpp">
       <Filter>eburc\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
-      <Filter>eburc\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="EBPosition.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="CharRange.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="EBHook.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="EBHookSet.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbook.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookText.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookSearch.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookFont.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBAppendix.cpp">
-      <Filter>eburc\Appendix</Filter>
-    </ClCompile>
-    <ClCompile Include="EBAppendixSubbook.cpp">
-      <Filter>eburc\Appendix</Filter>
-    </ClCompile>
-    <ClCompile Include="EBBook.cpp">
-      <Filter>eburc\Book</Filter>
-    </ClCompile>
-    <ClCompile Include="EBBookText.cpp">
-      <Filter>eburc\Book</Filter>
-    </ClCompile>
-    <ClCompile Include="EBBookABI.cpp">
-      <Filter>eburc\Book</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookABI.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBAppendixSubbookWideAlt.cpp">
-      <Filter>eburc\Appendix</Filter>
-    </ClCompile>
-    <ClCompile Include="EBAlternationCache.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="EBAppendixSubbookNarrowAlt.cpp">
-      <Filter>eburc\Appendix</Filter>
-    </ClCompile>
-    <ClCompile Include="EBHookSetInternal.cpp">
-      <Filter>eburc\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookExactWord.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="EBSubbookSetWord.cpp">
-      <Filter>eburc\Subbook</Filter>
-    </ClCompile>
-    <ClCompile Include="Match.cpp">
-      <Filter>eburc\Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="EBHit.cpp">
-      <Filter>eburc\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="EBInfo.h" />
-    <ClInclude Include="defs.h">
+    <ClInclude Include="eburc\build-post.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="Zio.h">
+    <ClInclude Include="eburc\defs.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="EBException.h">
+    <ClInclude Include="eburc\EBException.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="build-post.h">
+    <ClInclude Include="eburc\EBInfo.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="EBSearch.h">
+    <ClInclude Include="eburc\Zio.h">
       <Filter>eburc</Filter>
     </ClInclude>
-    <ClInclude Include="EBMultiSearch.h">
-      <Filter>eburc</Filter>
-    </ClInclude>
-    <ClInclude Include="EBSearchContext.h">
-      <Filter>eburc\Contexts</Filter>
-    </ClInclude>
-    <ClInclude Include="EBBinaryContext.h">
-      <Filter>eburc\Contexts</Filter>
-    </ClInclude>
-    <ClInclude Include="EBTextContext.h">
-      <Filter>eburc\Contexts</Filter>
-    </ClInclude>
-    <ClInclude Include="EBFont.h">
-      <Filter>eburc\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="EBNarrowFont.h">
-      <Filter>eburc\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="EBWideFont.h">
-      <Filter>eburc\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="JACode.h">
-      <Filter>eburc\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="FileName.h">
-      <Filter>eburc\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="EBUTF8Table.h">
-      <Filter>eburc\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>eburc\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="EBPosition.h">
-      <Filter>eburc\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="CharRange.h">
-      <Filter>eburc\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="EBHookSet.h">
-      <Filter>eburc\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="EBHook.h">
-      <Filter>eburc\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="EBSubbook.h">
-      <Filter>eburc\Subbook</Filter>
-    </ClInclude>
-    <ClInclude Include="EBAppendix.h">
+    <ClInclude Include="eburc\Appendix\EBAppendix.h">
       <Filter>eburc\Appendix</Filter>
     </ClInclude>
-    <ClInclude Include="EBAppendixSubbook.h">
+    <ClInclude Include="eburc\Appendix\EBAppendixSubbook.h">
       <Filter>eburc\Appendix</Filter>
     </ClInclude>
-    <ClInclude Include="EBBook.h">
+    <ClInclude Include="eburc\Objects\CharRange.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Contexts\EBBinaryContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Book\EBBook.h">
       <Filter>eburc\Book</Filter>
     </ClInclude>
-    <ClInclude Include="EBAlternationCache.h">
+    <ClInclude Include="eburc\Objects\EBAlternationCache.h">
       <Filter>eburc\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Match.h">
+    <ClInclude Include="eburc\Font\EBFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Objects\EBHit.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Objects\EBHook.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Objects\EBHookSet.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Objects\EBPosition.h">
+      <Filter>eburc\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Search\EBSearch.h">
+      <Filter>eburc\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Contexts\EBSearchContext.h">
+      <Filter>eburc\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Subbook\EBSubbook.h">
+      <Filter>eburc\Subbook</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Font\EBNarrowFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Search\EBMultiSearch.h">
+      <Filter>eburc\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Helpers\EBUTF8Table.h">
       <Filter>eburc\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="EBHit.h">
-      <Filter>eburc\Objects</Filter>
+    <ClInclude Include="eburc\Contexts\EBTextContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Font\EBWideFont.h">
+      <Filter>eburc\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Helpers\FileName.h">
+      <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Helpers\JACode.h">
+      <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Search\Match.h">
+      <Filter>eburc\Search</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Helpers\Utils.h">
+      <Filter>eburc\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

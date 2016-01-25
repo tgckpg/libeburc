@@ -214,72 +214,75 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="build-post.h" />
-    <ClInclude Include="CharRange.h" />
-    <ClInclude Include="defs.h" />
-    <ClInclude Include="EBAlternationCache.h" />
-    <ClInclude Include="EBAppendix.h" />
-    <ClInclude Include="EBAppendixSubbook.h" />
-    <ClInclude Include="EBBinaryContext.h" />
-    <ClInclude Include="EBBook.h" />
-    <ClInclude Include="EBException.h" />
-    <ClInclude Include="EBFont.h" />
-    <ClInclude Include="EBHit.h" />
-    <ClInclude Include="EBHook.h" />
-    <ClInclude Include="EBHookSet.h" />
-    <ClInclude Include="EBMultiSearch.h" />
-    <ClInclude Include="EBNarrowFont.h" />
-    <ClInclude Include="EBPosition.h" />
-    <ClInclude Include="EBSearch.h" />
-    <ClInclude Include="EBSearchContext.h" />
-    <ClInclude Include="EBSubbook.h" />
-    <ClInclude Include="EBTextContext.h" />
-    <ClInclude Include="EBUTF8Table.h" />
-    <ClInclude Include="EBWideFont.h" />
-    <ClInclude Include="FileName.h" />
-    <ClInclude Include="JACode.h" />
-    <ClInclude Include="Match.h" />
+    <ClInclude Include="eburc\Appendix\EBAppendix.h" />
+    <ClInclude Include="eburc\Appendix\EBAppendixSubbook.h" />
+    <ClInclude Include="eburc\Book\EBBook.h" />
+    <ClInclude Include="eburc\build-post.h" />
+    <ClInclude Include="eburc\Contexts\EBBinaryContext.h" />
+    <ClInclude Include="eburc\Contexts\EBSearchContext.h" />
+    <ClInclude Include="eburc\Contexts\EBTextContext.h" />
+    <ClInclude Include="eburc\defs.h" />
+    <ClInclude Include="eburc\EBException.h" />
+    <ClInclude Include="eburc\EBInfo.h" />
+    <ClInclude Include="eburc\Font\EBFont.h" />
+    <ClInclude Include="eburc\Font\EBNarrowFont.h" />
+    <ClInclude Include="eburc\Font\EBWideFont.h" />
+    <ClInclude Include="eburc\Helpers\EBUTF8Table.h" />
+    <ClInclude Include="eburc\Helpers\FileName.h" />
+    <ClInclude Include="eburc\Helpers\JACode.h" />
+    <ClInclude Include="eburc\Helpers\Utils.h" />
+    <ClInclude Include="eburc\Objects\CharRange.h" />
+    <ClInclude Include="eburc\Objects\EBAlternationCache.h" />
+    <ClInclude Include="eburc\Objects\EBHit.h" />
+    <ClInclude Include="eburc\Objects\EBHook.h" />
+    <ClInclude Include="eburc\Objects\EBHookSet.h" />
+    <ClInclude Include="eburc\Objects\EBPosition.h" />
+    <ClInclude Include="eburc\Search\EBMultiSearch.h" />
+    <ClInclude Include="eburc\Search\EBSearch.h" />
+    <ClInclude Include="eburc\Search\Match.h" />
+    <ClInclude Include="eburc\Subbook\EBSubbook.h" />
+    <ClInclude Include="eburc\Zio.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="EBInfo.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Utils.h" />
-    <ClInclude Include="Zio.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CharRange.cpp" />
-    <ClCompile Include="EBAlternationCache.cpp" />
-    <ClCompile Include="EBAppendix.cpp" />
-    <ClCompile Include="EBAppendixSubbook.cpp" />
-    <ClCompile Include="EBAppendixSubbookNarrowAlt.cpp" />
-    <ClCompile Include="EBAppendixSubbookWideAlt.cpp" />
-    <ClCompile Include="EBBinaryContext.cpp" />
-    <ClCompile Include="EBBook.cpp" />
-    <ClCompile Include="EBBookABI.cpp" />
-    <ClCompile Include="EBBookText.cpp" />
-    <ClCompile Include="EBException.cpp" />
-    <ClCompile Include="EBFont.cpp" />
-    <ClCompile Include="EBHit.cpp" />
-    <ClCompile Include="EBHook.cpp" />
-    <ClCompile Include="EBHookSetInternal.cpp" />
-    <ClCompile Include="EBHookSet.cpp" />
-    <ClCompile Include="EBMultiSearch.cpp" />
-    <ClCompile Include="EBNarrowFont.cpp" />
-    <ClCompile Include="EBPosition.cpp" />
-    <ClCompile Include="EBSearch.cpp" />
-    <ClCompile Include="EBSearchContext.cpp" />
-    <ClCompile Include="EBSubbook.cpp" />
-    <ClCompile Include="EBSubbookABI.cpp" />
-    <ClCompile Include="EBSubbookExactWord.cpp" />
-    <ClCompile Include="EBSubbookFont.cpp" />
-    <ClCompile Include="EBSubbookSearch.cpp" />
-    <ClCompile Include="EBSubbookSetWord.cpp" />
-    <ClCompile Include="EBSubbookText.cpp" />
-    <ClCompile Include="EBTextContext.cpp" />
-    <ClCompile Include="EBUTF8Table.cpp" />
-    <ClCompile Include="EBWideFont.cpp" />
-    <ClCompile Include="FileName.cpp" />
-    <ClCompile Include="JACode.cpp" />
-    <ClCompile Include="Match.cpp" />
+    <ClCompile Include="eburc\Appendix\EBAppendix.cpp" />
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbook.cpp" />
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbookNarrowAlt.cpp" />
+    <ClCompile Include="eburc\Appendix\EBAppendixSubbookWideAlt.cpp" />
+    <ClCompile Include="eburc\Book\EBBook.cpp" />
+    <ClCompile Include="eburc\Book\EBBookABI.cpp" />
+    <ClCompile Include="eburc\Book\EBBookText.cpp" />
+    <ClCompile Include="eburc\Contexts\EBBinaryContext.cpp" />
+    <ClCompile Include="eburc\Contexts\EBSearchContext.cpp" />
+    <ClCompile Include="eburc\Contexts\EBTextContext.cpp" />
+    <ClCompile Include="eburc\EBException.cpp" />
+    <ClCompile Include="eburc\EBInfo.cpp" />
+    <ClCompile Include="eburc\Font\EBFont.cpp" />
+    <ClCompile Include="eburc\Font\EBNarrowFont.cpp" />
+    <ClCompile Include="eburc\Font\EBWideFont.cpp" />
+    <ClCompile Include="eburc\Helpers\EBUTF8Table.cpp" />
+    <ClCompile Include="eburc\Helpers\FileName.cpp" />
+    <ClCompile Include="eburc\Helpers\JACode.cpp" />
+    <ClCompile Include="eburc\Helpers\Utils.cpp" />
+    <ClCompile Include="eburc\Objects\CharRange.cpp" />
+    <ClCompile Include="eburc\Objects\EBAlternationCache.cpp" />
+    <ClCompile Include="eburc\Objects\EBHit.cpp" />
+    <ClCompile Include="eburc\Objects\EBHook.cpp" />
+    <ClCompile Include="eburc\Objects\EBHookSet.cpp" />
+    <ClCompile Include="eburc\Objects\EBHookSetInternal.cpp" />
+    <ClCompile Include="eburc\Objects\EBPosition.cpp" />
+    <ClCompile Include="eburc\Search\EBMultiSearch.cpp" />
+    <ClCompile Include="eburc\Search\EBSearch.cpp" />
+    <ClCompile Include="eburc\Search\Match.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbook.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookABI.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookExactWord.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookFont.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookSearch.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookSetWord.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookText.cpp" />
+    <ClCompile Include="eburc\Zio.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -288,9 +291,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="EBInfo.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="Zio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libeburc.rc" />
