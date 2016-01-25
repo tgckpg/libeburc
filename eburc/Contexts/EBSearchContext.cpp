@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "eburc/Contexts/EBSearchContext.h"
+#include "EBSearchContext.h"
 
 using namespace libeburc;
 
@@ -32,10 +32,10 @@ EBSearchContext::EBSearchContext( EBSearchContext^ Context )
 	comparison_result = Context->comparison_result;
 
 	size_t csize = strlen( Context->word );
-	strcpy_s( word, csize, Context->word );
+	if ( 0 < csize ) strcpy_s( word, csize + 1, Context->word );
 
 	csize = strlen( Context->canonicalized_word );
-	strcpy_s( canonicalized_word, csize, Context->canonicalized_word );
+	if ( 0 < csize ) strcpy_s( canonicalized_word, csize + 1, Context->canonicalized_word );
 
 	page = Context->page;
 	offset = Context->offset;

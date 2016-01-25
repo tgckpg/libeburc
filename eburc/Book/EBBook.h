@@ -4,6 +4,7 @@
 #include <eburc/defs.h>
 #include <eburc/Helpers/FileName.h>
 #include <eburc/Helpers/JACode.h>
+#include <eburc/Contexts/EBContext.h>
 #include <eburc/Contexts/EBSearchContext.h>
 #include <eburc/Contexts/EBBinaryContext.h>
 #include <eburc/Contexts/EBTextContext.h>
@@ -75,6 +76,7 @@ namespace libeburc
 		void ResetSearchContext();
 		void ResetTextContext();
 		void ResetBinaryContext();
+		EBContext^ AcquireContext( int index, EBContextType type );
 		void InvalidateTextContext();
 
 		/*

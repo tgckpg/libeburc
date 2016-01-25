@@ -292,6 +292,11 @@ namespace libeburc
 		 * (for keyword search.)
 		 */
 		void ForwardHeading();
+		/*
+		 * Get text in the current subbook in `book'.
+		 */
+		void ReadHeading( EBAppendixSubbook^ appendix, EBHookSet^ hookset,
+			void *container, size_t text_max_length, char *text, SSIZE_T *text_length );
 		#pragma endregion
 
 		#pragma region UTF8
@@ -326,6 +331,7 @@ namespace libeburc
 		void PreSearchWord( EBSearchContext^ context );
 
 		void SeachExactWord( const char * input_word );
+		void SearchKeyword( const char * const input_words[] );
 		/*
 		 * Get hit entries of a submitted exactword/word/endword search request.
 		 */
@@ -354,6 +360,16 @@ namespace libeburc
 		 */
 		void SetWord( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
 
+		/*
+		 * Make a fixed word and a cannonicalized word for `KEYWORD SEARCH'
+		 * or `CROSS SEARCH'.
+		 *
+		 * If `inputword' is a KANA word,  EB_WORD_KANA is returned.
+		 * If `inputword' is a alphabetic word, EB_WORD_ALPHABET is returned.
+		 * Otherwise, -1 is returned.  It means that an error occurs.
+		 */
+		void SetKeyword( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
+
 		void FixWord( const EBSearch^ search, char *word, char *canonicalized_word );
 		#pragma endregion
 
@@ -364,7 +380,7 @@ namespace libeburc
 
 		EBSubbookCode code;
 		String^ GetPage( EBPosition^ Pos, ReadAction^ Action = nullptr, EBHookSet^ HookSet = ref new EBHookSet() );
-		IIterable<EBHit^>^ EBSubbook::Search( const char *phrase, EBSearchCode Code );
+		IIterable<EBHit^>^ EBSubbook::Search( const char **phrases, EBSearchCode Code );
 	public:
 		/// <summary>
 		/// Subbook ID.
@@ -402,7 +418,7 @@ namespace libeburc
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action );
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet );
 
-		IAsyncOperation<IIterable<EBHit^>^>^ SearchAysnc( String^ Phrase, EBSearchCode Code );
+		IAsyncOperation<IIterable<EBHit^>^>^ SearchAysnc( IVector<String^>^ Phrases, EBSearchCode Code );
 	};
 }
 

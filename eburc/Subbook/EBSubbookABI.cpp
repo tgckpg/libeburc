@@ -45,7 +45,7 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 	return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
 }
 
-IIterable<EBHit^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
+IIterable<EBHit^>^ EBSubbook::Search( const char** phrase, EBSearchCode Code )
 {
 	Vector<EBHit^>^ results = ref new Vector<EBHit^>();
 
@@ -55,14 +55,16 @@ IIterable<EBHit^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
 		{
 		case EBSearchCode::EB_SEARCH_CROSS:
 		case EBSearchCode::EB_SEARCH_ENDWORD:
-		case EBSearchCode::EB_SEARCH_KEYWORD:
 		case EBSearchCode::EB_SEARCH_MULTI:
 		case EBSearchCode::EB_SEARCH_WORD:
 			throw ref new NotImplementedException( "This method is not yet implemented" );
 		case EBSearchCode::EB_SEARCH_NONE:
 			break;
+		case EBSearchCode::EB_SEARCH_KEYWORD:
+			SearchKeyword( phrase );
+			break;
 		case EBSearchCode::EB_SEARCH_EXACTWORD:
-			SeachExactWord( phrase );
+			SeachExactWord( phrase[0] );
 			break;
 
 		default:
@@ -106,10 +108,20 @@ IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos, ReadAction^ 
 	return create_async( [ = ] { return GetPage( Pos, Action, HookSet ); } );
 }
 
-IAsyncOperation<IIterable<EBHit^>^>^ EBSubbook::SearchAysnc( String^ Phrase, EBSearchCode Code )
+IAsyncOperation<IIterable<EBHit^>^>^ EBSubbook::SearchAysnc( IVector<String^>^ Phrases, EBSearchCode Code )
 {
 	return create_async( [ = ]
 	{
-		return Search( ( char * ) Utils::Utf82EucJP( Phrase->Data() ), Code );
+		const char **converted = new const char*[ Phrases->Size ];
+
+		int i = 0;
+		for_each( begin( Phrases ), end( Phrases ), [&] ( String^ phrase )
+		{
+			char * n = ( char * ) Utils::Utf82EucJP( phrase->Data() );
+			converted[ i++ ] = n;
+		} );
+		converted[ i ] = NULL;
+
+		return Search( converted, Code );
 	} );
 }

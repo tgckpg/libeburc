@@ -1,12 +1,13 @@
 #pragma once
 
 #include <eburc/defs.h>
+#include <eburc/Contexts/EBContext.h>
 #include <eburc/Objects/EBPosition.h>
 #include <eburc/build-post.h>
 
 namespace libeburc
 {
-	ref class EBSearchContext sealed
+	ref class EBSearchContext sealed : EBContext
 	{
 	internal:
 		/*

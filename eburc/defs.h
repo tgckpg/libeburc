@@ -415,4 +415,5 @@ namespace libeburc
 		EB_ERR_ZIO_SEEK_FAILED,
 	};
 
+	enum EBContextType { BINARY, TEXT, SEARCH };
 }

@@ -1,9 +1,10 @@
 #pragma once
 #include <eburc/defs.h>
+#include <eburc/Contexts/EBContext.h>
 
 namespace libeburc
 {
-	ref class EBTextContext sealed
+	ref class EBTextContext sealed : EBContext
 	{
 	internal:
 		/*

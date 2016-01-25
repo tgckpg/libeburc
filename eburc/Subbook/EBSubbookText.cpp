@@ -1358,7 +1358,7 @@ void EBSubbook::ForwardHeading()
 		/*
 		 * Forward text
 		 */
-		ReadTextInternal( nullptr, nullptr, NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
+		ReadTextInternal( nullptr, ref new EBHookSet(), NULL, EB_SIZE_PAGE, NULL, NULL, 1 );
 
 		ParentBook->ResetTextContext();
 	}
@@ -1367,6 +1367,58 @@ void EBSubbook::ForwardHeading()
 		if ( ex->HResult != ( int ) EBErrorCode::EB_ERR_END_OF_CONTENT )
 			ParentBook->InvalidateTextContext();
 
+		throw ex;
+	}
+}
+
+void EBSubbook::ReadHeading( EBAppendixSubbook^ appendix, EBHookSet^ hookset,
+	void *container, size_t text_max_length, char *text, SSIZE_T *text_length )
+{
+	try
+	{
+		/*
+		 * Current subbook must have been set and START file must exist.
+		 */
+		if ( TextZio == nullptr )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_NO_TEXT );
+		}
+
+		/*
+		 * Use `eb_default_hookset' when `hookset' is `NULL'.
+		 */
+		if ( hookset == nullptr )
+			hookset = ref new EBHookSet();
+
+		/*
+		 * Set text mode to `heading'.
+		 */
+		if ( ParentBook->text_context->code == EBTextCode::EB_TEXT_INVALID )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_NO_PREV_SEEK );
+		}
+		else if ( ParentBook->text_context->code == EBTextCode::EB_TEXT_SEEKED )
+		{
+			ParentBook->ResetTextContext();
+			ParentBook->text_context->code = EBTextCode::EB_TEXT_HEADING;
+
+			EBHook^ hook = hookset->hooks[ ( int ) EBHookCode::EB_HOOK_INITIALIZE ];
+			hook->tryFunc( this, appendix, container, EBHookCode::EB_HOOK_INITIALIZE, 0, NULL );
+		}
+		else if ( ParentBook->text_context->code != EBTextCode::EB_TEXT_HEADING )
+		{
+			EBException::Throw( EBErrorCode::EB_ERR_DIFF_CONTENT );
+		}
+
+		ReadTextInternal( appendix, hookset, container,
+			text_max_length, text, text_length, 0 );
+	}
+	catch ( Exception^ ex )
+	{
+		/*
+		 * An error occurs...
+		 */
+		ParentBook->InvalidateTextContext();
 		throw ex;
 	}
 }

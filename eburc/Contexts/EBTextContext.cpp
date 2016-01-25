@@ -21,7 +21,7 @@ EBTextContext::EBTextContext( EBTextContext^ Context )
 	auto_stop_code = Context->auto_stop_code;
 
 	size_t csize = strlen( Context->candidate );
-	strcpy_s( candidate, csize, Context->candidate );
+	if( 0 < csize ) strcpy_s( candidate, csize + 1, Context->candidate );
 
 	is_candidate = Context->is_candidate;
 	ebxac_gaiji_flag = Context->ebxac_gaiji_flag;

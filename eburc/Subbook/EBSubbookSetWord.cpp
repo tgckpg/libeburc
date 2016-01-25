@@ -73,6 +73,28 @@ void EBSubbook::SetWord( const char *input_word, char *word,
 	FixWord( search, word, canonicalized_word );
 }
 
+void EBSubbook::SetKeyword( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code )
+{
+	/*
+	 * Make a fixed word and a canonicalized word from `input_word'.
+	 */
+	if ( ParentBook->character_code == EBCharCode::EB_CHARCODE_ISO8859_1 )
+		JACode::ConvertLatin( input_word, word, word_code );
+	else if ( ParentBook->character_code == EBCharCode::EB_CHARCODE_UTF8 )
+		ConvertUtf8( input_word, word, word_code );
+	else
+		JACode::ConvertEUCJP( input_word, word, word_code );
+
+	size_t slen = strlen( word );
+	memcpy_s( canonicalized_word, slen , word, slen );
+
+	/*
+	 * Fix the word.
+	 */
+	FixWord( keyword, word, canonicalized_word );
+}
+
+
 void EBSubbook::ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code )
 {
 	char *wp = ( char * ) word;

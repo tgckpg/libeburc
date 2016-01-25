@@ -219,6 +219,7 @@
     <ClInclude Include="eburc\Book\EBBook.h" />
     <ClInclude Include="eburc\build-post.h" />
     <ClInclude Include="eburc\Contexts\EBBinaryContext.h" />
+    <ClInclude Include="eburc\Contexts\EBContext.h" />
     <ClInclude Include="eburc\Contexts\EBSearchContext.h" />
     <ClInclude Include="eburc\Contexts\EBTextContext.h" />
     <ClInclude Include="eburc\defs.h" />
@@ -254,6 +255,7 @@
     <ClCompile Include="eburc\Book\EBBookABI.cpp" />
     <ClCompile Include="eburc\Book\EBBookText.cpp" />
     <ClCompile Include="eburc\Contexts\EBBinaryContext.cpp" />
+    <ClCompile Include="eburc\Contexts\EBContext.cpp" />
     <ClCompile Include="eburc\Contexts\EBSearchContext.cpp" />
     <ClCompile Include="eburc\Contexts\EBTextContext.cpp" />
     <ClCompile Include="eburc\EBException.cpp" />
@@ -279,6 +281,7 @@
     <ClCompile Include="eburc\Subbook\EBSubbookABI.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookExactWord.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookFont.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookKeyword.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookSearch.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookSetWord.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookText.cpp" />

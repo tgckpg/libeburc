@@ -95,9 +95,6 @@
     <ClCompile Include="eburc\Search\EBSearch.cpp">
       <Filter>eburc\Search</Filter>
     </ClCompile>
-    <ClCompile Include="eburc\Contexts\EBSearchContext.cpp">
-      <Filter>eburc\Search</Filter>
-    </ClCompile>
     <ClCompile Include="eburc\Subbook\EBSubbook.cpp">
       <Filter>eburc\Subbook</Filter>
     </ClCompile>
@@ -145,6 +142,15 @@
     </ClCompile>
     <ClCompile Include="eburc\Helpers\Utils.cpp">
       <Filter>eburc\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookKeyword.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Contexts\EBSearchContext.cpp">
+      <Filter>eburc\Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Contexts\EBContext.cpp">
+      <Filter>eburc\Contexts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,9 +207,6 @@
     <ClInclude Include="eburc\Search\EBSearch.h">
       <Filter>eburc\Search</Filter>
     </ClInclude>
-    <ClInclude Include="eburc\Contexts\EBSearchContext.h">
-      <Filter>eburc\Search</Filter>
-    </ClInclude>
     <ClInclude Include="eburc\Subbook\EBSubbook.h">
       <Filter>eburc\Subbook</Filter>
     </ClInclude>
@@ -233,6 +236,12 @@
     </ClInclude>
     <ClInclude Include="eburc\Helpers\Utils.h">
       <Filter>eburc\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Contexts\EBSearchContext.h">
+      <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Contexts\EBContext.h">
+      <Filter>eburc\Contexts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

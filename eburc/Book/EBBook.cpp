@@ -483,8 +483,8 @@ void EBBook::LoadLanguage()
 
 void EBBook::ResetSearchContext()
 {
-	search_contexts = ref new Vector<EBSearchContext^>();
-	search_contexts->Append( ref new EBSearchContext() );
+	search_contexts = ref new Vector<EBSearchContext^>( EB_NUMBER_OF_SEARCH_CONTEXTS );
+	search_contexts->SetAt( 0, ref new EBSearchContext() );
 }
 
 void EBBook::ResetBinaryContext()
@@ -503,4 +503,27 @@ void EBBook::InvalidateTextContext()
 {
 	ResetTextContext();
 	text_context->code = EBTextCode::EB_TEXT_INVALID;
+}
+
+EBContext^ EBBook::AcquireContext( int i, EBContextType type )
+{
+	EBContext^ context;
+	switch ( type )
+	{
+	case EBContextType::SEARCH:
+		if ( search_contexts->Size < i )
+		{
+			context = search_contexts->GetAt( i );
+		}
+		else
+		{
+			EBSearchContext^ S = ref new EBSearchContext();
+			search_contexts->SetAt( i, S );
+			context = S;
+		}
+		break;
+	default:
+		throw ref new Exception( -1, "Context Type does not exists" );
+	}
+	return context;
 }

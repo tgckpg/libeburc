@@ -1,12 +1,13 @@
 #pragma once
 
 #include <eburc/defs.h>
+#include <eburc/Contexts/EBContext.h>
 #include <eburc/Zio.h>
 
 namespace libeburc
 {
 
-	ref class EBBinaryContext sealed
+	ref class EBBinaryContext sealed : EBContext
 	{
 		/*
 		 * Binary type ID.
