@@ -7,9 +7,12 @@ Original Source: [EB Library with UTF-8 support](http://green.ribbon.to/~ikazuhi
 ### WORKING IN PROGRESS
 
 #### TODO
-- Reading .ebz format ( Needs to port zilb )
+- ~~Reading .ebz format ( Needs to port zilb )~~ ( Done! )
 - Auto mbstring output for book LOCALE
 - Text searching
+  - ~~exact word search~~ ( Done! )
+  - ~~Keyword search~~ ( Done! )
+  - Multi search
 - Mixed LOCAL mapping?
 
 ### Classes
