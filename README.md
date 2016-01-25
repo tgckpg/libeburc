@@ -24,10 +24,14 @@ Original Source: [EB Library with UTF-8 support](http://green.ribbon.to/~ikazuhi
 
 #### Object classes
 `EBPosition`
+`EBHit`
 `EBHook`
+`EBHookSet`
+
 
 #### Sample code ( C# )
 ```C#
+string ID = "libeburc";
 try
 {
 	EBBook ebb = await EBBook.Parse( KnownFolders.SavedPictures );
@@ -52,14 +56,30 @@ try
 		Logger.Log( ID, string.Format( "  Wide char range: 0x{0:X} - 0x{1:X}", WCR.Start, WCR.End ), LogType.INFO );
 
 		// Begin Seek text test
-		Logger.Log( ID, "  Start Page: " + Sbook.FirstPage.Page, LogType.INFO );
-		Logger.Log( ID, "  First Page: " + await Sbook.GetPageAsync( Sbook.FirstPage ), LogType.INFO );
+		EBPosition Pos = Sbook.FirstPage;
+		for( int i = 0; i < 2; i ++ )
+		{
+			Logger.Log( ID, string.Format( "  Start: {{ Page: {0}, Offset: {1} }}", Pos.Page, Pos.Offset ), LogType.INFO );
+			Logger.Log( ID, "  Content: " + await Sbook.GetPageAsync( Pos ), LogType.INFO );
+		}
+
+		string[] keyword = new string[] { "水田" };
+		IEnumerable<EBHit> Hits = await Sbook.SearchAysnc( keyword, EBSearchCode.EB_SEARCH_KEYWORD );
+		Logger.Log( ID, string.Format( "  Search \"{0}\" hits {1} result(s)", string.Join( ", ", keyword ), Hits.Count() ) , LogType.INFO );
+		foreach( EBHit Hit in Hits )
+		{
+			Pos = Hit.Heading;
+			Logger.Log( ID, string.Format( "    Heading: {{ Page: {0}, Offset: {1} }}", Pos.Page, Pos.Offset ), LogType.INFO );
+			Pos = Hit.Text;
+			Logger.Log( ID, string.Format( "    Text: {{ Page: {0}, Offset: {1} }}", Pos.Page, Pos.Offset ), LogType.INFO );
+			Logger.Log( ID, "    Text: " + await Sbook.GetPageAsync( Pos ), LogType.INFO );
+		}
 	}
 }
 catch( Exception ex )
 {
 	Logger.Log( "App", ex.Message, LogType.ERROR );
-}
+
 ```
 
 #### Sample code ( C++ )
