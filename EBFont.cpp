@@ -78,7 +78,7 @@ void EBFont::LoadHeaders()
 	/*
 	 * Read information from the text file.
 	 */
-	zio->LSeekRaw( ( ( off_t ) page - 1 ) * EB_SIZE_PAGE );
+	zio->LSeek( ( ( off_t ) page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 	Array<byte>^ buff = ref new Array<byte>( 16 );
 	zio->Read( 16, buff );
 	byte* buffer = buff->Data;

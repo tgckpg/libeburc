@@ -36,7 +36,7 @@ void EBSubbook::LoadIndexes()
 	/*
      * Read the index table in the subbook.
      */
-	TextZio->LSeekRaw( ( ( off_t ) IndexPage - 1 ) * EB_SIZE_PAGE );
+	TextZio->LSeek( ( ( off_t ) IndexPage - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 	String^ str = TextZio->SrcFile->Name;
 
 	Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
@@ -400,7 +400,7 @@ void EBSubbook::LoadMultiSearches()
 		/*
 		 * Read the index table page of the multi search.
 		 */
-		TextZio->LSeekRaw( ( ( off_t ) multi->search->start_page - 1 ) * EB_SIZE_PAGE );
+		TextZio->LSeek( ( ( off_t ) multi->search->start_page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 
 		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 		TextZio->Read( EB_SIZE_PAGE, buff );
@@ -540,7 +540,7 @@ void EBSubbook::LoadMultiTitles()
 	/*
 	 * Read the page of the multi search.
 	 */
-	TextZio->LSeekRaw( ( ( off_t ) search_title_page - 1 ) * EB_SIZE_PAGE );
+	TextZio->LSeek( ( ( off_t ) search_title_page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 	Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 	TextZio->Read( EB_SIZE_PAGE, buff );
 	byte* buffer = buff->Data;
@@ -613,7 +613,7 @@ void EBSubbook::PreSearchWord( EBSearchContext^ context )
 		/*
 		 * Seek and read a page.
 		 */
-		TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+		TextZio->LSeek( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 
 		Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 		TextZio->Read( EB_SIZE_PAGE, buff );
@@ -857,7 +857,7 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 			 */
 			if ( cache_book_code != ParentBook->code || cache_page != context->page )
 			{
-				TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+				TextZio->LSeek( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 				Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 				TextZio->Read( EB_SIZE_PAGE, buff );
 				memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
@@ -1175,7 +1175,7 @@ void EBSubbook::HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit
 			 */
 			if ( cache_book_code != ParentBook->code || cache_page != context->page )
 			{
-				TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+				TextZio->LSeek( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 				Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 				TextZio->Read( EB_SIZE_PAGE, buff );
 				memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );
@@ -1605,7 +1605,7 @@ void EBSubbook::HitListWord( int max_hit_count, EBHit^ *hit_list, int *hit_count
 		 */
 		if ( cache_book_code != ParentBook->code || cache_page != context->page )
 		{
-			TextZio->LSeekRaw( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE );
+			TextZio->LSeek( ( ( off_t ) context->page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 			Array<byte>^ buff = ref new Array<byte>( EB_SIZE_PAGE );
 			TextZio->Read( EB_SIZE_PAGE, buff );
 			memcpy_s( cache_buffer, EB_SIZE_PAGE, buff->Data, EB_SIZE_PAGE );

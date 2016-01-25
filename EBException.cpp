@@ -103,6 +103,7 @@ static const wchar_t * const error_messages[] = {
 
 	/* 70 -- 74 */
 	L"Failed to read ebz",
+	L"Zio seek failed",
 
 };
 

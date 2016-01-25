@@ -86,6 +86,11 @@ IIterable<EBHit^>^ EBSubbook::Search( const char* phrase, EBSearchCode Code )
 	return results->GetView();
 }
 
+IAsyncAction^ EBSubbook::OpenAsync()
+{
+	return create_async( [ & ] { SetAuto(); } );
+}
+
 IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 {
 	return create_async( [ = ] { return GetPage( Pos ); } );

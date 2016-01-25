@@ -34,10 +34,7 @@ static int zio_counter = 0;
 	+ (*(const unsigned char *)((p) + 3) << 8) \
 	+ (*(const unsigned char *)((p) + 4)))
 
-Zio::Zio()
-{
-	cache_buffer;
-}
+Zio::Zio() { }
 
 Zio::Zio( IStorageFile^ File, ZioCode ZCode )
 {
@@ -105,6 +102,55 @@ void Zio::ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer )
 
 		posx += length;
 	} ).wait();
+}
+/*
+ * Seek `zio'.
+ */
+void Zio::LSeek( off_t location, int whence )
+{
+	off_t result;
+
+	if ( SrcFile == nullptr )
+		EBException::Throw( EBErrorCode::EB_ERR_ZIO_SEEK_FAILED );
+
+	if ( Code == ZioCode::ZIO_PLAIN )
+	{
+		/*
+		 * If `zio' is not compressed, simply call lseek().
+		 */
+		LSeekRaw( location );
+	}
+	else
+	{
+		/*
+		 * Calculate new location according with `whence'.
+		 */
+		switch ( whence )
+		{
+		case SEEK_SET:
+			this->location = location;
+			break;
+		case SEEK_CUR:
+			this->location += location;
+			break;
+		case SEEK_END:
+			this->location = file_size - location;
+			break;
+		default:
+#ifdef EINVAL
+			errno = EINVAL;
+#endif
+			EBException::Throw( EBErrorCode::EB_ERR_ZIO_SEEK_FAILED );
+		}
+
+		/*
+		 * Adjust location.
+		 */
+		if ( this->location < 0 )
+			this->location = 0;
+		if ( file_size < this->location )
+			this->location = file_size;
+	}
 }
 
 void Zio::LSeekRaw( off_t offset )
@@ -412,3 +458,4 @@ IAsyncOperation<Zio^>^ Zio::OpenAsync( IStorageFile^ File, ZioCode ZCode )
 		return ref new Zio( File, ZCode );
 	} );
 }
+

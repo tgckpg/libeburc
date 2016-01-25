@@ -211,7 +211,7 @@ void EBSubbook::ReadTextInternal(
 			if ( 0 < cache_rest_length )
 				memmove_s( cache_buffer, cache_rest_length, cache_p, cache_rest_length );
 
-			TextZio->LSeekRaw( context->location + cache_rest_length );
+			TextZio->LSeek( context->location + cache_rest_length, SEEK_SET );
 
 			size_t rsize = EB_SIZE_PAGE - cache_rest_length;
 			Array<byte>^ buff = ref new Array<byte>( rsize );

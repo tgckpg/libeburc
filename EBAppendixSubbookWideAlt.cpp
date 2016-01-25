@@ -72,7 +72,7 @@ void EBAppendixSubbook::WideCharTextJIS( int character_number, char *text )
 	/*
 	 * Read the alternation data.
 	 */
-	zio->LSeekRaw( location );
+	zio->LSeek( location, SEEK_SET );
 	zio->Read( MAX_ALT_LEN1, cachep->text );
 
 	/*
@@ -123,7 +123,7 @@ void EBAppendixSubbook::WideCharTextLatin( int character_number, char *text )
 	/*
 	 * Read the alternation data.
 	 */
-	zio->LSeekRaw( location );
+	zio->LSeek( location, SEEK_SET );
 	zio->Read( MAX_ALT_LEN1, cache_p->text );
 
 	/*

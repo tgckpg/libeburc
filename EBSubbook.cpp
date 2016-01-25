@@ -22,12 +22,6 @@ EBSubbook::EBSubbook( EBBook^ Book )
 	sound = ref new EBSearch();
 }
 
-
-IAsyncAction^ EBSubbook::OpenAsync()
-{
-	return create_async( [ & ] { SetAuto(); } );
-}
-
 void EBSubbook::SetAuto()
 {
 	/*
@@ -82,7 +76,7 @@ void EBSubbook::Load()
 		/*
 		 * Rewind the file descriptor of the start file.
 		 */
-		TextZio->LSeekRaw( ( ( off_t ) IndexPage - 1 ) * EB_SIZE_PAGE );
+		TextZio->LSeek( ( ( off_t ) IndexPage - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 	}
 }
 
@@ -263,7 +257,7 @@ void EBSubbook::LoadUTF8Table()
 	 * Read normalization table.
 	 */
 	size_t buffer_size = table_size * EB_SIZE_PAGE;
-	TextZio->LSeekRaw( ( ( off_t ) table_page - 1 ) * EB_SIZE_PAGE );
+	TextZio->LSeek( ( ( off_t ) table_page - 1 ) * EB_SIZE_PAGE, SEEK_SET );
 
 	Array<byte>^ buff = ref new Array<byte>( buffer_size );
 	TextZio->Read( buffer_size, buff );

@@ -64,6 +64,44 @@ namespace libeburc
 
 	public ref class Zio sealed
 	{
+		/*
+		 * Low-level seek function.
+		 *
+		 * If `zio->file' is socket, it calls ebnet_close().  Otherwise it calls
+		 * the close() system call.
+		 */
+		void LSeekRaw( off_t offset );
+		/*
+		 * Low-level read function.
+		 *
+		 * If `zio->file' is socket, it calls ebnet_read().  Otherwise it calls
+		 * the read() system call.
+		 * *Does not support ebnet
+		 */
+		void ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer );
+		/*
+		 * Read data from the `zio' file compressed with the ebzip compression
+		 * format.
+		 */
+		void ReadEBZip( size_t length, WriteOnlyArray<byte>^ buffer );
+		/*
+		 * LSeekRaw Location
+		 */
+		off_t posx;
+		/*
+		 * Uncompress an ebzip'ped slice.
+		 *
+		 * If it succeeds, 0 is returned.  Otherwise, -1 is returned.
+		 */
+		void UnzipSlice( size_t zipped_slice_size, byte *out_buffer );
+		/*
+		 * Open an non-compressed file.
+		 */
+		void OpenPlain();
+		/*
+		 * Open an EBZIP compression file.
+		 */
+		void OpenEbZip();
 	internal:
 		/*
 		 * ID.
@@ -180,54 +218,14 @@ namespace libeburc
 		 * ebnet mode flag.
 		 */
 		int is_ebnet;
-
 		/*
-		 * LSeekRaw Location
+		 * Seek `zio'.
 		 */
-		off_t posx;
-
-		/*
-		 * Low-level read function.
-		 *
-		 * If `zio->file' is socket, it calls ebnet_read().  Otherwise it calls
-		 * the read() system call.
-		 * *Does not support ebnet
-		 */
-		void ReadRaw( size_t length, WriteOnlyArray<byte>^ buffer );
-		/*
-		 * Uncompress an ebzip'ped slice.
-		 *
-		 * If it succeeds, 0 is returned.  Otherwise, -1 is returned.
-		 */
-		void UnzipSlice( size_t zipped_slice_size, byte *out_buffer );
-
-		/*
-		 * Open an non-compressed file.
-		 */
-		void OpenPlain();
-
-		/*
-		 * Open an EBZIP compression file.
-		 */
-		void OpenEbZip();
-
-		/*
-		 * Low-level seek function.
-		 *
-		 * If `zio->file' is socket, it calls ebnet_close().  Otherwise it calls
-		 * the close() system call.
-		 */
-		void LSeekRaw( off_t offset );
-
+		void LSeek( off_t location, int whence );
 		/*
 		 * Read data from `zio' file.
 		 */
 		void Read( size_t length, WriteOnlyArray<byte>^ buffer );
-		/*
-		 * Read data from the `zio' file compressed with the ebzip compression
-		 * format.
-		 */
-		void ReadEBZip( size_t length, WriteOnlyArray<byte>^ buffer );
 
 		static ZioCode Hint( int catolog_hint_value );
 
