@@ -107,9 +107,17 @@ static const wchar_t * const error_messages[] = {
 
 };
 
+static EBErrorCode last_thrown = EBErrorCode::EB_SUCCESS;
 
 void EBException::Throw(EBErrorCode ErrorCode)
 {
+	last_thrown = ErrorCode;
 	int Code = (int)ErrorCode;
 	throw ref new Platform::COMException(-Code, ref new Platform::String(error_messages[Code]));
+}
+EBErrorCode EBException::LastError::get()
+{
+	EBErrorCode code = last_thrown;
+	last_thrown = EBErrorCode::EB_SUCCESS;
+	return code;
 }

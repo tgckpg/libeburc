@@ -2,6 +2,7 @@
 #include "eburc/Book/EBBook.h"
 #include "eburc/Subbook/EBSubbook.h"
 
+using namespace std;
 using namespace libeburc;
 
 #define MAX_HITS 50
@@ -93,6 +94,21 @@ IAsyncAction^ EBSubbook::OpenAsync()
 	return create_async( [ & ] { SetAuto(); } );
 }
 
+IAsyncOperation<IIterable<String^>^>^ EBSubbook::GetPageAsync( IIterable<EBPosition^>^ Pos )
+{
+	return create_async( [ = ]
+	{
+		Vector<String^>^ Views = ref new Vector<String^>();
+
+		for_each( begin( Pos ), end( Pos ), [ = ] ( EBPosition^ P )
+		{
+			Views->Append( GetPage( P ) );
+		} );
+
+		return ( IIterable<String^>^ ) Views->GetView();
+	} );
+}
+
 IAsyncOperation<String^>^ EBSubbook::GetPageAsync( EBPosition^ Pos )
 {
 	return create_async( [ = ] { return GetPage( Pos ); } );
@@ -124,4 +140,35 @@ IAsyncOperation<IIterable<EBHit^>^>^ EBSubbook::SearchAysnc( IVector<String^>^ P
 
 		return Search( converted, Code );
 	} );
+}
+
+Array<EBSearchCode>^ EBSubbook::SearchFlags::get()
+{
+	Vector<EBSearchCode>^ methods = ref new Vector<EBSearchCode>();
+
+	if ( have_word_search() )
+	{
+		methods->Append( EBSearchCode::EB_SEARCH_WORD );
+	}
+	if ( have_endword_search() )
+	{
+		methods->Append( EBSearchCode::EB_SEARCH_ENDWORD );
+	}
+	if ( have_cross_search() )
+	{
+		methods->Append( EBSearchCode::EB_SEARCH_CROSS );
+	}
+	if ( have_multi_search() )
+	{
+		methods->Append( EBSearchCode::EB_SEARCH_MULTI );
+	}
+
+	Array<EBSearchCode>^ A = ref new Array<EBSearchCode>( methods->Size );
+	int i = 0;
+	for_each( begin( methods ), end( methods ), [ & ] ( EBSearchCode s )
+	{
+		A->set( i++, s );
+	} );
+
+	return A;
 }

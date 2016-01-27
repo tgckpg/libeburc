@@ -5,9 +5,11 @@
 
 namespace libeburc
 {
-	ref class EBException sealed
+	public ref class EBException sealed
 	{
+	internal:
+		static void Throw( EBErrorCode Code );
 	public:
-		static void Throw(EBErrorCode Code);
+		static property EBErrorCode LastError { EBErrorCode get(); }
 	};
 }

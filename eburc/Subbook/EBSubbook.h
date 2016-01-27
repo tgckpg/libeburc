@@ -412,7 +412,11 @@ namespace libeburc
 			String^ get() { return DirRoot->Name; }
 		}
 
+		property Array<EBSearchCode>^ SearchFlags { Array<EBSearchCode>^ get(); }
+
 		IAsyncAction^ OpenAsync();
+
+		IAsyncOperation<IIterable<String^>^>^ GetPageAsync( IIterable<EBPosition^>^ Pos );
 
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos);
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action );
