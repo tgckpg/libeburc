@@ -108,16 +108,32 @@ static const wchar_t * const error_messages[] = {
 };
 
 static EBErrorCode last_thrown = EBErrorCode::EB_SUCCESS;
+static const wchar_t *last_message = nullptr;
 
-void EBException::Throw(EBErrorCode ErrorCode)
+void EBException::Throw( EBErrorCode ErrorCode )
 {
 	last_thrown = ErrorCode;
-	int Code = (int)ErrorCode;
-	throw ref new Platform::COMException(-Code, ref new Platform::String(error_messages[Code]));
+	int Code = ( int ) ErrorCode;
+	throw ref new Platform::COMException( -Code, ref new Platform::String( error_messages[ Code ] ) );
 }
+
+void EBException::Throw( EBErrorCode ErrorCode, const wchar_t *message )
+{
+	last_message = message;
+	Throw( ErrorCode );
+}
+
 EBErrorCode EBException::LastError::get()
 {
 	EBErrorCode code = last_thrown;
 	last_thrown = EBErrorCode::EB_SUCCESS;
 	return code;
+}
+
+String^ EBException::LastMessage::get()
+{
+	if ( last_message == nullptr ) return ref new String( L"<NULL>" );
+	String^ mesg = ref new String( last_message );
+	last_message = nullptr;
+	return mesg;
 }

@@ -115,7 +115,7 @@ IStorageFolder^ FileName::eb_fix_directory( IStorageFolder^ Folder, wstring Targ
 		} );
 
 		if ( TargetFolder == end( Folders ) )
-			EBException::Throw( EBErrorCode::EB_ERR_BAD_DIR_NAME );
+			EBException::Throw( EBErrorCode::EB_ERR_BAD_DIR_NAME, tName );
 
 		FoundFolder = *TargetFolder;
 	} );

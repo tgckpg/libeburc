@@ -232,6 +232,7 @@
     <ClInclude Include="eburc\Helpers\FileName.h" />
     <ClInclude Include="eburc\Helpers\JACode.h" />
     <ClInclude Include="eburc\Helpers\Utils.h" />
+    <ClInclude Include="eburc\EBLogger.h" />
     <ClInclude Include="eburc\Objects\CharRange.h" />
     <ClInclude Include="eburc\Objects\EBAlternationCache.h" />
     <ClInclude Include="eburc\Objects\EBHit.h" />
@@ -267,6 +268,7 @@
     <ClCompile Include="eburc\Helpers\FileName.cpp" />
     <ClCompile Include="eburc\Helpers\JACode.cpp" />
     <ClCompile Include="eburc\Helpers\Utils.cpp" />
+    <ClCompile Include="eburc\EBLogger.cpp" />
     <ClCompile Include="eburc\Objects\CharRange.cpp" />
     <ClCompile Include="eburc\Objects\EBAlternationCache.cpp" />
     <ClCompile Include="eburc\Objects\EBHit.cpp" />

@@ -192,7 +192,7 @@ namespace libeburc
 		void FontList( EBFontCode *font_list, int *font_count );
 		void SetFont( EBFontCode font_code );
 
-		#pragma region Propety Tests
+#pragma region Propety Tests
 		/// <summary>
 		/// Examine whether the current subbook in `book' supports `WORD SEARCH'
 		/// or not.
@@ -243,7 +243,7 @@ namespace libeburc
 		/// notice or not.
 		/// </summary>
 		bool have_copyright() { return copyright->start_page != 0; }
-		#pragma endregion
+#pragma endregion
 
 		/// <summary>
 		/// The top page of search methods.
@@ -276,7 +276,7 @@ namespace libeburc
 
 		EBSubbook( EBBook^ Book );
 
-		#pragma region Text Scope
+#pragma region Text Scope
 
 		int IsTextStopped();
 		int IsStopCode( EBAppendixSubbook^ appendix, unsigned int code0, unsigned int code1 );
@@ -297,9 +297,9 @@ namespace libeburc
 		 */
 		void ReadHeading( EBAppendixSubbook^ appendix, EBHookSet^ hookset,
 			void *container, size_t text_max_length, char *text, SSIZE_T *text_length );
-		#pragma endregion
+#pragma endregion
 
-		#pragma region UTF8
+#pragma region UTF8
 
 		/// <summary>
 		/// Normalization table for UTF-8 subbook.
@@ -319,9 +319,9 @@ namespace libeburc
 		 * Otherwise, -1 is returned.
 		 */
 		void ConvertUtf8( const char *input_word, char *word, EBWordCode *word_code );
-		#pragma endregion
+#pragma endregion
 
-		#pragma region Search
+#pragma region Search
 		/*
 		 * Pre-search for a word described in the current search context.
 		 * It descends intermediate indexes and reached to a leaf page that
@@ -348,9 +348,9 @@ namespace libeburc
 		 * Get hit entries of a submitted multi search request.
 		 */
 		void HitListMulti( EBSearchContext^ context, int max_hit_count, EBHit^ *hit_list, int *hit_count );
-		#pragma endregion
+#pragma endregion
 
-		#pragma region Set Word
+#pragma region Set Word
 		/*
 		 * Make a fixed word and a cannonicalized word for `WORD SEARCH'.
 		 *
@@ -371,7 +371,7 @@ namespace libeburc
 		void SetKeyword( const char *input_word, char *word, char *canonicalized_word, EBWordCode *word_code );
 
 		void FixWord( const EBSearch^ search, char *word, char *canonicalized_word );
-		#pragma endregion
+#pragma endregion
 
 		/// <summary>
 		/// Index page.
@@ -421,10 +421,24 @@ namespace libeburc
 		IAsyncAction^ OpenAsync();
 
 		IAsyncOperation<IIterable<String^>^>^ GetPageAsync( IIterable<EBPosition^>^ Pos );
+		IAsyncOperation<IIterable<String^>^>^ GetTextAsync( IIterable<EBHit^>^ Pos );
 
-		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos);
+		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos );
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action );
 		IAsyncOperation<String^>^ GetPageAsync( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet );
+
+		IAsyncOperation<String^>^ GetTextAsync( EBHit^ Hit )
+		{
+			return GetPageAsync( Hit->Text );
+		}
+		IAsyncOperation<String^>^ GetTextAsync( EBHit^ Hit, ReadAction^ Action )
+		{
+			return GetPageAsync( Hit->Text, Action );
+		};
+		IAsyncOperation<String^>^ GetTextAsync( EBHit^ Hit, ReadAction^ Action, EBHookSet^ HookSet )
+		{
+			return GetPageAsync( Hit->Text, Action, HookSet );
+		};
 
 		IAsyncOperation<IIterable<EBHit^>^>^ SearchAysnc( IVector<String^>^ Phrases, EBSearchCode Code );
 	};

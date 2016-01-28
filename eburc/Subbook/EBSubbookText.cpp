@@ -71,7 +71,7 @@ void EBSubbook::SeekText( EBPosition^ Pos )
 	ParentBook->ResetTextContext();
 	ParentBook->text_context->code = EBTextCode::EB_TEXT_SEEKED;
 	ParentBook->text_context->location
-		= ( ( off_t ) Pos->page - 1 ) * EB_SIZE_PAGE + Pos->offset;
+		= ( ( off_t ) Pos->_page - 1 ) * EB_SIZE_PAGE + Pos->_offset;
 }
 
 void EBSubbook::ReadText(
@@ -97,13 +97,13 @@ void EBSubbook::ReadText(
 		EBPosition^ position = TellText();
 		ParentBook->ResetTextContext();
 
-		if ( menu->start_page <= position->page && position->page <= menu->end_page )
+		if ( menu->start_page <= position->_page && position->_page <= menu->end_page )
 			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
 
-		else if ( image_menu->start_page <= position->page && position->page <= image_menu->end_page )
+		else if ( image_menu->start_page <= position->_page && position->_page <= image_menu->end_page )
 			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
 
-		else if ( copyright->start_page <= position->page && position->page <= copyright->end_page )
+		else if ( copyright->start_page <= position->_page && position->_page <= copyright->end_page )
 			book->text_context->code = EBTextCode::EB_TEXT_OPTIONAL_TEXT;
 
 		else

@@ -733,8 +733,8 @@ static void AndHitLists( EBHit^ and_list[ EB_TMP_MAX_HITS ], int *and_count,
 			 * Compare {current_page, current_offset} and {greatest_page,
 			 * greatest_offset}.
 			 */
-			current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->page;
-			current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->offset;
+			current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->_page;
+			current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->_offset;
 
 			if ( greatest_list == -1 )
 			{
@@ -791,8 +791,8 @@ static void AndHitLists( EBHit^ and_list[ EB_TMP_MAX_HITS ], int *and_count,
 			{
 				if ( hit_counts[ i ] <= hit_indexes[ i ] )
 					continue;
-				current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->page;
-				current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->offset;
+				current_page = hit_lists[ i ][ hit_indexes[ i ] ]->text->_page;
+				current_offset = hit_lists[ i ][ hit_indexes[ i ] ]->text->_offset;
 				if ( current_page != greatest_page
 					|| current_offset != greatest_offset )
 				{
@@ -1051,9 +1051,9 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 						context->comparison_result
 							= context->compare_single( context->word, cache_p + 6,
 								context->entry_length );
-						context->keyword_heading->page
+						context->keyword_heading->_page
 							= eb_uint4( cache_p + context->entry_length + 6 );
-						context->keyword_heading->offset
+						context->keyword_heading->_offset
 							= eb_uint2( cache_p + context->entry_length + 10 );
 						context->in_group_entry = 1;
 						cache_p += context->entry_length + 12;
@@ -1085,8 +1085,8 @@ void EBSubbook::HitListKeyword( EBSearchContext^ context, int max_hit_count, EBH
 							context->keyword_heading = TellText();
 							*hit = ref new EBHit(
 								ref new EBPosition(
-									context->keyword_heading->page,
-									context->keyword_heading->offset ),
+									context->keyword_heading->_page,
+									context->keyword_heading->_offset ),
 								ref new EBPosition(
 									eb_uint4( cache_p + 1 ),
 									eb_uint2( cache_p + 5 ) )

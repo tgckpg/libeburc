@@ -11,6 +11,6 @@ EBHit::EBHit( EBPosition^ Heading, EBPosition^ Text )
 
 EBHit::EBHit( EBHit^ Hit )
 {
-	heading = ref new EBPosition( Hit->heading->page, Hit->heading->offset );
-	text = ref new EBPosition( Hit->text->page, Hit->text->offset );
+	heading = ref new EBPosition( Hit->heading->_page, Hit->heading->_offset );
+	text = ref new EBPosition( Hit->text->_page, Hit->text->_offset );
 }

@@ -152,6 +152,9 @@
     <ClCompile Include="eburc\Contexts\EBContext.cpp">
       <Filter>eburc\Contexts</Filter>
     </ClCompile>
+    <ClCompile Include="eburc\EBLogger.cpp">
+      <Filter>eburc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -242,6 +245,9 @@
     </ClInclude>
     <ClInclude Include="eburc\Contexts\EBContext.h">
       <Filter>eburc\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\EBLogger.h">
+      <Filter>eburc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

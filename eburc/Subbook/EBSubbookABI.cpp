@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "eburc/Book/EBBook.h"
 #include "eburc/Subbook/EBSubbook.h"
+#include "eburc/EBLogger.h"
 
 using namespace std;
 using namespace libeburc;
@@ -40,8 +41,8 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 	}
 
 	EBPosition^ npos = TellText();
-	Pos->page = npos->page;
-	Pos->offset = npos->offset;
+	Pos->_page = npos->_page;
+	Pos->_offset = npos->_offset;
 
 	String^ Str = ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
 	delete[] text;
@@ -80,6 +81,11 @@ IIterable<EBHit^>^ EBSubbook::Search( const char** phrase, EBSearchCode Code )
 
 		for ( int i = 0; i < hit_count; i++ )
 		{
+			char buff[ 100 ];
+			snprintf( buff, 100, "Head: %d, %d", hits[ i ]->Heading->Page, hits[ i ]->Heading->Offset );
+			EBLogger::Log( buff );
+			snprintf( buff, 100, "Text: %d, %d", hits[ i ]->Text->Page, hits[ i ]->Text->Offset );
+			EBLogger::Log( buff );
 			results->Append( hits[ i ] );
 		}
 	}
@@ -105,6 +111,21 @@ IAsyncOperation<IIterable<String^>^>^ EBSubbook::GetPageAsync( IIterable<EBPosit
 		for_each( begin( Pos ), end( Pos ), [ = ] ( EBPosition^ P )
 		{
 			Views->Append( GetPage( P ) );
+		} );
+
+		return ( IIterable<String^>^ ) Views->GetView();
+	} );
+}
+
+IAsyncOperation<IIterable<String^>^>^ EBSubbook::GetTextAsync( IIterable<EBHit^>^ Hits )
+{
+	return create_async( [ = ]
+	{
+		Vector<String^>^ Views = ref new Vector<String^>();
+
+		for_each( begin( Hits ), end( Hits ), [ = ] ( EBHit ^ P )
+		{
+			Views->Append( GetPage( P->Text ) );
 		} );
 
 		return ( IIterable<String^>^ ) Views->GetView();
