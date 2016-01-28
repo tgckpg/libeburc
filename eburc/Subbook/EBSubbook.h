@@ -395,7 +395,11 @@ namespace libeburc
 		{
 			String^ get()
 			{
-				return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( title ) );
+				LPWSTR s = ( LPWSTR ) Utils::EucJP2Utf16( title );
+				String^ str = ref new String( s );
+
+				delete[] s;
+				return str;
 			}
 		}
 
