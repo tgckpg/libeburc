@@ -15,7 +15,8 @@ namespace libeburc
 		 */
 		int offset;
 
-		EBPosition( int Page = 0, int Offset = 0 );
+		EBPosition( int Page, int Offset );
+		EBPosition();
 
 	public:
 		property int Page {
