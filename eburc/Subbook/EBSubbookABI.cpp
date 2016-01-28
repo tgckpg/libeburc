@@ -6,13 +6,13 @@ using namespace std;
 using namespace libeburc;
 
 #define MAX_HITS 50
-#define MAXLEN_TEXT 1023
+#define MAXLEN_TEXT 1048575
 
 String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ HookSet )
 {
 	SeekText( Pos );
 
-	char text[ MAXLEN_TEXT + 1 ];
+	char *text = new char[ MAXLEN_TEXT + 1 ];
 	try
 	{
 		SSIZE_T text_length;
@@ -43,7 +43,9 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 	Pos->page = npos->page;
 	Pos->offset = npos->offset;
 
-	return ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
+	String^ Str = ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
+	delete[] text;
+	return Str;
 }
 
 IIterable<EBHit^>^ EBSubbook::Search( const char** phrase, EBSearchCode Code )
