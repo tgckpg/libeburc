@@ -155,6 +155,9 @@
     <ClCompile Include="eburc\EBLogger.cpp">
       <Filter>eburc</Filter>
     </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookWord.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

@@ -330,7 +330,8 @@ namespace libeburc
 		 */
 		void PreSearchWord( EBSearchContext^ context );
 
-		void SeachExactWord( const char * input_word );
+		void SearchWord( const char * input_word );
+		void SearchExactWord( const char * input_word );
 		void SearchKeyword( const char * const input_words[] );
 		/*
 		 * Get hit entries of a submitted exactword/word/endword search request.

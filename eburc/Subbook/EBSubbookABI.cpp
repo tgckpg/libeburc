@@ -60,15 +60,19 @@ IIterable<EBHit^>^ EBSubbook::Search( const char** phrase, EBSearchCode Code )
 		case EBSearchCode::EB_SEARCH_CROSS:
 		case EBSearchCode::EB_SEARCH_ENDWORD:
 		case EBSearchCode::EB_SEARCH_MULTI:
-		case EBSearchCode::EB_SEARCH_WORD:
 			throw ref new NotImplementedException( "This method is not yet implemented" );
+		case EBSearchCode::EB_SEARCH_WORD:
+			SearchWord( phrase[0] );
+			break;
 		case EBSearchCode::EB_SEARCH_NONE:
+			// Searching nothing, so reset the search context and do nothing
+			ParentBook->ResetSearchContext();
 			break;
 		case EBSearchCode::EB_SEARCH_KEYWORD:
 			SearchKeyword( phrase );
 			break;
 		case EBSearchCode::EB_SEARCH_EXACTWORD:
-			SeachExactWord( phrase[0] );
+			SearchExactWord( phrase[0] );
 			break;
 
 		default:

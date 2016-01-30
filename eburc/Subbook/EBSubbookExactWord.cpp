@@ -4,7 +4,7 @@
 
 using namespace libeburc;
 
-void EBSubbook::SeachExactWord( const char * input_word )
+void EBSubbook::SearchExactWord( const char * input_word )
 {
 	/*
 	 * Initialize search context.
