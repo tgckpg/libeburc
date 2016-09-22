@@ -92,7 +92,7 @@ ZioCode FileName::eb_path_name_zio_code( IStorageFile^ File, ZioCode DefaultCode
 	{
 		return ZioCode::ZIO_EBZIP1;
 	}
-	else if ( _wcsnicmp( extc, L".org", 4 ) == 0 )
+	else if ( _wcsnicmp( extc, L".org", 4 ) == 0 || wcscmp( extc, L"" ) == 0 )
 	{
 		return ZioCode::ZIO_PLAIN;
 	}
