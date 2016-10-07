@@ -6,6 +6,11 @@ using namespace libeburc;
 
 void EBSubbook::LoadMap()
 {
+	EBHMap = ref new EBMap( EBMapType::EB_MAP_HAN_FONT );
+	EBZMap = ref new EBMap( EBMapType::EB_MAP_ZEN_FONT );
+	EBCMap = ref new EBMap( EBMapType::EB_MAP_C );
+	EBGMap = ref new EBMap( EBMapType::EB_MAP_G );
+
 	try
 	{
 		wstring wname( DirRoot->Name->Data() );
@@ -35,11 +40,6 @@ void EBSubbook::LoadMap()
 
 	int skip = false;
 	bool line_started = true;
-
-	EBHMap = ref new EBMap( EBMapType::EB_MAP_HAN_FONT );
-	EBZMap = ref new EBMap( EBMapType::EB_MAP_ZEN_FONT );
-	EBCMap = ref new EBMap( EBMapType::EB_MAP_C );
-	EBGMap = ref new EBMap( EBMapType::EB_MAP_G );
 
 	while ( nbytes == chunkSize )
 	{
