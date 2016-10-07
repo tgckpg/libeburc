@@ -76,7 +76,7 @@ namespace libeburc
 		/*
 		 * Delete some marks in `word'.
 		 */
-		static void DeletMarksJIS( char *word );
+		static void DeleteMarksJIS( char *word );
 		/*
 		 * Delete long vowel marks in `word'.
 		 */

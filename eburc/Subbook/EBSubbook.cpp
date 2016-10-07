@@ -62,6 +62,8 @@ void EBSubbook::Load()
 
 	if ( TextZio->Code != ZioCode::ZIO_INVALID )
 	{
+		LoadMap();
+
 		/*
 		 * Read index information.
 		 */

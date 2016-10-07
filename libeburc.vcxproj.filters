@@ -158,6 +158,12 @@
     <ClCompile Include="eburc\Subbook\EBSubbookWord.cpp">
       <Filter>eburc\Subbook</Filter>
     </ClCompile>
+    <ClCompile Include="eburc\Subbook\EBSubbookMap.cpp">
+      <Filter>eburc\Subbook</Filter>
+    </ClCompile>
+    <ClCompile Include="eburc\Objects\EBMap.cpp">
+      <Filter>eburc\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -251,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="eburc\EBLogger.h">
       <Filter>eburc</Filter>
+    </ClInclude>
+    <ClInclude Include="eburc\Objects\EBMap.h">
+      <Filter>eburc\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

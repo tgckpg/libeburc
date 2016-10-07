@@ -340,7 +340,7 @@ void JACode::ConvertLowerJIS( char *word )
 	*wp = '\0';
 }
 
-void JACode::DeletMarksJIS( char *word )
+void JACode::DeleteMarksJIS( char *word )
 {
 	unsigned char *in_wp = ( unsigned char * ) word;
 	unsigned char *out_wp = ( unsigned char * ) word;

@@ -72,7 +72,7 @@ void eb_hook_euc_to_ascii( EBSubbook^ subbook, EBAppendixSubbook^ appendix, void
 	if ( out_code == 0 )
 		subbook->ParentBook->WriteTextByte2( in_code1, in_code2 );
 	else
-		subbook->ParentBook->WriteTextByte1( out_code );
+		subbook->ParentBook->WriteTextByte2( out_code, '\0' );
 }
 
 
@@ -87,7 +87,15 @@ void eb_hook_narrow_character_text( EBSubbook^ subbook, EBAppendixSubbook^ appen
 
 	if ( appendix == nullptr )
 	{
-		subbook->ParentBook->WriteTextString( "<?>" );
+		const char * bytes = subbook->EBHMap->Get( argv[ 0 ] );
+		if ( bytes == nullptr )
+		{
+			subbook->ParentBook->WriteTextByte2( '?', '\0' );
+		}
+		else
+		{
+			subbook->ParentBook->WriteText( bytes, subbook->EBHMap->Size( argv[ 0 ] ) );
+		}
 	}
 	else
 	{
@@ -108,7 +116,15 @@ void eb_hook_wide_character_text( EBSubbook^ subbook, EBAppendixSubbook^ appendi
 
 	if ( appendix == nullptr )
 	{
-		subbook->ParentBook->WriteTextString( "<?>" );
+		const char * bytes = subbook->EBZMap->Get( argv[ 0 ] );
+		if ( bytes == nullptr )
+		{
+			subbook->ParentBook->WriteTextByte2( '?', '\0' );
+		}
+		else
+		{
+			subbook->ParentBook->WriteText( bytes, subbook->EBZMap->Size( argv[ 0 ] ) );
+		}
 	}
 	else
 	{
@@ -117,16 +133,35 @@ void eb_hook_wide_character_text( EBSubbook^ subbook, EBAppendixSubbook^ appendi
 	}
 }
 
-
-/*
- * Hook for a newline character.
- */
 void eb_hook_newline(EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *container,
     EBHookCode code, int argc, const unsigned int *argv)
 {
-	subbook->ParentBook->WriteTextByte1( '\n' );
+	subbook->ParentBook->WriteTextByte2( '\n', '\0' );
 }
 
+void eb_hook_gb2312( EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *container,
+	EBHookCode hook_code, int argc, const unsigned int *argv )
+{
+	byte gb_char[] { argv[ 0 ] >> 8 & 0xFF, argv[ 0 ] & 0xFF, 0 };
+	size_t Size = MultiByteToWideChar( CP_GB2312, 0, ( LPCSTR ) gb_char, -1, NULL, 0 );
+
+	byte buff16[ 4 ];
+	MultiByteToWideChar( CP_GB2312, 0, ( LPCSTR ) gb_char, -1, ( LPWSTR ) buff16, Size );
+
+	subbook->ParentBook->WriteText( ( const char * ) buff16, Size );
+}
+
+void eb_hook_eucjp( EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *container,
+	EBHookCode hook_code, int argc, const unsigned int *argv )
+{
+	byte euc_char[] { argv[ 0 ] >> 8 & 0xFF, argv[ 0 ] & 0xFF, 0 };
+	size_t Size = MultiByteToWideChar( CP_EUCJP, 0, ( LPCSTR ) euc_char, -1, NULL, 0 );
+
+	byte buff16[ 4 ];
+	MultiByteToWideChar( CP_EUCJP, 0, ( LPCSTR ) euc_char, -1, ( LPWSTR ) buff16, Size );
+
+	subbook->ParentBook->WriteText( ( const char * ) buff16, Size );
+}
 
 /*
  * Hook which does nothing.
@@ -139,8 +174,10 @@ void eb_hook_empty(EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *contai
 void EBHookSet::BindDefaultHooks()
 {
 	hooks[ ( int ) EBHookCode::EB_HOOK_NARROW_JISX0208 ]->function = eb_hook_euc_to_ascii;
+	hooks[ ( int ) EBHookCode::EB_HOOK_WIDE_JISX0208 ]->function = eb_hook_eucjp;
 	hooks[ ( int ) EBHookCode::EB_HOOK_NARROW_FONT ]->function = eb_hook_narrow_character_text;
 	hooks[ ( int ) EBHookCode::EB_HOOK_WIDE_FONT ]->function = eb_hook_wide_character_text;
 	hooks[ ( int ) EBHookCode::EB_HOOK_NEWLINE ]->function = eb_hook_newline;
+	hooks[ ( int ) EBHookCode::EB_HOOK_GB2312 ]->function = eb_hook_gb2312;
 }
 

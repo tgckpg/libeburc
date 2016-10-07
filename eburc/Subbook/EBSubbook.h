@@ -12,6 +12,7 @@
 #include <eburc/Helpers/JACode.h>
 #include <eburc/Objects/EBHit.h>
 #include <eburc/Objects/EBHookSet.h>
+#include <eburc/Objects/EBMap.h>
 #include <eburc/Objects/EBPosition.h>
 #include <eburc/Search/Match.h>
 #include <eburc/Search/EBSearch.h>
@@ -121,8 +122,17 @@ namespace libeburc
 		/// Files
 		/// </summary>
 		IStorageFile^ TextFile;
+		IStorageFile^ MapFile;
 		IStorageFile^ GraphFile;
 		IStorageFile^ SoundFile;
+
+		/// <summary>
+		/// Maps
+		/// </summary>
+		EBMap^ EBHMap;
+		EBMap^ EBZMap;
+		EBMap^ EBCMap;
+		EBMap^ EBGMap;
 
 		/// <summary>
 		/// Internal title
@@ -188,6 +198,11 @@ namespace libeburc
 		/// Load font files.
 		/// </summary>
 		void LoadFontHeaders();
+
+		/// <summary>
+		/// Load map file.
+		/// </summary>
+		void LoadMap();
 
 		void FontList( EBFontCode *font_list, int *font_count );
 		void SetFont( EBFontCode font_code );

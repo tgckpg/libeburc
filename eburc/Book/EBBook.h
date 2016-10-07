@@ -24,8 +24,6 @@ namespace libeburc
 	/// </summary>
 	public ref class EBBook sealed
 	{
-		IStorageFolder^ DirRoot;
-
 		/*
 		 * Fix chachacter-code of the book if misleaded.
 		 */
@@ -53,6 +51,8 @@ namespace libeburc
 
 		EBBook( IStorageFolder^ BookDir );
 	internal:
+		IStorageFolder^ DirRoot;
+
 		int subbook_count;
 
 		// See relative public properties

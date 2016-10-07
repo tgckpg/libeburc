@@ -13,11 +13,11 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 {
 	SeekText( Pos );
 
-	char *text = new char[ MAXLEN_TEXT + 1 ];
+	char* text = new char[ MAXLEN_TEXT + 1 ];
+	SSIZE_T text_length;
+
 	try
 	{
-		SSIZE_T text_length;
-
 		int stopped = 0;
 		while ( !stopped )
 		{
@@ -27,7 +27,7 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 			// Call for action
 			if ( Action )
 			{
-				Action( ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) ) );
+				Action( ref new String( ( LPWSTR ) text ) );
 			}
 		}
 
@@ -44,8 +44,11 @@ String^ EBSubbook::GetPage( EBPosition^ Pos, ReadAction^ Action, EBHookSet^ Hook
 	Pos->_page = npos->_page;
 	Pos->_offset = npos->_offset;
 
-	String^ Str = ref new String( ( LPWSTR ) Utils::EucJP2Utf16( text ) );
+	text[ text_length + 1 ] = '\0';
+
+	String^ Str = ref new String( ( LPWSTR ) text );
 	delete[] text;
+
 	return Str;
 }
 

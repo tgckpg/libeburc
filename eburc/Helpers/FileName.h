@@ -28,6 +28,7 @@ namespace libeburc
 		/// Extra: eb_find_file_name2 is also generalized within.
 		/// </summary>
 		static StorageFile^ eb_find_file_name( IStorageFolder^ Folder, wstring target_file_name );
+		static StorageFile^ eb_find_file_name( IStorageFolder^ Folder, wstring target_file_name, vector<wchar_t*> supp_exts );
 		/// <summary>
 		/// Rewrite `directory_name' to a real directory name in the `path' directory.
 		///

@@ -234,7 +234,7 @@ void EBSubbook::FixWord( const EBSearch^ search, char *word, char *canonicalized
 			JACode::ConvertLowerJIS( canonicalized_word );
 
 		if ( search->mark == EBIndexStyleCode::EB_INDEX_STYLE_DELETE )
-			JACode::DeletMarksJIS( canonicalized_word );
+			JACode::DeleteMarksJIS( canonicalized_word );
 
 		if ( search->long_vowel == EBIndexStyleCode::EB_INDEX_STYLE_CONVERT )
 			JACode::ConvertLongVowelsJIS( canonicalized_word );

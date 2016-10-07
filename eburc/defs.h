@@ -3,6 +3,8 @@
 #include <eburc/Helpers/Utils.h>
 
 #define CP_EUCJP 20932
+#define CP_SHIFT_JIS 932
+#define CP_GB2312 936
 
 #define LOG(x);
 
@@ -416,4 +418,10 @@ namespace libeburc
 	};
 
 	enum EBContextType { BINARY, TEXT, SEARCH };
+	enum EBMapType {
+		EB_MAP_HAN_FONT
+		, EB_MAP_ZEN_FONT
+		, EB_MAP_C
+		, EB_MAP_G
+	};
 }

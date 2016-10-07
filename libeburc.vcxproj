@@ -238,6 +238,7 @@
     <ClInclude Include="eburc\Objects\EBHit.h" />
     <ClInclude Include="eburc\Objects\EBHook.h" />
     <ClInclude Include="eburc\Objects\EBHookSet.h" />
+    <ClInclude Include="eburc\Objects\EBMap.h" />
     <ClInclude Include="eburc\Objects\EBPosition.h" />
     <ClInclude Include="eburc\Search\EBMultiSearch.h" />
     <ClInclude Include="eburc\Search\EBSearch.h" />
@@ -275,6 +276,7 @@
     <ClCompile Include="eburc\Objects\EBHook.cpp" />
     <ClCompile Include="eburc\Objects\EBHookSet.cpp" />
     <ClCompile Include="eburc\Objects\EBHookSetInternal.cpp" />
+    <ClCompile Include="eburc\Objects\EBMap.cpp" />
     <ClCompile Include="eburc\Objects\EBPosition.cpp" />
     <ClCompile Include="eburc\Search\EBMultiSearch.cpp" />
     <ClCompile Include="eburc\Search\EBSearch.cpp" />
@@ -284,6 +286,7 @@
     <ClCompile Include="eburc\Subbook\EBSubbookExactWord.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookFont.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookKeyword.cpp" />
+    <ClCompile Include="eburc\Subbook\EBSubbookMap.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookSearch.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookSetWord.cpp" />
     <ClCompile Include="eburc\Subbook\EBSubbookText.cpp" />
