@@ -4,16 +4,26 @@ The EB library rewritten in C++/CX favor.
 
 Original Source: [EB Library with UTF-8 support](http://green.ribbon.to/~ikazuhiro/dic/ebu.html)
 
+### Tested dictionary
+- 新明解国語辞典　第五版
+- 三省堂　スーパー大辞林
+- 小学館「中日／日中辞典」統合版
+
 ### WORKING IN PROGRESS
 
 #### TODO
 - ~~Reading .ebz format ( Needs to port zilb )~~ ( Done! )
-- Auto mbstring output for book LOCALE
 - Text searching
   - ~~exact word search~~ ( Done! )
   - ~~Keyword search~~ ( Done! )
   - Multi search
-- Mixed LOCAL mapping?
+- ~~Mixed LOCAL mapping?~~ ( Done! EBXA-C support added, YESH! )
+
+### Not supported
+The following features are not ported because I don't really need them. It will be implemented if enough people request for these features.
+- sound
+- image
+- video
 
 ### Classes
 #### Main classes
@@ -82,7 +92,7 @@ try
 catch( Exception ex )
 {
 	Logger.Log( "App", ex.Message, LogType.ERROR );
-
+}
 ```
 
 #### Sample code ( C++ )
