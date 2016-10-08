@@ -160,6 +160,7 @@ const char* EBMap::Get( int index )
 {
 	if( conv_map.count( index ) )
 		return conv_map.at( index );
+	return nullptr;
 }
 
 int EBMap::Size( int index )

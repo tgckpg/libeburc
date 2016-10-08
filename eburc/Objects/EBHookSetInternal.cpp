@@ -130,6 +130,38 @@ void eb_hook_eucjp( EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *conta
 
 	subbook->ParentBook->WriteText( ( const char * ) buff16, Size );
 }
+void eb_hook_euc_to_ascii( EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *container,
+	EBHookCode hook_code, int argc, const unsigned int *argv )
+{
+	int in_code1, in_code2;
+	int out_code = 0;
+
+	in_code1 = argv[ 0 ] >> 8;
+	in_code2 = argv[ 0 ] & 0xff;
+
+	if ( in_code2 < EUC_TO_ASCII_TABLE_START
+		|| EUC_TO_ASCII_TABLE_END < in_code2 )
+	{
+		out_code = 0;
+	}
+	else if ( in_code1 == 0xa1 )
+	{
+		out_code = euc_a1_to_ascii_table[ in_code2 - EUC_TO_ASCII_TABLE_START ];
+	}
+	else if ( in_code1 == 0xa3 )
+	{
+		out_code = euc_a3_to_ascii_table[ in_code2 - EUC_TO_ASCII_TABLE_START ];
+	}
+
+	if ( out_code == 0 )
+	{
+		eb_hook_eucjp( subbook, appendix, container, hook_code, argc, argv );
+	}
+	else
+	{
+		subbook->ParentBook->WriteTextByte2( out_code, '\0' );
+	}
+}
 
 /*
  * Hook which does nothing.
@@ -141,7 +173,7 @@ void eb_hook_empty(EBSubbook^ subbook, EBAppendixSubbook^ appendix, void *contai
 
 void EBHookSet::BindDefaultHooks()
 {
-	hooks[ ( int ) EBHookCode::EB_HOOK_NARROW_JISX0208 ]->function = eb_hook_eucjp;
+	hooks[ ( int ) EBHookCode::EB_HOOK_NARROW_JISX0208 ]->function = eb_hook_euc_to_ascii;
 	hooks[ ( int ) EBHookCode::EB_HOOK_WIDE_JISX0208 ]->function = eb_hook_eucjp;
 	hooks[ ( int ) EBHookCode::EB_HOOK_NARROW_FONT ]->function = eb_hook_narrow_character_text;
 	hooks[ ( int ) EBHookCode::EB_HOOK_WIDE_FONT ]->function = eb_hook_wide_character_text;
